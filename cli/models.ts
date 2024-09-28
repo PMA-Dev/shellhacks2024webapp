@@ -1,65 +1,108 @@
-import type { Low } from 'lowdb';
+import 'reflect-metadata';
+import { IsNumber, IsOptional, IsString, IsArray } from 'class-validator';
 
-export type DbType = Low<DbData>;
-
-export interface DbData {
-    metadatas: MetadatasOuter;
+// Base data record with validation for id
+export class BaseDataRecord {
+  @IsOptional()
+  @IsNumber()
+  id?: number;
 }
 
-export interface MetadatasOuter {
-    [MetadataType.Galactic]: MetadataTable<GalacticMetadata>;
-    [MetadataType.Project]: MetadataTable<ProjectMetadata>;
-    [MetadataType.Page]: MetadataTable<PageMetadata>;
-    [MetadataType.Template]: MetadataTable<TemplateMetadata>;
-    [MetadataType.Component]: MetadataTable<ComponentMetadata>;
+// Galactic Metadata with validation decorators
+export class GalacticMetadata extends BaseDataRecord {
+  @IsString()
+  githubPat: string;
+
+  @IsString()
+  workingDir: string;
+
+  @IsArray()
+  @IsNumber({}, { each: true }) // Validates that each element in the array is a number
+  projectIds: number[] = [];
 }
 
-export interface MetadataTable<T> {
-    metadata: T[];
+// Project Metadata with validation decorators
+export class ProjectMetadata extends BaseDataRecord {
+  @IsString()
+  projectName: string;
+
+  @IsArray()
+  @IsNumber({}, { each: true }) // Validates that each element in the array is a number
+  pageIds: number[] = [];
 }
 
-export interface BaseDataRecord {
-    id: number;
+// Page Metadata with validation decorators
+export class PageMetadata extends BaseDataRecord {
+  @IsString()
+  pageName: string;
+
+  @IsString()
+  routerPath: string;
+
+  @IsArray()
+  @IsNumber({}, { each: true }) // Validates that each element in the array is a number
+  templateIds: number[] = [];
+
+  @IsOptional()
+  @IsString()
+  physicalPath?: string;
 }
 
-export type GenericMetadata =
-    | GalacticMetadata
-    | ProjectMetadata
-    | PageMetadata
-    | TemplateMetadata
-    | ComponentMetadata;
-export interface GalacticMetadata extends BaseDataRecord {
-    githubPat: string;
-    workingDir: string;
-    projectIds: number[];
+// Template Metadata with validation decorators
+export class TemplateMetadata extends BaseDataRecord {
+  @IsArray()
+  @IsNumber({}, { each: true }) // Validates that each element in the array is a number
+  componentIds: number[] = [];
+
+  @IsString()
+  templateName: string;
 }
 
-export interface ProjectMetadata extends BaseDataRecord {
-    projectName: string;
-    pageIds: number[];
+// Component Metadata with validation decorators
+export class ComponentMetadata extends BaseDataRecord {
+  @IsString()
+  componentName: string;
+
+  @IsString()
+  assetPath: string;
 }
 
-export interface PageMetadata extends BaseDataRecord {
-    pageName: string;
-    routerPath: string;
-    templateIds: number[];
-    physicalPath?: string;
+// Metadata Table to hold arrays of metadata records
+export class MetadataTable<T> {
+  @IsArray()
+  metadata: T[];
 }
 
-export interface TemplateMetadata extends BaseDataRecord {
-    componentIds: number[];
-    templateName: string;
-}
-
-export interface ComponentMetadata extends BaseDataRecord {
-    componentName: string;
-    assetPath: string;
-}
-
+// Enum for Metadata Types
 export enum MetadataType {
-    Galactic = 'galactic',
-    Project = 'project',
-    Page = 'page',
-    Template = 'template',
-    Component = 'component',
+  Galactic = 'galactic',
+  Project = 'project',
+  Page = 'page',
+  Template = 'template',
+  Component = 'component',
 }
+
+// MetadatasOuter with validation decorators
+export class MetadatasOuter {
+  @IsOptional() // This field may or may not be present
+  galactic?: MetadataTable<GalacticMetadata>;
+
+  @IsOptional()
+  project?: MetadataTable<ProjectMetadata>;
+
+  @IsOptional()
+  page?: MetadataTable<PageMetadata>;
+
+  @IsOptional()
+  template?: MetadataTable<TemplateMetadata>;
+
+  @IsOptional()
+  component?: MetadataTable<ComponentMetadata>;
+}
+
+// DbData interface with MetadatasOuter
+export class DbData {
+  @IsOptional()
+  metadatas?: MetadatasOuter;
+}
+

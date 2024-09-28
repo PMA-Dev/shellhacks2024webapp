@@ -38,7 +38,7 @@ export const setupDb = async () => {
     const defaultData = getDefaultData();
     const dbPath = Config.DbFileName;
     console.log(
-        `creating db instance with default data ${defaultData} at ${dbPath}...`
+        `creating db instance with default data ${JSON.stringify(defaultData)} at ${dbPath}...`
     );
     const db = await JSONFilePreset(dbPath, defaultData);
     GLOBAL_DB = db;
@@ -47,7 +47,7 @@ export const setupDb = async () => {
 export const pushMetadata = async (
     metadataType: MetadataType,
     data: GenericMetadata
-) => {
+) : Promise<number> => {
     console.log(
         `Going to enter data to table ${metadataType}, with data: ${JSON.stringify(
             data
@@ -55,10 +55,17 @@ export const pushMetadata = async (
     );
     const db = await getDbHandle();
     await db.read();
-    await db.update((dbData) =>
+    data.id = getRandomInt(100000000);
+    await db.update((dbData: any) =>
         dbData.metadatas[metadataType].metadata.push(data as any)
     );
+    return data.id;
 };
+
+const getRandomInt = (max: number) => {
+  return Math.floor(Math.random() * max);
+}
+
 
 export const queryAll = async <T>(
     metadataType: MetadataType
@@ -66,7 +73,7 @@ export const queryAll = async <T>(
     console.log(`Going to query for type: ${metadataType} and get all...`);
     const db = await getDbHandle();
     await db.read();
-    const resp = db.data.metadatas[metadataType].metadata;
+    const resp = db.data?.metadatas[metadataType]?.metadata;
     if (!resp) {
         console.log('No data found...');
         return null;

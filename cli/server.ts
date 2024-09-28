@@ -10,7 +10,8 @@ import {
     ProjectMetadata,
     TemplateMetadata,
 } from './models';
-import { queryAll } from './db';
+import { pushMetadata, queryAll } from './db';
+import { validate } from 'class-validator';
 
 const initializeMiddlewares = (app: Express) => {
     app.use(express.json());
@@ -29,32 +30,35 @@ const getAllMetadata = async (
     res: Response<GenericMetadata[] | null | { message: string }>,
     next: NextFunction
 ): Promise<void> => {
-    const isPresent = req.path.includes;
-    if (isPresent(MetadataType.Galactic)) {
+    validate(req.body);
+    console.log(
+        `Going to get all metadata with path: ${JSON.stringify(req.path)}...`
+    );
+    if (req.path.includes(MetadataType.Galactic)) {
         const metadata = await queryAll<GalacticMetadata>(
             MetadataType.Galactic
         );
         res.json(metadata);
         return;
     }
-    if (isPresent(MetadataType.Project)) {
+    if (req.path.includes(MetadataType.Project)) {
         const metadata = await queryAll<ProjectMetadata>(MetadataType.Project);
         res.json(metadata);
         return;
     }
-    if (isPresent(MetadataType.Page)) {
+    if (req.path.includes(MetadataType.Page)) {
         const metadata = await queryAll<PageMetadata>(MetadataType.Page);
         res.json(metadata);
         return;
     }
-    if (isPresent(MetadataType.Template)) {
+    if (req.path.includes(MetadataType.Template)) {
         const metadata = await queryAll<TemplateMetadata>(
             MetadataType.Template
         );
         res.json(metadata);
         return;
     }
-    if (isPresent(MetadataType.Component)) {
+    if (req.path.includes(MetadataType.Component)) {
         const metadata = await queryAll<ComponentMetadata>(
             MetadataType.Component
         );
@@ -66,9 +70,51 @@ const getAllMetadata = async (
     });
 };
 
+const postMetadata = async (
+    req: Request<{}, {}, GenericMetadata>,
+    res: Response<number | null | { message: string }>,
+    next: NextFunction
+): Promise<void> => {
+    validate(req.body);
+    console.log(
+        `Going to post: ${JSON.stringify(req.path)} and data: ${JSON.stringify(
+            req.body
+        )}...`
+    );
+    if (req.path.includes(MetadataType.Galactic)) {
+        const metadataId = await pushMetadata(MetadataType.Galactic, req.body);
+        res.json(metadataId);
+        return;
+    }
+    if (req.path.includes(MetadataType.Project)) {
+        const metadataId = await pushMetadata(MetadataType.Project, req.body);
+        res.json(metadataId);
+        return;
+    }
+    if (req.path.includes(MetadataType.Page)) {
+        const metadataId = await pushMetadata(MetadataType.Page, req.body);
+        res.json(metadataId);
+        return;
+    }
+    if (req.path.includes(MetadataType.Template)) {
+        const metadataId = await pushMetadata(MetadataType.Template, req.body);
+        res.json(metadataId);
+        return;
+    }
+    if (req.path.includes(MetadataType.Component)) {
+        const metadataId = await pushMetadata(MetadataType.Component, req.body);
+        res.json(metadataId);
+        return;
+    }
+    res.status(404).send({
+        message: 'Path not found!',
+    });
+};
+
 const initializeRoutes = async (app: Express) => {
     app.get('/home', getHome);
-    app.get('/metadata/', getAllMetadata);
+    app.get('/metadata/all/*', getAllMetadata);
+    app.post('/metadata/post/*', postMetadata);
 };
 
 export const listen = async () => {

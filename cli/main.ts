@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { runFrontendStart } from './shellProxy';
-import { setupDb, write } from './db';
+import { setupDb } from './db';
 import { listen } from './server';
 
 const registerInitCmd = async (program: Command) => {
@@ -35,7 +35,6 @@ const registerTestCmd = async (program: Command) => {
         console.log('post calling db...');
 
         const data = { id: 0, text: 'test' };
-        await write(data);
 
         // console.log('pre launching frontend...');
         // await launchApp();
