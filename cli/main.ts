@@ -1,4 +1,6 @@
 import { Command } from 'commander';
+import { runFrontendStart } from './shellProxy';
+import { setupDb } from './db';
 
 const registerInitCmd = async (program: Command) => {
     // .argument("<string>", "string to split")
@@ -6,9 +8,13 @@ const registerInitCmd = async (program: Command) => {
     // .option("-s, --separator <char>", "separator character", ",");
 
     const fn = async () => {
-        console.log('pre calling db');
-        await setupDb();
-        console.log('post calling db');
+        console.log('pre calling db...');
+        await runSetupDb();
+        console.log('post calling db...');
+
+        console.log('pre launching frontend...');
+        await launchApp();
+        console.log('post launching frontend...');
     };
 
     program
@@ -17,11 +23,12 @@ const registerInitCmd = async (program: Command) => {
         .action(fn);
 };
 
-const setupDb = async () => {
+const runSetupDb = async () => {
     await setupDb();
 };
 
 const launchApp = async () => {
+    await runFrontendStart();
 }
 
 export const init = async () => {
