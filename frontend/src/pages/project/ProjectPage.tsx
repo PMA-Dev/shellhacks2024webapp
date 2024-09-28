@@ -1,8 +1,6 @@
 // src/pages/ProjectPage.tsx
 
 import { useParams, Routes, Route } from 'react-router-dom';
-import { useContext } from 'react';
-import { ProjectContext } from '@/context/ProjectContext';
 import { Sidebar } from '@/components/Sidebar';
 import PagesPage from './PagesPage';
 import TemplatesPage from './TemplatesPage';
@@ -10,10 +8,11 @@ import ComponentsPage from './ComponentsPage';
 import RouterPage from './RouterPage';
 import AssetsPage from './AssetsPage';
 import DBSchemaPage from './DBSchemaPage';
+import { useProjects } from '@/hooks/useProjects';
 
 function ProjectPage() {
     const { projectId } = useParams();
-    const { projects } = useContext(ProjectContext)!;
+    const { projects } = useProjects();
 
     const project = projects.find((p) => p.id === projectId);
 

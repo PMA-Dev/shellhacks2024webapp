@@ -1,6 +1,6 @@
 // src/pages/project/PagesPage.tsx
 
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +13,10 @@ import {
     DialogDescription,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { ProjectContext } from '@/context/ProjectContext';
+import { useProjects } from '@/hooks/useProjects';
+import { usePages } from '@/hooks/usePages';
+import { Page } from '@/models';
+import { toast } from 'sonner';
 
 interface PagesPageProps {
     projectId: string;
@@ -23,8 +26,9 @@ function PagesPage({ projectId }: PagesPageProps) {
     const [pageName, setPageName] = useState('');
     const [pageRoute, setPageRoute] = useState('');
     const [selectedTemplate, setSelectedTemplate] = useState('');
-    const templates = ['Blog', 'Portfolio', 'E-commerce'];
-    const { projects, addPageToProject } = useContext(ProjectContext)!;
+    const templates = ['Landing Page', 'Blog'];
+    const { projects } = useProjects();
+    const { pages, addPage } = usePages();
 
     const project = projects.find((p) => p.id === projectId);
 
@@ -32,16 +36,22 @@ function PagesPage({ projectId }: PagesPageProps) {
         return <div>Project not found</div>;
     }
 
-    const handleAddPage = () => {
-        if (pageName.trim() !== '' && selectedTemplate !== '') {
-            const newPage = {
-                id: Date.now().toString(),
-                name: pageName,
-                template: selectedTemplate,
-            };
-            addPageToProject(projectId, newPage);
-            setPageName('');
-            setSelectedTemplate('');
+    const handleAddPage = async () => {
+        try {
+            if (pageName.trim() !== '' && selectedTemplate !== '') {
+                const newPage: Page = {
+                    name: pageName,
+                    templateIds: [selectedTemplate],
+                    projectId: projectId,
+                    route: pageRoute,
+                };
+                await addPage(newPage);
+                setPageName('');
+                setSelectedTemplate('');
+            }
+        } catch (error) {
+            toast('Error adding page');
+            console.error(error);
         }
     };
 
@@ -107,11 +117,11 @@ function PagesPage({ projectId }: PagesPageProps) {
             </Dialog>
 
             {/* List of pages */}
-            {project.pages.length > 0 ? (
+            {pages.length > 0 ? (
                 <div className="mt-4 space-y-2">
-                    {project.pages.map((page) => (
+                    {pages.map((page) => (
                         <div key={page.id} className="p-2 bg-gray-100 rounded">
-                            {page.name} ({page.template})
+                            {page.name} ({page.route})
                         </div>
                     ))}
                 </div>

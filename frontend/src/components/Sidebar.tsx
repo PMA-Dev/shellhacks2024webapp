@@ -14,7 +14,8 @@ import {
     Image,
     Database,
     UploadCloud,
-    HomeIcon
+    HomeIcon,
+    Undo2Icon
 } from 'lucide-react';
 
 function Sidebar() {
@@ -22,31 +23,32 @@ function Sidebar() {
     const { projectId } = useParams();
 
     const sections = [
-        {title: '',
+        {
+            title: '',
             items: [
-                { to: `/projects/${projectId}`, label: 'General', icon: <HomeIcon size={18} /> },
+                { to: `/projects/${projectId}/general`, label: 'General', icon: <HomeIcon size={24} /> },
             ]
         },
         {
             title: 'Frontend',
             items: [
-                { to: `/projects/${projectId}/pages`, label: 'Pages', icon: <FileText size={18} /> },
-                { to: `/projects/${projectId}/templates`, label: 'Templates', icon: <LayoutTemplate size={18} /> },
-                { to: `/projects/${projectId}/components`, label: 'Components', icon: <Box size={18} /> },
+                { to: `/projects/${projectId}/pages`, label: 'Pages', icon: <FileText size={24} /> },
+                { to: `/projects/${projectId}/templates`, label: 'Templates', icon: <LayoutTemplate size={24} /> },
+                { to: `/projects/${projectId}/components`, label: 'Components', icon: <Box size={24} /> },
             ],
         },
         {
             title: 'Backend',
             items: [
-                { to: `/projects/${projectId}/router`, label: 'Router', icon: <Server size={18} /> },
-                { to: `/projects/${projectId}/assets`, label: 'Assets & Content', icon: <Image size={18} /> },
-                { to: `/projects/${projectId}/dbschema`, label: 'DB Schema', icon: <Database size={18} /> },
+                { to: `/projects/${projectId}/router`, label: 'Router', icon: <Server size={24} /> },
+                { to: `/projects/${projectId}/assets`, label: 'Content', icon: <Image size={24} /> },
+                { to: `/projects/${projectId}/dbschema`, label: 'DB Schema', icon: <Database size={24} /> },
             ],
         },
         {
             title: 'Deployment',
             items: [
-                { to: `/projects/${projectId}/deployment`, label: 'Deployment', icon: <UploadCloud size={18} /> },
+                { to: `/projects/${projectId}/deployment`, label: 'Deployment', icon: <UploadCloud size={24} /> },
             ],
         },
     ];
@@ -69,7 +71,7 @@ function Sidebar() {
                     {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
                 </Button>
             </div>
-            <nav className="mt-4">
+            <nav className="mt-4 relative">
                 {sections.map((section) => (
                     <div key={section.title} className="mb-4">
                         {!isCollapsed && (
@@ -83,7 +85,7 @@ function Sidebar() {
                                 to={item.to}
                                 className={({ isActive }) =>
                                     cn(
-                                        'flex items-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200',
+                                        'flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200',
                                         isActive ? 'bg-gray-300 font-semibold' : ''
                                     )
                                 }
@@ -92,11 +94,20 @@ function Sidebar() {
                                     {item.icon}
                                     {!isCollapsed && <span>{item.label}</span>}
                                 </div>
-                               
+
                             </NavLink>
                         ))}
                     </div>
                 ))}
+                {/* back to dashboard */}
+                <NavLink
+                    to={`/dashboard`}
+                    className="flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200 space-x-2 relative "
+                >
+                    <Undo2Icon className="" />
+                    {!isCollapsed && <span>All Projects</span>}
+                </NavLink>
+
             </nav>
         </div>
     );

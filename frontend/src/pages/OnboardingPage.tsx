@@ -5,15 +5,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
+import { toast } from "sonner"
 
 function OnboardingPage() {
     const navigate = useNavigate();
     const [pat, setPat] = useState('');
     const [dir, setDir] = useState('');
+    const { createGalaticMetadata } = useGalaticMetadata();
 
-    const handleSubmit = () => {
-        // TODO: send PAT and dir to backend
-        navigate('/dashboard');
+    const handleSubmit = async () => {
+        try {
+            if (pat && dir) {
+                await createGalaticMetadata({ pat, dir });
+            }
+            navigate('/dashboard');
+            toast.success('Successfully saved your Galactic metadata!');
+        } catch (error) {
+            toast.error('Failed to save your Galactic metadata!');
+            console.error(error);
+        }
     };
 
     return (

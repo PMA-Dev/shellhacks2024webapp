@@ -1,11 +1,10 @@
 // src/pages/DashboardPage.tsx
 
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import ProjectList from '@/components/ProjectList';
 import {
     Dialog,
     DialogTrigger,
@@ -15,27 +14,37 @@ import {
     DialogDescription,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { ProjectContext } from '@/context/ProjectContext';
 import { UserCircle } from 'lucide-react';
+import { useProjects } from '@/hooks/useProjects';
+import { toast } from "sonner"
+
 
 function DashboardPage() {
     const [projectName, setProjectName] = useState('');
-    const { projects, addProject } = useContext(ProjectContext)!;
+    const { projects, addProject } = useProjects();
     const navigate = useNavigate();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const handleCreateProject = () => {
-        if (projectName.trim() !== '') {
-            const newProject = {
-                id: Date.now().toString(),
-                name: projectName,
-                pages: [],
-            };
-            addProject(newProject);
-            setProjectName('');
-            setIsDialogOpen(false);
+    const handleCreateProject = async () => {
+        try {
+            if (projectName.trim() !== '') {
+                const newProject = {
+                    id: Date.now().toString(),
+                    name: projectName,
+                    pages: [],
+                    pageIds: []
+                };
+                await addProject(newProject);
+                setProjectName('');
+                setIsDialogOpen(false);
+                toast.success('Successfully created a new project!');
+            }
+        } catch (error) {
+            toast.error('Failed to create a new project!');
+            console.error(error);
         }
-    };
+    }
+
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -81,21 +90,15 @@ function DashboardPage() {
                 {projects.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {projects.map((project) => (
+                            // add galatic particles to the background of these containers
                             <div
                                 key={project.id}
-                                className="p-6 bg-white rounded-lg shadow hover:shadow-lg"
+                                className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
+                                onClick={() => navigate(`/projects/${project.id}`)}
                             >
                                 <h2 className="mb-2 text-xl font-semibold text-gray-800">
                                     {project.name}
                                 </h2>
-                                <p className="text-gray-600">Project description here...</p>
-                                <Button
-                                    variant="primary"
-                                    className="mt-4"
-                                    onClick={() => navigate(`/projects/${project.id}`)}
-                                >
-                                    Open Project
-                                </Button>
                             </div>
                         ))}
                     </div>
