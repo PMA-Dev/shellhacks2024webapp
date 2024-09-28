@@ -26,7 +26,7 @@ const runSetupDb = async () => {
 
 const launchApp = async () => {
     await runFrontendStart();
-}
+};
 
 const registerTestCmd = async (program: Command) => {
     const fn = async () => {
@@ -34,8 +34,7 @@ const registerTestCmd = async (program: Command) => {
         await runSetupDb();
         console.log('post calling db...');
 
-
-        const data = {id: 0, text: "test"};
+        const data = { id: 0, text: 'test' };
         await write(data);
 
         // console.log('pre launching frontend...');
@@ -43,22 +42,15 @@ const registerTestCmd = async (program: Command) => {
         // console.log('post launching frontend...');
     };
 
-    program
-        .command('test')
-        .description('local test')
-        .action(fn);
+    program.command('test').description('local test').action(fn);
 };
- 
 
 const registerListenCmd = async (program: Command) => {
     const fn = async () => {
         await listen();
     };
 
-    program
-        .command('listen')
-        .description('Boots up the web server')
-        .action(fn);
+    program.command('listen').description('Boots up the web server').action(fn);
 };
 
 export const init = async () => {
