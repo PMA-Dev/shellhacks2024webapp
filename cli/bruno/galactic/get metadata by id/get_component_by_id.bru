@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: { {url} }/metadata/all/component
+  url: {{url}}/metadata/get/component?id="test"
   body: none
   auth: none
+}
+
+query {
+  id: "test"
 }

@@ -1,11 +1,11 @@
 meta {
-  name: post template metadata
+  name: patch template metadata
   type: http
   seq: 8
 }
 
-post {
-  url: {{url}}/metadata/post/template
+patch {
+  url: {{url}}/metadata/patch/template?id="test"
   body: none
   auth: none
 }
@@ -19,4 +19,8 @@ body:json {
       3
     ]
   }
+}
+
+query {
+  id: "test"
 }

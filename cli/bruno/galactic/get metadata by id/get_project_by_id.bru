@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: { {url} }/metadata/all/project
+  url: {{url}}/metadata/get/project?id="test"
   body: none
   auth: none
+}
+
+query {
+  id: "test"
 }

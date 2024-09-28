@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: { {url} }/metadata/all/galactic
+  url: {{url}}/metadata/get/galactic?id="test"
   body: none
   auth: none
+}
+
+query {
+  id: "test"
 }
