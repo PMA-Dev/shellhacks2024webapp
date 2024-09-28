@@ -7,7 +7,7 @@ export const useProjects = () => {
 
   useEffect(() => {
       const fetchProjects = async () => {
-          const response = await api.get('/projects');
+          const response = await api.get('/metadata/all/project');
           setProjects(response.data);
       };
 
@@ -16,24 +16,25 @@ export const useProjects = () => {
 
 
   const addProject = async (project: Project) => {
-    const response = await api.post("/projects", project);
+    const response = await api.post("/metadata/post/project", project);
     setProjects([...projects, response.data]);
   };
 
   const updateProject = async (project: Project) => {
-    const response = await api.put(`/projects/${project.id}`, project);
+    const response = await api.patch(`/metadata/patch/project?id=${project.id}`, project);
     setProjects(projects.map((p) => (p.id === project.id ? response.data : p)));
   };
 
-  const deleteProject = async (projectId: string) => {
-    await api.delete(`/projects/${projectId}`);
-    setProjects(projects.filter((p) => p.id !== projectId));
-  };
+  const getProjectById = async (projectId: string) => {
+    const response = await api.get(`/metadata/get/project?id=${projectId}`);
+    return response.data;
+  }
+
 
   return {
     projects,
     addProject,
     updateProject,
-    deleteProject,
+    getProjectById
   };
 };

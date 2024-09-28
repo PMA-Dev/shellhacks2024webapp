@@ -9,12 +9,22 @@ import RouterPage from './RouterPage';
 import AssetsPage from './AssetsPage';
 import DBSchemaPage from './DBSchemaPage';
 import { useProjects } from '@/hooks/useProjects';
+import { useEffect, useState } from 'react';
+import { Project } from '@/models';
 
 function ProjectPage() {
-    const { projectId } = useParams();
-    const { projects } = useProjects();
+    const { getProjectById } = useProjects();
+    const { projectId } = useParams<{ projectId: string }>();
+    const [project, setProject] = useState<Project | null>(null);
 
-    const project = projects.find((p) => p.id === projectId);
+    useEffect(() => {
+        console.log('projectId:', projectId);
+        setProject(getProjectById(projectId))
+    }, [projectId]);
+
+    useEffect(() => {
+        console.log('project:', project);
+    }, [project]);
 
     if (!project) {
         return <div>Project not found</div>;
