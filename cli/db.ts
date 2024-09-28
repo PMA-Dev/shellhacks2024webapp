@@ -170,15 +170,20 @@ export const query = async <T extends BaseDataRecord>(
     );
     const data = await queryAll<T>(metadataType);
     console.log('Returning data for query id:', queryId);
-    const fetchedData =  (data?.find((x) => x.id == queryId) as T) || null;
+    const fetchedData = (data?.find((x) => x.id == queryId) as T) || null;
     if (!fetchedData) {
-        console.log(`No data found for query id: ${queryId} for type: ${metadataType}`);
-        throw Error(`No data found for query id: ${queryId} for type: ${metadataType}`);
+        console.log(
+            `No data found for query id: ${queryId} for type: ${metadataType}`
+        );
+        throw Error(
+            `No data found for query id: ${queryId} for type: ${metadataType}`
+        );
     }
     return fetchedData;
 };
 
-
 export const getDefaultGalacticId = async (): Promise<number | null> => {
-    return Number((await queryAll<GalacticMetadata>(MetadataType.Galactic))?.[0]?.id);
-}
+    return Number(
+        (await queryAll<GalacticMetadata>(MetadataType.Galactic))?.[0]?.id
+    );
+};

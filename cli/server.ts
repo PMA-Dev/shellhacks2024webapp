@@ -49,7 +49,12 @@ const notFoundHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    const notFoundMessages = ['not found', 'not found in db', 'no project', 'no data found'];
+    const notFoundMessages = [
+        'not found',
+        'not found in db',
+        'no project',
+        'no data found',
+    ];
     if (
         notFoundMessages
             .map((x) => err.message.toLowerCase().includes(x))

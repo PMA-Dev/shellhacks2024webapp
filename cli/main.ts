@@ -20,7 +20,6 @@ const registerTestCmd = async (program: Command) => {
     program.command('test').description('Dev test').action(fn);
 };
 
-
 export const init = async () => {
     const program = new Command();
     program

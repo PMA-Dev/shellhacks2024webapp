@@ -132,13 +132,10 @@ export const startFrontendVite = async (
     if (!projectName) {
         throw new Error('No project metadata found for id: ' + projectName);
     }
-    runCmd(
-        [
-            `cd ${workingDir}/${projectName}`,
-            `bun vite --port ${project.port} &`,
-        ],
-        true
-    );
+    runCmd([
+        `cd ${workingDir}/${projectName}`,
+        `bun vite --port ${project.port} &`,
+    ]);
 };
 
 export const stopFrontendVite = async (
@@ -166,10 +163,7 @@ export const stopFrontendVite = async (
 };
 
 export const killOnPort = (port: number) => {
-    runCmd(
-        [
-            `(lsof -t -i :${port} &>/dev/null && kill -9 $(lsof -t -i :${port}) || echo "No process running on port ${port}")&`,
-        ],
-        true
-    );
+    runCmd([
+        `(lsof -t -i :${port} &>/dev/null && kill -9 $(lsof -t -i :${port}) || echo "No process running on port ${port}")&`,
+    ]);
 };

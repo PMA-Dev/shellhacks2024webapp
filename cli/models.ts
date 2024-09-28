@@ -30,7 +30,6 @@ export class ProjectMetadata extends BaseDataRecord {
     @IsNumber({}, { each: true })
     pageIds: number[] = [];
 
-
     @IsOptional()
     @IsString()
     sitePath?: string;
