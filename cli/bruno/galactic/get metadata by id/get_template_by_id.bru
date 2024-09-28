@@ -1,0 +1,15 @@
+meta {
+  name: get template metadata
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{url}}/metadata/get/template?id="test"
+  body: none
+  auth: none
+}
+
+query {
+  id: "test"
+}

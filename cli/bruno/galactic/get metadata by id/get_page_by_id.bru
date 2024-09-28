@@ -1,0 +1,15 @@
+meta {
+  name: get page metadata
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{url}}/metadata/get/page?id="test"
+  body: none
+  auth: none
+}
+
+query {
+  id: "test"
+}

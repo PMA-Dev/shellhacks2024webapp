@@ -7,10 +7,11 @@ import {
     type DbData,
     type DbType,
 } from './models';
+import { Low } from 'lowdb';
 
 let GLOBAL_DB: DbType | null = null;
 
-export const getDbHandle = async (): Promise<DbType> => {
+export const getDbHandle = async (): Promise<Low<DbType>> => {
     if (!GLOBAL_DB) {
         await setupDb();
     }
@@ -38,7 +39,9 @@ export const setupDb = async () => {
     const defaultData = getDefaultData();
     const dbPath = Config.DbFileName;
     console.log(
-        `creating db instance with default data ${JSON.stringify(defaultData)} at ${dbPath}...`
+        `creating db instance with default data ${JSON.stringify(
+            defaultData
+        )} at ${dbPath}...`
     );
     const db = await JSONFilePreset(dbPath, defaultData);
     GLOBAL_DB = db;
@@ -59,6 +62,35 @@ export const pushMetadata = async (
     await db.update((dbData: any) =>
         dbData.metadatas[metadataType].metadata.push(data as any)
     );
+    return data.id;
+};
+
+export const patchMetadata = async (
+    metadataType: MetadataType,
+    data: GenericMetadata,
+    queryId: number
+): Promise<void> => {
+    console.log(
+        `Going to patch data to table ${metadataType}, with data: ${JSON.stringify(
+            data
+        )} using query: ${queryId}`
+    );
+    const db = await getDbHandle();
+    await db.read();
+    await db.update((dbData: any) => {
+        const obj = dbData.metadatas[metadataType].metadata.find((x: any) => x.id == queryId);
+        if (!obj) {
+            console.log(`No data found for query id: ${queryId}`);
+            return;
+        }
+        const mergedObj = { ...obj, ...data };
+        console.log('Merged obj:', mergedObj);
+        console.log(`count before: ${dbData.metadatas[metadataType].metadata.length}`);
+        dbData.metadatas[metadataType].metadata = dbData.metadatas[metadataType].metadata.filter((x: any) => x.id != queryId);
+        console.log(`count after: ${dbData.metadatas[metadataType].metadata.length}`);
+        dbData.metadatas[metadataType].metadata.push(mergedObj);
+        console.log(`count final: ${dbData.metadatas[metadataType].metadata.length}`);
+    });
     return data.id;
 };
 

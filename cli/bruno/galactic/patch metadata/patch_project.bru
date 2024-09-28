@@ -1,11 +1,11 @@
 meta {
-  name: post project metadata
+  name: patch project metadata
   type: http
   seq: 4
 }
 
-post {
-  url: {{url}}/metadata/post/project
+patch {
+  url: {{url}}/metadata/patch/project?id="test"
   body: none
   auth: none
 }
@@ -19,4 +19,8 @@ body:json {
       3
     ]
   }
+}
+
+query {
+  id: "test"
 }

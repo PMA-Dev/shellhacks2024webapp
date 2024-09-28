@@ -1,11 +1,11 @@
 meta {
-  name: post page metadata
+  name: patch page metadata
   type: http
   seq: 6
 }
 
-post {
-  url: {{url}}/metadata/post/page
+patch {
+  url: {{url}}/metadata/patch/page?id="test"
   body: none
   auth: none
 }
@@ -21,4 +21,8 @@ body:json {
     ],
     "physicalPath": "/optional/physical/path"
   }
+}
+
+query {
+  id: "test"
 }

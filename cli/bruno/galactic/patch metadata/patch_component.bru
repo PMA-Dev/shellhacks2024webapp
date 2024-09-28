@@ -1,11 +1,11 @@
 meta {
-  name: post component metadata
+  name: patch component metadata
   type: http
   seq: 10
 }
 
-post {
-  url: {{url}}/metadata/post/component
+patch {
+  url: {{url}}/metadata/patch/component?id="test"
   body: none
   auth: none
 }
@@ -15,4 +15,8 @@ body:json {
     "componentName": "Your Component Name",
     "assetPath": "/path/to/asset"
   }
+}
+
+query {
+  id: "test"
 }
