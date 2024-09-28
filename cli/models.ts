@@ -29,6 +29,11 @@ export class ProjectMetadata extends BaseDataRecord {
     @IsArray()
     @IsNumber({}, { each: true })
     pageIds: number[] = [];
+
+
+    @IsOptional()
+    @IsString()
+    sitePath?: string;
 }
 
 // Page Metadata with validation decorators

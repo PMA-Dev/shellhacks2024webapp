@@ -57,14 +57,14 @@ export const pushMetadata = async (
     );
     const db = await getDbHandle();
     await db.read();
-    data.id = getRandomInt(100000000);
+    data.id = getRandomInt(10000000, 100000000);
     await db.update((dbData: any) =>
         dbData.metadatas[metadataType].metadata.push(data as any)
     );
     return data.id;
 };
 
-export const addIdToMetadata = async <T>(
+export const editMetadataInPlace = async <T>(
     parentMetadataType: MetadataType,
     parentQueryId: number,
     fnToAppendId: (dbObject: T) => void
@@ -131,8 +131,14 @@ export const patchMetadata = async (
     });
 };
 
-const getRandomInt = (max: number) => {
-    return Math.floor(Math.random() * max);
+export const getRandomInt = (min: number, max: number) => {
+    // Ensure min is less than max
+    if (min > max) {
+        throw new Error('Min value must be less than max value');
+    }
+
+    // Generate a random integer in the range [min, max)
+    return Math.floor(Math.random() * (max - min)) + min;
 };
 
 export const queryAll = async <T>(

@@ -6,7 +6,7 @@ import {
     pushMetadata,
     patchMetadata,
     query,
-    addIdToMetadata,
+    editMetadataInPlace,
 } from '../db';
 
 import {
@@ -252,12 +252,18 @@ export const postProjectMetadata = async (
             return;
         }
         const metadataId = await pushMetadata(MetadataType.Project, data);
-        await addIdToMetadata<GalacticMetadata>(
+        const port = await runFrontendStart(Number(req.query.galacticId), metadataId);
+        await editMetadataInPlace<GalacticMetadata>(
             MetadataType.Galactic,
             Number(req.query.galacticId),
             (x) => x.projectIds.push(metadataId)
         );
-        await runFrontendStart(Number(req.query.galacticId), metadataId);
+
+        await editMetadataInPlace<ProjectMetadata>(
+            MetadataType.Project,
+            metadataId,
+            (x) => x.sitePath = `http://localhost:${port}`
+        );
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
@@ -281,7 +287,7 @@ export const postPageMetadata = async (
             return;
         }
         const metadataId = await pushMetadata(MetadataType.Page, data);
-        await addIdToMetadata<ProjectMetadata>(
+        await editMetadataInPlace<ProjectMetadata>(
             MetadataType.Project,
             Number(req.query.projectId),
             (x) => x.pageIds.push(metadataId)
