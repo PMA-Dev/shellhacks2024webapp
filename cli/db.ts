@@ -47,7 +47,7 @@ export const setupDb = async () => {
 export const pushMetadata = async (
     metadataType: MetadataType,
     data: GenericMetadata
-) : Promise<number> => {
+): Promise<number> => {
     console.log(
         `Going to enter data to table ${metadataType}, with data: ${JSON.stringify(
             data
@@ -63,9 +63,8 @@ export const pushMetadata = async (
 };
 
 const getRandomInt = (max: number) => {
-  return Math.floor(Math.random() * max);
-}
-
+    return Math.floor(Math.random() * max);
+};
 
 export const queryAll = async <T>(
     metadataType: MetadataType
