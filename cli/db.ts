@@ -18,11 +18,14 @@ const getDefaultData = (): DbData => {
 
 export const setupDb = async () => {
     if (!!GLOBAL_DB) {
+        console.log("db instance exists...")
         return;
     }
 
     const defaultData = getDefaultData();
-    const db = await JSONFilePreset(Config.DbFileName, defaultData);
+    const dbPath = Config.DbFileName;
+    console.log(`creating db instance with default data ${defaultData} at ${dbPath}...`)
+    const db = await JSONFilePreset(dbPath, defaultData);
     GLOBAL_DB = db;
 };
 

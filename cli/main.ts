@@ -1,12 +1,8 @@
 import { Command } from 'commander';
 import { runFrontendStart } from './shellProxy';
-import { setupDb } from './db';
+import { setupDb, write } from './db';
 
 const registerInitCmd = async (program: Command) => {
-    // .argument("<string>", "string to split")
-    // .option("--first", "display just the first substring")
-    // .option("-s, --separator <char>", "separator character", ",");
-
     const fn = async () => {
         console.log('pre calling db...');
         await runSetupDb();
@@ -31,6 +27,28 @@ const launchApp = async () => {
     await runFrontendStart();
 }
 
+const registerTestCmd = async (program: Command) => {
+    const fn = async () => {
+        console.log('pre calling db...');
+        await runSetupDb();
+        console.log('post calling db...');
+
+
+        const data = {id: 0, text: "test"};
+        await write(data);
+
+        // console.log('pre launching frontend...');
+        // await launchApp();
+        // console.log('post launching frontend...');
+    };
+
+    program
+        .command('test')
+        .description('local test')
+        .action(fn);
+};
+ 
+
 export const init = async () => {
     const program = new Command();
     program
@@ -38,5 +56,6 @@ export const init = async () => {
         .description('CLI to rule the galaxy')
         .version('0.0.1');
     await registerInitCmd(program);
+    await registerTestCmd(program);
     await program.parseAsync();
 };
