@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { runCmd } from '../shellProxy';
 import { getDefaultGalacticId, getRandomInt, query } from '../db';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
+import path from 'path';
 
 export const startViteApp = async (
     req: Request,

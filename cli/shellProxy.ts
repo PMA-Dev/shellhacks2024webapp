@@ -1,19 +1,33 @@
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 
-export const runCmd = async (rawCmd: string[], dry: boolean = false) => {
-    console.log('going to run:', rawCmd, ', at path: ', __dirname);
-    if (dry) {
-        console.log(`would have run cmd: ${JSON.stringify(rawCmd)}...`);
-    }
-    exec(rawCmd.join(' && '), (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error executing command: ${error.message}`);
-            return;
+export const runCmd = (rawCmd: string[], dry: boolean = false) => {
+    const fn = async () => {
+        try {
+            console.log('Going to run:', rawCmd, ', at path:', __dirname);
+            if (dry) {
+                console.log(`Would have run cmd: ${JSON.stringify(rawCmd)}...`);
+                return;
+            }
+            const cmd = rawCmd.shift();
+            if (!cmd) {
+                console.error('No command specified.');
+                return;
+            }
+            const child = spawn(cmd, rawCmd, {
+                cwd: __dirname,
+                shell: true,
+                detached: true,
+                stdio: 'ignore',
+            });
+            child.unref(); // Detach the child process
+            console.log(`Spawned process with PID: ${child.pid}`);
+        } catch (err) {
+            console.error('Error in runCmd:', err);
         }
-        if (stderr) {
-            console.error(`Standard error: ${stderr}`);
-            return;
-        }
-        console.log(`Standard output: ${stdout}`);
+    };
+
+    // Call fn without awaiting, and handle any potential errors
+    fn().catch((err) => {
+        console.error('Unhandled error in runCmd:', err);
     });
 };
