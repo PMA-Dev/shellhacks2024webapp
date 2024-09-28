@@ -1,18 +1,20 @@
 {
-  "name": "cli",
-  "module": "index.ts",
-  "type": "module",
-  "scripts": {
-    "start": "bun run index.ts"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "commander": "^12.1.0",
-    "lowdb": "^7.0.1"
-  }
+    "name": "cli",
+    "module": "index.ts",
+    "type": "module",
+    "scripts": {
+        "start": "bun run index.ts",
+        "format": "prettier --write \"**/*.{js,ts,tsx,json}\""
+    },
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@types/lowdb": "^1.0.15",
+        "commander": "^12.1.0",
+        "lowdb": "^7.0.1"
+    }
 }
