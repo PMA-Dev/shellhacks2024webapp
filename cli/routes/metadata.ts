@@ -7,6 +7,7 @@ import {
     patchMetadata,
     query,
     editMetadataInPlace,
+    getDefaultGalacticId,
 } from '../db';
 
 import {
@@ -241,7 +242,7 @@ export const postProjectMetadata = async (
     next: NextFunction
 ) => {
     try {
-        const galacticId = (await queryAll<GalacticMetadata>(MetadataType.Galactic))?.[0]?.id;
+        const galacticId = await getDefaultGalacticId();
         if (!galacticId) {
             res.status(400).json({ error: 'Galactic metadata not found' });
             return;
@@ -263,7 +264,10 @@ export const postProjectMetadata = async (
         await editMetadataInPlace<ProjectMetadata>(
             MetadataType.Project,
             metadataId,
-            (x) => x.sitePath = `http://localhost:${port}`
+            (x) => {
+                x.sitePath = `http://localhost:${port}`;
+                x.port = port;
+            }
         );
         res.json({ id: metadataId });
     } catch (error) {

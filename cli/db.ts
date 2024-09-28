@@ -2,6 +2,7 @@ import { JSONFilePreset } from 'lowdb/node';
 import { Config } from './config';
 import {
     BaseDataRecord,
+    GalacticMetadata,
     GenericMetadata,
     MetadataType,
     type DbData,
@@ -169,5 +170,15 @@ export const query = async <T extends BaseDataRecord>(
     );
     const data = await queryAll<T>(metadataType);
     console.log('Returning data for query id:', queryId);
-    return (data?.find((x) => x.id == queryId) as T) || null;
+    const fetchedData =  (data?.find((x) => x.id == queryId) as T) || null;
+    if (!fetchedData) {
+        console.log(`No data found for query id: ${queryId} for type: ${metadataType}`);
+        throw Error(`No data found for query id: ${queryId} for type: ${metadataType}`);
+    }
+    return fetchedData;
 };
+
+
+export const getDefaultGalacticId = async (): Promise<number | null> => {
+    return Number((await queryAll<GalacticMetadata>(MetadataType.Galactic))?.[0]?.id);
+}

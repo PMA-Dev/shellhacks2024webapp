@@ -24,7 +24,11 @@ import {
     patchTemplateMetadata,
     patchComponentMetadata,
 } from './routes/metadata';
-import { runCreateReactApp } from './routes/commands';
+import {
+    runCreateReactApp,
+    startViteApp,
+    stopViteApp,
+} from './routes/commands';
 
 const initializeMiddlewares = (app: Express) => {
     app.use(express.json());
@@ -37,6 +41,33 @@ const getHome = async (
     next: NextFunction
 ): Promise<void> => {
     res.json({ ok: true });
+};
+
+const notFoundHandler = (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const notFoundMessages = ['not found', 'not found in db', 'no project', 'no data found'];
+    if (
+        notFoundMessages
+            .map((x) => err.message.toLowerCase().includes(x))
+            .some((x) => x)
+    ) {
+        res.status(404).json({ error: `Resource not found: ${err.message}` });
+        return;
+    }
+    next(err);
+};
+
+const defaultErrorHandler = (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    res.status(500).json({ error: 'Internal Server Error' });
 };
 
 const initializeRoutes = async (app: Express) => {
@@ -70,6 +101,8 @@ const initializeRoutes = async (app: Express) => {
 
     // CMD routes
     app.post('/commands/boot/frontend/', runCreateReactApp);
+    app.get('/commands/stopVite/', stopViteApp);
+    app.get('/commands/startVite/', startViteApp);
 };
 
 export const listen = async () => {
@@ -78,6 +111,8 @@ export const listen = async () => {
     const host = Config.ServerHost;
     const port = Config.ServerPort;
     await initializeRoutes(app);
+    app.use(notFoundHandler);
+    app.use(defaultErrorHandler);
     app.listen(port, host, () => {
         console.log(`Server running on port ${host}:${port}`);
     });
