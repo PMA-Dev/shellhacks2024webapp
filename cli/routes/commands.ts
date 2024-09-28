@@ -11,14 +11,13 @@ export const startViteApp = async (
 ) => {
     try {
         if (!req.query.projectId) {
-            res.status(400).json({
-                error: 'projectid is required',
-            });
+            res.status(400).json({ error: 'projectId is required' });
             return;
         }
         const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
-        await startFrontendVite(galacticId!, projectId);
+        startFrontendVite(galacticId!, projectId);
+        res.status(200).json({ message: 'Vite started' });
     } catch (e) {
         next(e);
     }
@@ -31,25 +30,14 @@ export const stopViteApp = async (
 ) => {
     try {
         if (!req.query.projectId) {
-            res.status(400).json({
-                error: 'galactic id and/or projectid is required',
-            });
+            res.status(400).json({ error: 'projectId is required' });
             return;
         }
         const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
-        console.log(
-            'Stopping vite for project:',
-            projectId,
-            'galactic:',
-            galacticId
-        );
         await stopFrontendVite(galacticId!, projectId);
+        res.status(200).json({ message: 'Vite stopped' });
     } catch (e) {
-        console.log(
-            'Error stopping vite:',
-            JSON.stringify((e as Error).message)
-        );
         next(e);
     }
 };
@@ -79,37 +67,27 @@ export const runFrontendStart = async (
     const workingDir = (
         await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
     )?.workingDir;
-
-    if (!workingDir) {
+    if (!workingDir)
         throw new Error('No galactic metadata found for id: ' + galacticId);
-    }
-
     const projectName = (
         await query<ProjectMetadata>(MetadataType.Project, projectId)
     )?.projectName;
-
-    if (!projectName) {
-        throw new Error('No project metadata found for id: ' + projectName);
-    }
+    if (!projectName)
+        throw new Error('No project metadata found for id: ' + projectId);
     const port = getRandomInt(1024, 49151);
-
-    runCmd([
-        `cd ${workingDir}`,
-        `git clone https://github.com/varun-d/template_react_ts_tw ${projectName}`,
-        `rm -r ${workingDir}/${projectName}/.git`,
-        `git init`,
-        `git config init.defaultBranch main`,
-        `git add .`,
-        `git commit -am "init commit"`,
-        `cd ${workingDir}/${projectName}`,
-        `bun install`,
-    ]);
+    runCmd(
+        'sh',
+        [
+            '-c',
+            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} && rm -r ${workingDir}/${projectName}/.git && cd ${workingDir}/${projectName} && git init && git config init.defaultBranch main && git add . && git commit -am "init commit" && bun install`,
+        ],
+        { cwd: workingDir }
+    );
     return port;
 };
 
 export const bootGalaxy = async (galaxy: GalacticMetadata) => {
-    const workingDir = galaxy.workingDir;
-    runCmd([`mkdir -p ${workingDir}`]);
+    runCmd('mkdir', ['-p', galaxy.workingDir]);
 };
 
 export const startFrontendVite = async (
@@ -119,52 +97,37 @@ export const startFrontendVite = async (
     const workingDir = (
         await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
     )?.workingDir;
-
-    if (!workingDir) {
+    if (!workingDir)
         throw new Error('No galactic metadata found for id: ' + galacticId);
-    }
-
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId
     );
     const projectName = project?.projectName;
-
-    if (!projectName) {
-        throw new Error('No project metadata found for id: ' + projectName);
-    }
-    runCmd([
-        `cd ${workingDir}/${projectName}`,
-        `bun vite --port ${project.port} &`,
-    ]);
+    if (!projectName)
+        throw new Error('No project metadata found for id: ' + projectId);
+    runCmd('bun', ['vite', '--port', `${project.port}`], {
+        cwd: path.join(workingDir, projectName),
+    });
 };
 
 export const stopFrontendVite = async (
     galacticId: number,
     projectId: number
 ) => {
-    const workingDir = (
-        await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
-    )?.workingDir;
-
-    if (!workingDir) {
-        throw Error('No galactic metadata found for id: ' + galacticId);
-    }
-
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId
     );
-    const projectName = project?.projectName;
-
-    if (!projectName) {
-        throw new Error('No project metadata found for id: ' + projectName);
-    }
-    killOnPort(Number(project.port));
+    const port = project?.port;
+    if (!port)
+        throw new Error('No project metadata found for id: ' + projectId);
+    killOnPort(port);
 };
 
 export const killOnPort = (port: number) => {
-    runCmd([
-        `(lsof -t -i :${port} &>/dev/null && kill -9 $(lsof -t -i :${port}) || echo "No process running on port ${port}")&`,
+    runCmd('sh', [
+        '-c',
+        `(lsof -t -i :${port} &>/dev/null && kill -9 $(lsof -t -i :${port}) || echo "No process running on port ${port}")`,
     ]);
 };
