@@ -1,7 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
-import { queryAll, pushMetadata, patchMetadata, query } from '../db';
+import {
+    queryAll,
+    pushMetadata,
+    patchMetadata,
+    query,
+    addIdToMetadata,
+} from '../db';
 
 import {
     GalacticMetadata,
@@ -11,6 +17,8 @@ import {
     ComponentMetadata,
     MetadataType,
 } from '../models';
+import { bootGalaxy, runFrontendStart } from './commands';
+import path from 'path';
 
 // GET Handlers
 export const getGalacticMetadata = async (
@@ -218,7 +226,9 @@ export const postGalacticMetadata = async (
             res.status(400).json({ errors });
             return;
         }
+        data.workingDir = path.join(data.workingDir, 'galactic');
         const metadataId = await pushMetadata(MetadataType.Galactic, data);
+        await bootGalaxy(data);
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
@@ -231,6 +241,10 @@ export const postProjectMetadata = async (
     next: NextFunction
 ) => {
     try {
+        if (!req.query.galacticId) {
+            res.status(400).json({ error: 'galactic id is required' });
+            return;
+        }
         const data = plainToInstance(ProjectMetadata, req.body);
         const errors = await validate(data);
         if (errors.length > 0) {
@@ -238,6 +252,12 @@ export const postProjectMetadata = async (
             return;
         }
         const metadataId = await pushMetadata(MetadataType.Project, data);
+        await addIdToMetadata<GalacticMetadata>(
+            MetadataType.Galactic,
+            Number(req.query.galacticId),
+            (x) => x.projectIds.push(metadataId)
+        );
+        await runFrontendStart(Number(req.query.galacticId), metadataId);
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
@@ -250,6 +270,10 @@ export const postPageMetadata = async (
     next: NextFunction
 ) => {
     try {
+        if (!req.query.projectId) {
+            res.status(400).json({ error: 'projectId is required' });
+            return;
+        }
         const data = plainToInstance(PageMetadata, req.body);
         const errors = await validate(data);
         if (errors.length > 0) {
@@ -257,6 +281,11 @@ export const postPageMetadata = async (
             return;
         }
         const metadataId = await pushMetadata(MetadataType.Page, data);
+        await addIdToMetadata<ProjectMetadata>(
+            MetadataType.Project,
+            Number(req.query.projectId),
+            (x) => x.pageIds.push(metadataId)
+        );
         res.json({ id: metadataId });
     } catch (error) {
         next(error);

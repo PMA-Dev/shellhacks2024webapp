@@ -24,6 +24,7 @@ import {
     patchTemplateMetadata,
     patchComponentMetadata,
 } from './routes/metadata';
+import { runCreateReactApp } from './routes/commands';
 
 const initializeMiddlewares = (app: Express) => {
     app.use(express.json());
@@ -66,6 +67,9 @@ const initializeRoutes = async (app: Express) => {
     app.patch('/metadata/patch/page', patchPageMetadata);
     app.patch('/metadata/patch/template', patchTemplateMetadata);
     app.patch('/metadata/patch/component', patchComponentMetadata);
+
+    // CMD routes
+    app.post('/commands/boot/frontend/', runCreateReactApp);
 };
 
 export const listen = async () => {

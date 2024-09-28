@@ -5,9 +5,13 @@ meta {
 }
 
 post {
-  url: {{url}}/metadata/post/project
+  url: {{url}}/metadata/post/project?galacticId=123
   body: none
   auth: none
+}
+
+query {
+  galacticId: 123
 }
 
 body:json {

@@ -39,9 +39,9 @@ export class PageMetadata extends BaseDataRecord {
     @IsString()
     routerPath!: string;
 
-    @IsArray()
-    @IsNumber({}, { each: true })
-    templateIds: number[] = [];
+    @IsNumber()
+    @IsOptional()
+    templateId?: number;
 
     @IsOptional()
     @IsString()

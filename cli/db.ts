@@ -64,6 +64,35 @@ export const pushMetadata = async (
     return data.id;
 };
 
+export const addIdToMetadata = async <T>(
+    parentMetadataType: MetadataType,
+    parentQueryId: number,
+    fnToAppendId: (dbObject: T) => void
+): Promise<void> => {
+    console.log(
+        `Going to append with fn to parent id: ${parentQueryId} in table ${parentMetadataType}`
+    );
+    const db = await getDbHandle();
+    await db.read();
+    await db.update((dbData: any) => {
+        const obj = dbData.metadatas[parentMetadataType].metadata.find(
+            (x: any) => x.id == parentQueryId
+        );
+        if (!obj) {
+            console.log(`No data found for query id: ${parentQueryId}`);
+            return;
+        }
+
+        console.log('Found obj:', obj);
+        fnToAppendId(
+            dbData.metadatas[parentMetadataType].metadata.find(
+                (x: any) => x.id == parentQueryId
+            )
+        );
+        console.log('done with fnToAppendId');
+    });
+};
+
 export const patchMetadata = async (
     metadataType: MetadataType,
     data: GenericMetadata,

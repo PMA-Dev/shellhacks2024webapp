@@ -6,23 +6,19 @@ meta {
 
 patch {
   url: {{url}}/metadata/patch/page?id="test"
-  body: none
+  body: json
   auth: none
+}
+
+query {
+  id: "test"
 }
 
 body:json {
   {
     "pageName": "Your Page Name",
     "routerPath": "/your/router/path",
-    "templateIds": [
-      1,
-      2,
-      3
-    ],
+    "templateId": 123,
     "physicalPath": "/optional/physical/path"
   }
-}
-
-query {
-  id: "test"
 }
