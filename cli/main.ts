@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { runFrontendStart } from './shellProxy';
 import { setupDb, write } from './db';
+import { listen } from './server';
 
 const registerInitCmd = async (program: Command) => {
     const fn = async () => {
@@ -49,6 +50,17 @@ const registerTestCmd = async (program: Command) => {
 };
  
 
+const registerListenCmd = async (program: Command) => {
+    const fn = async () => {
+        await listen();
+    };
+
+    program
+        .command('listen')
+        .description('Boots up the web server')
+        .action(fn);
+};
+
 export const init = async () => {
     const program = new Command();
     program
@@ -57,5 +69,6 @@ export const init = async () => {
         .version('0.0.1');
     await registerInitCmd(program);
     await registerTestCmd(program);
+    await registerListenCmd(program);
     await program.parseAsync();
 };

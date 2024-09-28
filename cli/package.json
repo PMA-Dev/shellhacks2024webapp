@@ -14,8 +14,10 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
+        "@types/express": "^5.0.0",
         "@types/lowdb": "^1.0.15",
         "commander": "^12.1.0",
+        "express": "^4.21.0",
         "lowdb": "^7.0.1"
     }
 }
