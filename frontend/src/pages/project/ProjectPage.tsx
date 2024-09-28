@@ -28,7 +28,7 @@ function ProjectPage() {
 
                 {/* Nested Routes */}
                 <Routes>
-                    <Route path="/" element={<div>Welcome to your project dashboard.</div>} />
+                    <Route path="/general" element={<div>Welcome to your project dashboard.</div>} />
                     <Route path="pages" element={<PagesPage projectId={projectId} />} />
                     <Route path="templates" element={<TemplatesPage />} />
                     <Route path="components" element={<ComponentsPage />} />

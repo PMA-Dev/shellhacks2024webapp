@@ -94,7 +94,7 @@ function DashboardPage() {
                             <div
                                 key={project.id}
                                 className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
-                                onClick={() => navigate(`/projects/${project.id}`)}
+                                onClick={() => navigate(`/projects/${project.id}/general`)}
                             >
                                 <h2 className="mb-2 text-xl font-semibold text-gray-800">
                                     {project.name}

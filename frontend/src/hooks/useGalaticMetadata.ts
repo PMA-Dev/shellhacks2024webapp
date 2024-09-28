@@ -11,7 +11,7 @@ export const useGalaticMetadata = () => {
 
     useEffect(() => {
         const fetchGalaticMetadata = async () => {
-            const response = await api.get('/galatic');
+            const response = await api.get('/metadata/get/galactic');
             setGalaticMetadata(response.data);
         };
 
@@ -19,12 +19,12 @@ export const useGalaticMetadata = () => {
     }, []);
 
     const updateGalaticMetadata = async (metadata: GalacticMetadata) => {
-        const response = await api.put('/galatic', metadata);
+        const response = await api.patch('/metadata/patch/galactic', metadata);
         setGalaticMetadata(response.data);
     };
 
     const createGalaticMetadata = async (metadata: GalacticMetadata) => {
-        const response = await api.post('/galatic', metadata);
+        const response = await api.post('/metadata/post/galactic', metadata);
         setGalaticMetadata(response.data);
     };
 

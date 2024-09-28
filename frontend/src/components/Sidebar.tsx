@@ -71,7 +71,7 @@ function Sidebar() {
                     {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
                 </Button>
             </div>
-            <nav className="mt-4 relative">
+            <nav className="mt-4 relative h-full">
                 {sections.map((section) => (
                     <div key={section.title} className="mb-4">
                         {!isCollapsed && (
@@ -102,7 +102,7 @@ function Sidebar() {
                 {/* back to dashboard */}
                 <NavLink
                     to={`/dashboard`}
-                    className="flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200 space-x-2 relative "
+                    className="flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200 space-x-2 relative !mt-[100%]"
                 >
                     <Undo2Icon className="" />
                     {!isCollapsed && <span>All Projects</span>}
