@@ -15,10 +15,12 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
+        "@types/cors": "^2.8.17",
         "@types/express": "^5.0.0",
         "@types/lowdb": "^1.0.15",
         "class-validator": "^0.14.1",
         "commander": "^12.1.0",
+        "cors": "^2.8.5",
         "express": "^4.21.0",
         "lowdb": "^7.0.1",
         "reflect-metadata": "^0.2.2"

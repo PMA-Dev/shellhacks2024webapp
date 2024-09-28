@@ -5,30 +5,15 @@ import api from "./api";
 export const useProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
-  // useEffect(() => {
-  //     const fetchProjects = async () => {
-  //         const response = await api.get('/projects');
-  //         setProjects(response.data);
-  //     };
-
-  //     fetchProjects();
-  // }, []);
-
-  // mock a project
   useEffect(() => {
-    setProjects([
-      {
-        id: "1",
-        name: "My Project",
-        pageIds: ["1", "2", "3"],
-      },
-      {
-        id: "2",
-        name: "My Other Project",
-        pageIds: ["4", "5", "6"],
-      },
-    ]);
+      const fetchProjects = async () => {
+          const response = await api.get('/projects');
+          setProjects(response.data);
+      };
+
+      fetchProjects();
   }, []);
+
 
   const addProject = async (project: Project) => {
     const response = await api.post("/projects", project);

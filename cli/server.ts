@@ -1,6 +1,7 @@
 import express, { type Express } from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { Config } from './config';
+import cors from 'cors';
 import {
     getGalacticMetadata,
     getProjectMetadata,
@@ -26,6 +27,7 @@ import {
 
 const initializeMiddlewares = (app: Express) => {
     app.use(express.json());
+    app.use(cors());
 };
 
 const getHome = async (

@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { runFrontendStart } from './shellProxy';
 import { setupDb } from './db';
 import { listen } from './server';
+import cors from 'cors';
 
 const registerInitCmd = async (program: Command) => {
     const fn = async () => {
