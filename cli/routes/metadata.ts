@@ -241,8 +241,9 @@ export const postProjectMetadata = async (
     next: NextFunction
 ) => {
     try {
-        if (!req.query.galacticId) {
-            res.status(400).json({ error: 'galactic id is required' });
+        const galacticId = (await queryAll<GalacticMetadata>(MetadataType.Galactic))?.[0]?.id;
+        if (!galacticId) {
+            res.status(400).json({ error: 'Galactic metadata not found' });
             return;
         }
         const data = plainToInstance(ProjectMetadata, req.body);
@@ -252,10 +253,10 @@ export const postProjectMetadata = async (
             return;
         }
         const metadataId = await pushMetadata(MetadataType.Project, data);
-        const port = await runFrontendStart(Number(req.query.galacticId), metadataId);
+        const port = await runFrontendStart(galacticId, metadataId);
         await editMetadataInPlace<GalacticMetadata>(
             MetadataType.Galactic,
-            Number(req.query.galacticId),
+            galacticId,
             (x) => x.projectIds.push(metadataId)
         );
 
