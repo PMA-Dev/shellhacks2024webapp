@@ -5,13 +5,12 @@ import {
     GenericMetadata,
     MetadataType,
     type DbData,
-    type DbType,
 } from './models';
 import { Low } from 'lowdb';
 
-let GLOBAL_DB: DbType | null = null;
+let GLOBAL_DB: Low<DbData> | null = null;
 
-export const getDbHandle = async (): Promise<Low<DbType>> => {
+export const getDbHandle = async (): Promise<Low<DbData>> => {
     if (!GLOBAL_DB) {
         await setupDb();
     }
@@ -78,20 +77,29 @@ export const patchMetadata = async (
     const db = await getDbHandle();
     await db.read();
     await db.update((dbData: any) => {
-        const obj = dbData.metadatas[metadataType].metadata.find((x: any) => x.id == queryId);
+        const obj = dbData.metadatas[metadataType].metadata.find(
+            (x: any) => x.id == queryId
+        );
         if (!obj) {
             console.log(`No data found for query id: ${queryId}`);
             return;
         }
         const mergedObj = { ...obj, ...data };
         console.log('Merged obj:', mergedObj);
-        console.log(`count before: ${dbData.metadatas[metadataType].metadata.length}`);
-        dbData.metadatas[metadataType].metadata = dbData.metadatas[metadataType].metadata.filter((x: any) => x.id != queryId);
-        console.log(`count after: ${dbData.metadatas[metadataType].metadata.length}`);
+        console.log(
+            `count before: ${dbData.metadatas[metadataType].metadata.length}`
+        );
+        dbData.metadatas[metadataType].metadata = dbData.metadatas[
+            metadataType
+        ].metadata.filter((x: any) => x.id != queryId);
+        console.log(
+            `count after: ${dbData.metadatas[metadataType].metadata.length}`
+        );
         dbData.metadatas[metadataType].metadata.push(mergedObj);
-        console.log(`count final: ${dbData.metadatas[metadataType].metadata.length}`);
+        console.log(
+            `count final: ${dbData.metadatas[metadataType].metadata.length}`
+        );
     });
-    return data.id;
 };
 
 const getRandomInt = (max: number) => {
@@ -104,7 +112,7 @@ export const queryAll = async <T>(
     console.log(`Going to query for type: ${metadataType} and get all...`);
     const db = await getDbHandle();
     await db.read();
-    const resp = db.data?.metadatas[metadataType]?.metadata;
+    const resp = db.data?.metadatas?.[metadataType]?.metadata;
     if (!resp) {
         console.log('No data found...');
         return null;

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 import { queryAll, pushMetadata, patchMetadata, query } from '../db';
 
 import {
@@ -11,13 +12,20 @@ import {
     MetadataType,
 } from '../models';
 
+// GET Handlers
 export const getGalacticMetadata = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const metadata = await queryAll<GalacticMetadata>(MetadataType.Galactic);
-    res.json(metadata);
+    try {
+        const metadata = await queryAll<GalacticMetadata>(
+            MetadataType.Galactic
+        );
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const getProjectMetadata = async (
@@ -25,8 +33,12 @@ export const getProjectMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    const metadata = await queryAll<ProjectMetadata>(MetadataType.Project);
-    res.json(metadata);
+    try {
+        const metadata = await queryAll<ProjectMetadata>(MetadataType.Project);
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const getPageMetadata = async (
@@ -34,8 +46,12 @@ export const getPageMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    const metadata = await queryAll<PageMetadata>(MetadataType.Page);
-    res.json(metadata);
+    try {
+        const metadata = await queryAll<PageMetadata>(MetadataType.Page);
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const getTemplateMetadata = async (
@@ -43,8 +59,14 @@ export const getTemplateMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    const metadata = await queryAll<TemplateMetadata>(MetadataType.Template);
-    res.json(metadata);
+    try {
+        const metadata = await queryAll<TemplateMetadata>(
+            MetadataType.Template
+        );
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const getComponentMetadata = async (
@@ -52,25 +74,39 @@ export const getComponentMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    const metadata = await queryAll<ComponentMetadata>(MetadataType.Component);
-    res.json(metadata);
+    try {
+        const metadata = await queryAll<ComponentMetadata>(
+            MetadataType.Component
+        );
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
 };
 
+// GET by ID Handlers
 export const getGalacticMetadataById = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const metadata = await query<GalacticMetadata>(
+            MetadataType.Galactic,
+            Number(req.query.id)
+        );
+        if (!metadata) {
+            res.status(404).json({ error: 'metadata not found' });
+            return;
+        }
+        res.json(metadata);
+    } catch (error) {
+        next(error);
     }
-    const metadata = await query<GalacticMetadata>(MetadataType.Galactic, Number(req.query.id));
-    if (!metadata) {
-        res.status(404).json({ error: 'metadata not found' });
-        return;
-    }
-    res.json(metadata);
 };
 
 export const getProjectMetadataById = async (
@@ -78,16 +114,23 @@ export const getProjectMetadataById = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const metadata = await query<ProjectMetadata>(
+            MetadataType.Project,
+            Number(req.query.id)
+        );
+        if (!metadata) {
+            res.status(404).json({ error: 'metadata not found' });
+            return;
+        }
+        res.json(metadata);
+    } catch (error) {
+        next(error);
     }
-    const metadata = await query<ProjectMetadata>(MetadataType.Project, Number(req.query.id));
-    if (!metadata) {
-        res.status(404).json({ error: 'metadata not found' });
-        return;
-    }
-    res.json(metadata);
 };
 
 export const getPageMetadataById = async (
@@ -95,16 +138,23 @@ export const getPageMetadataById = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const metadata = await query<PageMetadata>(
+            MetadataType.Page,
+            Number(req.query.id)
+        );
+        if (!metadata) {
+            res.status(404).json({ error: 'metadata not found' });
+            return;
+        }
+        res.json(metadata);
+    } catch (error) {
+        next(error);
     }
-    const metadata = await query<PageMetadata>(MetadataType.Page, Number(req.query.id));
-    if (!metadata) {
-        res.status(404).json({ error: 'metadata not found' });
-        return;
-    }
-    res.json(metadata);
 };
 
 export const getTemplateMetadataById = async (
@@ -112,16 +162,23 @@ export const getTemplateMetadataById = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const metadata = await query<TemplateMetadata>(
+            MetadataType.Template,
+            Number(req.query.id)
+        );
+        if (!metadata) {
+            res.status(404).json({ error: 'metadata not found' });
+            return;
+        }
+        res.json(metadata);
+    } catch (error) {
+        next(error);
     }
-    const metadata = await query<TemplateMetadata>(MetadataType.Template, Number(req.query.id));
-    if (!metadata) {
-        res.status(404).json({ error: 'metadata not found' });
-        return;
-    }
-    res.json(metadata);
 };
 
 export const getComponentMetadataById = async (
@@ -129,25 +186,43 @@ export const getComponentMetadataById = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const metadata = await query<ComponentMetadata>(
+            MetadataType.Component,
+            Number(req.query.id)
+        );
+        if (!metadata) {
+            res.status(404).json({ error: 'metadata not found' });
+            return;
+        }
+        res.json(metadata);
+    } catch (error) {
+        next(error);
     }
-    const metadata = await query<ComponentMetadata>(MetadataType.Component, Number(req.query.id));
-    if (!metadata) {
-        res.status(404).json({ error: 'metadata not found' });
-        return;
-    }
-    res.json(metadata);
 };
 
+// POST Handlers with Validation
 export const postGalacticMetadata = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const metadataId = await pushMetadata(MetadataType.Galactic, req.body);
-    res.json(metadataId);
+    try {
+        const data = plainToInstance(GalacticMetadata, req.body);
+        const errors = await validate(data);
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await pushMetadata(MetadataType.Galactic, data);
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const postProjectMetadata = async (
@@ -155,8 +230,18 @@ export const postProjectMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    const metadataId = await pushMetadata(MetadataType.Project, req.body);
-    res.json(metadataId);
+    try {
+        const data = plainToInstance(ProjectMetadata, req.body);
+        const errors = await validate(data);
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await pushMetadata(MetadataType.Project, data);
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const postPageMetadata = async (
@@ -164,8 +249,18 @@ export const postPageMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    const metadataId = await pushMetadata(MetadataType.Page, req.body);
-    res.json(metadataId);
+    try {
+        const data = plainToInstance(PageMetadata, req.body);
+        const errors = await validate(data);
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await pushMetadata(MetadataType.Page, data);
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const postTemplateMetadata = async (
@@ -173,8 +268,18 @@ export const postTemplateMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    const metadataId = await pushMetadata(MetadataType.Template, req.body);
-    res.json(metadataId);
+    try {
+        const data = plainToInstance(TemplateMetadata, req.body);
+        const errors = await validate(data);
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await pushMetadata(MetadataType.Template, data);
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const postComponentMetadata = async (
@@ -182,25 +287,46 @@ export const postComponentMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    const metadataId = await pushMetadata(MetadataType.Component, req.body);
-    res.json(metadataId);
+    try {
+        const data = plainToInstance(ComponentMetadata, req.body);
+        const errors = await validate(data);
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await pushMetadata(MetadataType.Component, data);
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
+    }
 };
 
+// PATCH Handlers with Validation
 export const patchGalacticMetadata = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const data = plainToInstance(GalacticMetadata, req.body);
+        const errors = await validate(data, { skipMissingProperties: true });
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await patchMetadata(
+            MetadataType.Galactic,
+            data,
+            Number(req.query.id)
+        );
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
     }
-    const metadataId = await patchMetadata(
-        MetadataType.Galactic,
-        req.body,
-        Number(req.query.id)
-    );
-    res.json(metadataId);
 };
 
 export const patchProjectMetadata = async (
@@ -208,16 +334,26 @@ export const patchProjectMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const data = plainToInstance(ProjectMetadata, req.body);
+        const errors = await validate(data, { skipMissingProperties: true });
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await patchMetadata(
+            MetadataType.Project,
+            data,
+            Number(req.query.id)
+        );
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
     }
-    const metadataId = await patchMetadata(
-        MetadataType.Project,
-        req.body,
-        Number(req.query.id)
-    );
-    res.json(metadataId);
 };
 
 export const patchPageMetadata = async (
@@ -225,16 +361,26 @@ export const patchPageMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const data = plainToInstance(PageMetadata, req.body);
+        const errors = await validate(data, { skipMissingProperties: true });
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await patchMetadata(
+            MetadataType.Page,
+            data,
+            Number(req.query.id)
+        );
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
     }
-    const metadataId = await patchMetadata(
-        MetadataType.Page,
-        req.body,
-        Number(req.query.id)
-    );
-    res.json(metadataId);
 };
 
 export const patchTemplateMetadata = async (
@@ -242,16 +388,26 @@ export const patchTemplateMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const data = plainToInstance(TemplateMetadata, req.body);
+        const errors = await validate(data, { skipMissingProperties: true });
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await patchMetadata(
+            MetadataType.Template,
+            data,
+            Number(req.query.id)
+        );
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
     }
-    const metadataId = await patchMetadata(
-        MetadataType.Template,
-        req.body,
-        Number(req.query.id)
-    );
-    res.json(metadataId);
 };
 
 export const patchComponentMetadata = async (
@@ -259,14 +415,24 @@ export const patchComponentMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.query.id) {
-        res.status(400).json({ error: 'id is required' });
-        return;
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const data = plainToInstance(ComponentMetadata, req.body);
+        const errors = await validate(data, { skipMissingProperties: true });
+        if (errors.length > 0) {
+            res.status(400).json({ errors });
+            return;
+        }
+        const metadataId = await patchMetadata(
+            MetadataType.Component,
+            data,
+            Number(req.query.id)
+        );
+        res.json({ id: metadataId });
+    } catch (error) {
+        next(error);
     }
-    const metadataId = await patchMetadata(
-        MetadataType.Component,
-        req.body,
-        Number(req.query.id)
-    );
-    res.json(metadataId);
 };

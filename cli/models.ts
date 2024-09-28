@@ -11,10 +11,10 @@ export class BaseDataRecord {
 // Galactic Metadata with validation decorators
 export class GalacticMetadata extends BaseDataRecord {
     @IsString()
-    githubPat: string;
+    githubPat!: string;
 
     @IsString()
-    workingDir: string;
+    workingDir!: string;
 
     @IsArray()
     @IsNumber({}, { each: true })
@@ -24,7 +24,7 @@ export class GalacticMetadata extends BaseDataRecord {
 // Project Metadata with validation decorators
 export class ProjectMetadata extends BaseDataRecord {
     @IsString()
-    projectName: string;
+    projectName!: string;
 
     @IsArray()
     @IsNumber({}, { each: true })
@@ -34,10 +34,10 @@ export class ProjectMetadata extends BaseDataRecord {
 // Page Metadata with validation decorators
 export class PageMetadata extends BaseDataRecord {
     @IsString()
-    pageName: string;
+    pageName!: string;
 
     @IsString()
-    routerPath: string;
+    routerPath!: string;
 
     @IsArray()
     @IsNumber({}, { each: true })
@@ -55,16 +55,16 @@ export class TemplateMetadata extends BaseDataRecord {
     componentIds: number[] = [];
 
     @IsString()
-    templateName: string;
+    templateName!: string;
 }
 
 // Component Metadata with validation decorators
 export class ComponentMetadata extends BaseDataRecord {
     @IsString()
-    componentName: string;
+    componentName!: string;
 
     @IsString()
-    assetPath: string;
+    assetPath!: string;
 }
 
 // Metadata Table to hold arrays of metadata records
@@ -105,3 +105,10 @@ export class DbData {
     @IsOptional()
     metadatas?: MetadatasOuter;
 }
+
+export type GenericMetadata =
+    | GalacticMetadata
+    | ProjectMetadata
+    | PageMetadata
+    | TemplateMetadata
+    | ComponentMetadata;
