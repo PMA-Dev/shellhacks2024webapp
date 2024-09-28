@@ -1,11 +1,23 @@
 meta {
   name: post galactic metadata
   type: http
-  seq: 6
+  seq: 2
 }
 
 post {
-  url: {{url}}/metadata/post/galactic
+  url: { {url} }/metadata/post/galactic
   body: none
   auth: none
+}
+
+body:json {
+  {
+    "githubPat": "your-github-pat",
+    "workingDir": "/path/to/working/dir",
+    "projectIds": [
+      1,
+      2,
+      3
+    ]
+  }
 }

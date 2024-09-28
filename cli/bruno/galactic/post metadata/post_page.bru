@@ -1,11 +1,24 @@
 meta {
   name: post page metadata
   type: http
-  seq: 10
+  seq: 6
 }
 
 post {
-  url: {{url}}/metadata/post/page
+  url: { {url} }/metadata/post/page
   body: none
   auth: none
+}
+
+body:json {
+  {
+    "pageName": "Your Page Name",
+    "routerPath": "/your/router/path",
+    "templateIds": [
+      1,
+      2,
+      3
+    ],
+    "physicalPath": "/optional/physical/path"
+  }
 }

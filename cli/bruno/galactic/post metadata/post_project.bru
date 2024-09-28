@@ -1,11 +1,22 @@
 meta {
   name: post project metadata
   type: http
-  seq: 8
+  seq: 4
 }
 
 post {
-  url: {{url}}/metadata/post/project
+  url: { {url} }/metadata/post/project
   body: none
   auth: none
+}
+
+body:json {
+  {
+    "projectName": "Your Project Name",
+    "pageIds": [
+      1,
+      2,
+      3
+    ]
+  }
 }

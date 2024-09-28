@@ -1,11 +1,22 @@
 meta {
   name: post template metadata
   type: http
-  seq: 12
+  seq: 8
 }
 
 post {
-  url: {{url}}/metadata/post/template
+  url: { {url} }/metadata/post/template
   body: none
   auth: none
+}
+
+body:json {
+  {
+    "templateName": "Your Template Name",
+    "componentIds": [
+      1,
+      2,
+      3
+    ]
+  }
 }
