@@ -43,6 +43,10 @@ export const setupDb = async () => {
         )} at ${dbPath}...`
     );
     const db = await JSONFilePreset(dbPath, defaultData);
+    // if path doesnt exist write default data
+    if (!db.data) {
+        await db.write();
+    }
     GLOBAL_DB = db;
 };
 
