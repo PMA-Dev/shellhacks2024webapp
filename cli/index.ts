@@ -1,3 +1,3 @@
 import { init } from './main';
 
-init();
+await init();

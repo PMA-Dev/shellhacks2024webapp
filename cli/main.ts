@@ -1,26 +1,35 @@
 import { Command } from 'commander';
 
-const registerInitCmd = (program: Command) => {
-    program
-        .command('init')
-        .description('Inits the application and opens the local site');
+const registerInitCmd = async (program: Command) => {
     // .argument("<string>", "string to split")
     // .option("--first", "display just the first substring")
     // .option("-s, --separator <char>", "separator character", ",");
 
-    const fn = () => {
-        console.log('init called');
+    const fn = async () => {
+        console.log('pre calling db');
+        await setupDb();
+        console.log('post calling db');
     };
 
-    program.action(fn);
+    program
+        .command('init')
+        .description('Inits the application and opens the local site')
+        .action(fn);
 };
 
-export const init = () => {
+const setupDb = async () => {
+    await setupDb();
+};
+
+const launchApp = async () => {
+}
+
+export const init = async () => {
     const program = new Command();
     program
         .name('galactic')
         .description('CLI to rule the galaxy')
         .version('0.0.1');
-    registerInitCmd(program);
-    program.parse();
+    await registerInitCmd(program);
+    await program.parseAsync();
 };
