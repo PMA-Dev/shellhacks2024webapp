@@ -30,16 +30,27 @@ export const createAppTsxFileForProject = async (
         project?.pageIds.map((pageId) =>
             query<PageMetadata>(MetadataType.Page, pageId)
         ) || [];
-    const pages = await Promise.all(pagePromises);
+    const homePage = {
+        pageName: 'Home',
+        routerPath: '/',
+        templateId: 0,
+    };
+    const pages = [...(await Promise.all(pagePromises)), homePage];
     const templates = await queryAll<TemplateMetadata>(MetadataType.Template);
 
     const pageImports = pages
-        .map(
-            (page) =>{
-                const template = templates!.find((t) => t.id === page?.templateId);
-                return `import {${template!.templateType} as ${page!.pageName}} from './pages/${page!.pageName}';`;
+        .map((page) => {
+            if (
+                page?.pageName == homePage.pageName ||
+                page?.templateId == homePage.templateId
+            ) {
+                return `import { Home } from './pages/${page!.pageName}';`;
             }
-        )
+            const template = templates!.find((t) => t.id === page?.templateId);
+            return `import {${template!.templateType} as ${
+                page!.pageName
+            }} from './pages/${page!.pageName}';`;
+        })
         .join('\n');
 
     const navLinks = pages
@@ -85,4 +96,3 @@ export default App;
     await fs.writeFile(appTsxPath, appTsxContent);
     console.log(`Wrote to ${appTsxPath}`);
 };
-
