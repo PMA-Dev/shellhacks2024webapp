@@ -20,7 +20,8 @@ import {
 } from '../models';
 import { bootGalaxy, runFrontendStart } from './commands';
 import path from 'path';
-import { createAppTsxFileForProject, createPageIdempotent, getPagesPath } from '../factory';
+import { createPageIdempotent, getPagesPath, populateTemplates } from '../factory';
+import { createAppTsxFileForProject } from '../create_app_tsx';
 
 // GET Handlers
 export const getGalacticMetadata = async (
@@ -231,6 +232,7 @@ export const postGalacticMetadata = async (
         data.workingDir = path.join(data.workingDir, 'galactic');
         const metadataId = await pushMetadata(MetadataType.Galactic, data);
         await bootGalaxy(data);
+        await populateTemplates();
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
@@ -322,26 +324,32 @@ export const postTemplateMetadata = async (
 ) => {
     try {
         const data = plainToInstance(TemplateMetadata, req.body);
-        const errors = await validate(data);
-        if (errors.length > 0) {
-            res.status(400).json({ errors });
-            return;
-        }
-
-        data.physicalPath = path.join(
-            __dirname,
-            '..',
-            'templates',
-            `${data.templateName}.tsx`
-        );
-
-        console.log(`Creating template at ${data.physicalPath}`);
-        const metadataId = await pushMetadata(MetadataType.Template, data);
+        const metadataId = await innerPostTemplateMetadata(data);
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
     }
 };
+
+export const innerPostTemplateMetadata = async (
+    data: TemplateMetadata, physicalPathOverride?: string
+) => {
+    const errors = await validate(data);
+    if (errors.length > 0) {
+        throw new Error('Validation failed');
+    }
+
+    data.physicalPath = physicalPathOverride ?? path.join(
+        __dirname,
+        '..',
+        'templates',
+        `${data.templateName}.tsx`
+    );
+
+    console.log(`Creating template at ${data.physicalPath}`);
+    const metadataId = await pushMetadata(MetadataType.Template, data);
+    return metadataId;
+}
 
 export const postComponentMetadata = async (
     req: Request,
