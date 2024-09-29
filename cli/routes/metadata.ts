@@ -20,6 +20,7 @@ import {
 } from '../models';
 import { bootGalaxy, runFrontendStart } from './commands';
 import path from 'path';
+import { createAppTsxFileForProject, createPageIdempotent, getPagesPath } from '../factory';
 
 // GET Handlers
 export const getGalacticMetadata = async (
@@ -291,12 +292,23 @@ export const postPageMetadata = async (
             res.status(400).json({ errors });
             return;
         }
+        const pagesBasePath = await getPagesPath((await getDefaultGalacticId())!, Number(req.query.projectId));
+        data.physicalPath = path.join(pagesBasePath, `${data.pageName}.tsx`);
         const metadataId = await pushMetadata(MetadataType.Page, data);
         await editMetadataInPlace<ProjectMetadata>(
             MetadataType.Project,
             Number(req.query.projectId),
             (x) => x.pageIds.push(metadataId)
         );
+        console.log(`finished editing project metadata for ${req.query.projectId}`);
+
+        console.log(`Creating page idempotent for ${metadataId}`);
+        if (data.templateId) {
+            console.log(`Creating page idempotent inside for ${metadataId}`);
+            await createPageIdempotent(metadataId, Number(req.query.projectId));
+            console.log(`Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${req.query.projectId}`);
+            await createAppTsxFileForProject((await getDefaultGalacticId())!, Number(req.query.projectId));
+        }
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
@@ -315,6 +327,15 @@ export const postTemplateMetadata = async (
             res.status(400).json({ errors });
             return;
         }
+
+        data.physicalPath = path.join(
+            __dirname,
+            '..',
+            'templates',
+            `${data.templateName}.tsx`
+        );
+
+        console.log(`Creating template at ${data.physicalPath}`);
         const metadataId = await pushMetadata(MetadataType.Template, data);
         res.json({ id: metadataId });
     } catch (error) {

@@ -68,6 +68,13 @@ export class TemplateMetadata extends BaseDataRecord {
     @IsString()
     @IsOptional()
     physicalPath?: string;
+
+    @IsString()
+    templateType!: TemplateTypes;
+}
+
+export enum TemplateTypes {
+    Blog = 'Blog',
 }
 
 // Component Metadata with validation decorators
