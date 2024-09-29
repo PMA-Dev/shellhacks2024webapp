@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { makeFetchRequest } from '../fetchConfig';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 
 interface LogData {
   logName: string;
@@ -30,29 +32,38 @@ export const Table = () => {
     fetchData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>{error}</p>
+      </div>
+    );
 
   return (
-    <div>
-      <h1>Log Data</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Log Name</th>
-            <th>Timestamp</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+      <div className="w-full max-w-2xl">
+        <h1 className="text-4xl font-bold mb-8 text-center">Log Data</h1>
+        <div className="space-y-4">
           {data.map((log, index) => (
-            <tr key={index}>
-              <td>{log.logName}</td>
-              <td>{log.timestamp}</td>
-            </tr>
+            <Card key={index} className="border border-gray-200">
+              <CardHeader>
+                <CardTitle className="text-xl">{log.logName}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700">Timestamp: {log.timestamp}</p>
+              </CardContent>
+            </Card>
           ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>
   );
 };
 
+export default Table;
