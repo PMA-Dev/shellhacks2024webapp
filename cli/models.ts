@@ -64,6 +64,10 @@ export class TemplateMetadata extends BaseDataRecord {
 
     @IsString()
     templateName!: string;
+
+    @IsString()
+    @IsOptional()
+    physicalPath?: string;
 }
 
 // Component Metadata with validation decorators
