@@ -76,6 +76,8 @@ export const startViteApp = async (
             projectId
         );
         startFrontendVite(galacticId!, projectId);
+        // TODO tmp
+        startBackend(projectId);
         res.status(200).json({
             message: 'Vite started at: ' + project?.sitePath,
         });
@@ -97,6 +99,7 @@ export const stopViteApp = async (
         const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
         await stopFrontendVite(galacticId!, projectId);
+        await stopBackend(projectId);
         res.status(200).json({ message: 'Vite stopped' });
     } catch (e) {
         next(e);
