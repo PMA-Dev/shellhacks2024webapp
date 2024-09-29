@@ -31,7 +31,8 @@ export const startBackendApp = async (
         );
         startBackend(projectId);
         res.status(200).json({
-            message: 'Backend started at: ' + `localhost:${project?.backendPort}`,
+            message:
+                'Backend started at: ' + `localhost:${project?.backendPort}`,
         });
     } catch (e) {
         next(e);
@@ -56,7 +57,6 @@ export const stopBackendApp = async (
         next(e);
     }
 };
-
 
 export const startViteApp = async (
     req: Request,
@@ -162,14 +162,7 @@ console.log('Listening: http://localhost:' + port);
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    runCmd(
-        'sh',
-        [
-            '-c',
-            `cd backend && bun install`,
-        ],
-        { cwd: workingDir! }
-    );
+    runCmd('sh', ['-c', `cd backend && bun install`], { cwd: workingDir! });
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -178,7 +171,9 @@ console.log('Listening: http://localhost:' + port);
     // rm the file
     runCmd('rm', ['-f', filePath]);
     await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log(`Writing index.ts to ${path.join(workingDir!, 'backend', 'src', 'index.ts')}`);
+    console.log(
+        `Writing index.ts to ${path.join(workingDir!, 'backend', 'src', 'index.ts')}`
+    );
     await fs.writeFile(filePath, indexTsContents);
     console.log(`DONE!`);
     return port;
@@ -258,9 +253,7 @@ export const startFrontendVite = async (
     });
 };
 
-export const startBackend = async (
-    projectId: number
-) => {
+export const startBackend = async (projectId: number) => {
     const project = await getProjectData(projectId);
     const workingDir = await getBackendWorkingDir(projectId);
     runCmd('bun', [`src/index.ts`], {
@@ -268,12 +261,10 @@ export const startBackend = async (
     });
 };
 
-export const stopBackend = async (
-    projectId: number
-) => {
+export const stopBackend = async (projectId: number) => {
     const project = await getProjectData(projectId);
     killOnPort(project.backendPort!);
-}
+};
 
 export const stopFrontendVite = async (
     galacticId: number,

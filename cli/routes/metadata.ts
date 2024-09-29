@@ -331,8 +331,13 @@ export const postPageMetadata = async (
         if (data.templateId) {
             console.log(`Creating page idempotent inside for ${metadataId}`);
             await createPageIdempotent(metadataId, Number(req.query.projectId));
-            console.log(`Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${req.query.projectId}`);
-            await createAppTsxFileForProject((await getDefaultGalacticId())!, Number(req.query.projectId));
+            console.log(
+                `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${req.query.projectId}`
+            );
+            await createAppTsxFileForProject(
+                (await getDefaultGalacticId())!,
+                Number(req.query.projectId)
+            );
         }
         res.json({ id: metadataId });
     } catch (error) {

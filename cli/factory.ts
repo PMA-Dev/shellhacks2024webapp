@@ -63,7 +63,7 @@ export const createHomePageIdempotent = async (projectId: number) => {
         throw new Error('No template path found for page id: ' + projectId);
 
     console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
-    runCmd('cp', [pathToCopy, pagesPath! + "/"]);
+    runCmd('cp', [pathToCopy, pagesPath! + '/']);
 };
 
 export const getTemplatePathToCopy = async (templateId: number) => {
