@@ -43,6 +43,51 @@ export const createPageIdempotent = async (
     runCmd('cp', [pathToCopy, pagesPath!]);
 };
 
+export const createHomePageIdempotent = async (
+    projectId: number
+) => {
+    const pagesPath = path.join(page?.physicalPath;
+
+    console.log('Checking if page already exists at:', pagesPath);
+    if (pagesPath && (await doesPathExist(pagesPath))) return;
+    console.log(`Page does not exist at ${pagesPath}, creating...`);
+
+    await createPagesPath((await getDefaultGalacticId())!, projectId);
+
+    const pathToCopy = await getTemplatePathToCopy(page?.templateId!);
+
+    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
+    if (!pathToCopy)
+        throw new Error('No template path found for page id: ' + pageId);
+
+    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
+    runCmd('cp', [pathToCopy, pagesPath!]);
+};
+
+export const getTemplatePathToCopy = async (templateId: number) => {
+    const template = await query<TemplateMetadata>(
+        MetadataType.Template,
+        templateId
+    );
+    return template?.physicalPath;
+};
+
+export const doesPathExist = async (pathStr: string): Promise<boolean> => {
+    try {
+        await fs.access(pathStr);
+        return true;
+    } catch {
+        return false;
+    }
+};
+
+export const getWorkingDir = async () => {
+    const galacticId = (await getDefaultGalacticId())!;
+    const workingDir = (
+        await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
+    )?.workingDir;
+
+
 export const getTemplatePathToCopy = async (templateId: number) => {
     const template = await query<TemplateMetadata>(
         MetadataType.Template,

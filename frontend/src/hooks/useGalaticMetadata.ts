@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from './api';
-
-type GalacticMetadata = {
-    pat: string;
-    dir: string;
-};
+import { GalacticMetadata } from '@/models';
 
 export const useGalaticMetadata = () => {
     const [galaticMetadata, setGalaticMetadata] = useState<GalacticMetadata>();

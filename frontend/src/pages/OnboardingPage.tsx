@@ -10,14 +10,14 @@ import { toast } from "sonner"
 
 function OnboardingPage() {
     const navigate = useNavigate();
-    const [pat, setPat] = useState('');
-    const [dir, setDir] = useState('');
+    const [githubPat, setPat] = useState('');
+    const [workingDir, setDir] = useState('');
     const { createGalaticMetadata } = useGalaticMetadata();
 
     const handleSubmit = async () => {
         try {
-            if (pat && dir) {
-                await createGalaticMetadata({ pat, dir });
+            if (githubPat && workingDir) {
+                await createGalaticMetadata({ githubPat, workingDir });
             }
             navigate('/dashboard');
             toast.success('Successfully saved your Galactic metadata!');
@@ -32,20 +32,20 @@ function OnboardingPage() {
             <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow">
                 <h2 className="text-2xl font-bold text-center">Welcome to Galactic 🌌</h2>
                 <div>
-                    <Label htmlFor="pat">Github PAT</Label>
+                    <Label htmlFor="githubPat">Github PAT</Label>
                     <Input
-                        id="pat"
+                        id="githubPat"
                         placeholder="Your GitHub Personal Access Token"
-                        value={pat}
+                        value={githubPat}
                         onChange={(e) => setPat(e.target.value)}
                     />
                 </div>
                 <div>
-                    <Label htmlFor="dir">Working Directory</Label>
+                    <Label htmlFor="workingDir">Working Directory</Label>
                     <Input
-                        id="dir"
+                        id="workingDir"
                         placeholder="~/Developer/galactic"
-                        value={dir}
+                        value={workingDir}
                         onChange={(e) => setDir(e.target.value)}
                     />
                 </div>

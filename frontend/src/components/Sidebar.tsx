@@ -102,7 +102,7 @@ function Sidebar() {
                 {/* back to dashboard */}
                 <NavLink
                     to={`/dashboard`}
-                    className="flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200 space-x-2 relative !mt-[100%]"
+                    className="flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200 space-x-2 relative !bottom-0"
                 >
                     <Undo2Icon className="" />
                     {!isCollapsed && <span>All Projects</span>}

@@ -29,8 +29,7 @@ function DashboardPage() {
         try {
             if (projectName.trim() !== '') {
                 const newProject = {
-                    id: Date.now().toString(),
-                    name: projectName,
+                    projectName,
                     pages: [],
                     pageIds: []
                 };
@@ -97,7 +96,7 @@ function DashboardPage() {
                                 onClick={() => navigate(`/projects/${project.id}/general`)}
                             >
                                 <h2 className="mb-2 text-xl font-semibold text-gray-800">
-                                    {project.name}
+                                    {project.projectName}
                                 </h2>
                             </div>
                         ))}

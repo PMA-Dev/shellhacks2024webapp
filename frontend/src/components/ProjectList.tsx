@@ -3,12 +3,7 @@
 import { FC } from 'react';
 import { Card } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
-
-interface Project {
-    id: string;
-    name: string;
-    pages: [];
-}
+import { Project } from '@/models';
 
 interface ProjectListProps {
     projects: Project[];
@@ -29,7 +24,7 @@ const ProjectList: FC<ProjectListProps> = ({ projects }) => {
                     className="p-4 cursor-pointer hover:bg-gray-100"
                     onClick={() => navigate(`/projects/${project.id}`)}
                 >
-                    <h3 className="text-lg font-semibold">{project.name}</h3>
+                    <h3 className="text-lg font-semibold">{project.projectName}</h3>
                 </Card>
             ))}
         </div>

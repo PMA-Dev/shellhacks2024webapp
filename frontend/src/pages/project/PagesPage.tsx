@@ -1,6 +1,4 @@
-// src/pages/project/PagesPage.tsx
-
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,24 +11,30 @@ import {
     DialogDescription,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { useProjects } from '@/hooks/useProjects';
+import { useProject } from '../../context/ProjectContext.tsx';
 import { usePages } from '@/hooks/usePages';
 import { Page } from '@/models';
 import { toast } from 'sonner';
+import PageOverviewWidget from '@/components/PageOverviewWidget.tsx';
+import api from '@/hooks/api.ts';
 
-interface PagesPageProps {
-    projectId: string;
-}
-
-function PagesPage({ projectId }: PagesPageProps) {
+function PagesPage() {
     const [pageName, setPageName] = useState('');
     const [pageRoute, setPageRoute] = useState('');
-    const [selectedTemplate, setSelectedTemplate] = useState('');
-    const templates = ['Landing Page', 'Blog'];
-    const { projects } = useProjects();
-    const { pages, addPage } = usePages();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedTemplate, setSelectedTemplate] = useState();
+    const [templates, setTemplates] = useState([]);
+    const project = useProject();
+    const { pages, addPage } = usePages(project?.id || '');
 
-    const project = projects.find((p) => p.id === projectId);
+    useEffect(() => {
+        async function fetchTemplates() {
+            const response = await api.get('/metadata/all/template');
+            console.log('fetched templates:', response.data);
+            setTemplates(response.data);
+        }
+        fetchTemplates();
+    }, []);
 
     if (!project) {
         return <div>Project not found</div>;
@@ -38,16 +42,20 @@ function PagesPage({ projectId }: PagesPageProps) {
 
     const handleAddPage = async () => {
         try {
-            if (pageName.trim() !== '' && selectedTemplate !== '') {
-                const newPage: Page = {
-                    name: pageName,
-                    templateIds: [selectedTemplate],
-                    projectId: projectId,
-                    route: pageRoute,
+            if (pageName.trim() !== '') {
+                console.log('selectedTemplate:', selectedTemplate?.templateName);
+                const newPage = {
+                    pageName,
+                    templateId: selectedTemplate?.id,
+                    projectId: project.id,
+                    routerPath: pageRoute,
+                    templateType: selectedTemplate?.templateType,
                 };
                 await addPage(newPage);
                 setPageName('');
-                setSelectedTemplate('');
+                setSelectedTemplate(undefined);
+                toast.success('Page added successfully!');
+                setIsDialogOpen(false);
             }
         } catch (error) {
             toast('Error adding page');
@@ -58,7 +66,9 @@ function PagesPage({ projectId }: PagesPageProps) {
     return (
         <div>
             <h2 className="mb-4 text-2xl font-bold">Pages</h2>
-            <Dialog>
+
+            {/* Add New Page Dialog */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                     <Button>Add New Page</Button>
                 </DialogTrigger>
@@ -91,18 +101,23 @@ function PagesPage({ projectId }: PagesPageProps) {
                         <div>
                             <Label>Template</Label>
                             <div className="space-y-2">
-                                {templates.map((template) => (
-                                    <div key={template} className="flex items-center space-x-2">
+                                {templates?.length && templates.map((template) => (
+                                    <div key={template.id} className="flex items-center space-x-2">
                                         <input
                                             type="radio"
-                                            id={template}
+                                            id={template.id}
                                             name="template"
-                                            value={template}
-                                            checked={selectedTemplate === template}
-                                            onChange={(e) => setSelectedTemplate(e.target.value)}
+                                            value={template.id}
+                                            onChange={(e) => {
+                                                console.log('selected template:', e.target.value);
+                                                const selectedId = e.target.value;
+                                                const selected = templates.find((t) => t.id == selectedId);
+                                                console.log('selected:', selected);
+                                                setSelectedTemplate(selected);
+                                            }}
                                             className="w-4 h-4"
                                         />
-                                        <Label htmlFor={template}>{template}</Label>
+                                        <Label htmlFor={template.id}>{template.templateName}</Label>
                                     </div>
                                 ))}
                             </div>
@@ -117,17 +132,17 @@ function PagesPage({ projectId }: PagesPageProps) {
             </Dialog>
 
             {/* List of pages */}
-            {pages.length > 0 ? (
-                <div className="mt-4 space-y-2">
-                    {pages.map((page) => (
-                        <div key={page.id} className="p-2 bg-gray-100 rounded">
-                            {page.name} ({page.route})
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <p className="mt-4">No pages created yet.</p>
-            )}
+            <div className="mt-4 space-y-2">
+                {pages && pages.length > 0 ? (
+                    <div className="mt-4 space-y-2">
+                        {pages.map((page) => (
+                            <PageOverviewWidget key={page.id} page={page} project={project} />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="mt-4">No pages created yet.</p>
+                )}
+            </div>
         </div>
     );
 }
