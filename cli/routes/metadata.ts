@@ -20,7 +20,12 @@ import {
 } from '../models';
 import { bootGalaxy, runBackendStart, runFrontendStart } from './commands';
 import path from 'path';
-import { createHomePageIdempotent, createPageIdempotent, getPagesPath, populateTemplates } from '../factory';
+import {
+    createHomePageIdempotent,
+    createPageIdempotent,
+    getPagesPath,
+    populateTemplates,
+} from '../factory';
 import { createAppTsxFileForProject } from '../create_app_tsx';
 
 // GET Handlers
@@ -277,6 +282,14 @@ export const postProjectMetadata = async (
                 // x.backendPort = backendPort!;
             }
         );
+
+        console.log(
+            `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${metadataId}`
+        );
+        await createAppTsxFileForProject(
+            (await getDefaultGalacticId())!,
+            metadataId
+        );
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
@@ -299,7 +312,10 @@ export const postPageMetadata = async (
             res.status(400).json({ errors });
             return;
         }
-        const pagesBasePath = await getPagesPath((await getDefaultGalacticId())!, Number(req.query.projectId));
+        const pagesBasePath = await getPagesPath(
+            (await getDefaultGalacticId())!,
+            Number(req.query.projectId)
+        );
         data.physicalPath = path.join(pagesBasePath, `${data.pageName}.tsx`);
         const metadataId = await pushMetadata(MetadataType.Page, data);
         await editMetadataInPlace<ProjectMetadata>(
@@ -307,14 +323,16 @@ export const postPageMetadata = async (
             Number(req.query.projectId),
             (x) => x.pageIds.push(metadataId)
         );
-        console.log(`finished editing project metadata for ${req.query.projectId}`);
+        console.log(
+            `finished editing project metadata for ${req.query.projectId}`
+        );
 
         console.log(`Creating page idempotent for ${metadataId}`);
         if (data.templateId) {
             console.log(`Creating page idempotent inside for ${metadataId}`);
             await createPageIdempotent(metadataId, Number(req.query.projectId));
-            console.log(`Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${req.query.projectId}`);
-            await createAppTsxFileForProject((await getDefaultGalacticId())!, Number(req.query.projectId));
+            // console.log(`Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${req.query.projectId}`);
+            // await createAppTsxFileForProject((await getDefaultGalacticId())!, Number(req.query.projectId));
         }
         res.json({ id: metadataId });
     } catch (error) {
@@ -337,24 +355,22 @@ export const postTemplateMetadata = async (
 };
 
 export const innerPostTemplateMetadata = async (
-    data: TemplateMetadata, physicalPathOverride?: string
+    data: TemplateMetadata,
+    physicalPathOverride?: string
 ) => {
     const errors = await validate(data);
     if (errors.length > 0) {
         throw new Error('Validation failed');
     }
 
-    data.physicalPath = physicalPathOverride ?? path.join(
-        __dirname,
-        '..',
-        'templates',
-        `${data.templateName}.tsx`
-    );
+    data.physicalPath =
+        physicalPathOverride ??
+        path.join(__dirname, '..', 'templates', `${data.templateName}.tsx`);
 
     console.log(`Creating template at ${data.physicalPath}`);
     const metadataId = await pushMetadata(MetadataType.Template, data);
     return metadataId;
-}
+};
 
 export const postComponentMetadata = async (
     req: Request,
