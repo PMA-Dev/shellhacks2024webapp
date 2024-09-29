@@ -11,22 +11,20 @@ import {
 import { runCmd } from './shellProxy';
 import path from 'path';
 import { innerPostTemplateMetadata } from './routes/metadata';
-import { getProjectData } from './routes/commands';
 
 export const copyTemplateFileToProject = async (
     templateFileName: string,
     projectId: number,
-    overridePath?: string
+    overrideToPath?: string
 ) => {
-    const project = await getProjectData(projectId);
-    const toPath = path.join(await getPagesPath(projectId), templateFileName);
+    const toPath = overrideToPath ?? path.join(await getPagesPath(projectId), templateFileName);
     console.log('Checking if page already exists at:', toPath);
     if (toPath && (await doesPathExist(toPath))) return;
     console.log(`Page does not exist at ${toPath}, creating...`);
 
     await createPagesPath((await getDefaultGalacticId())!, projectId);
 
-    const pathToCopy = path.join(overridePath ?? __dirname, 'templates', templateFileName);
+    const pathToCopy = path.join(__dirname, 'templates', templateFileName);
 
     console.log(`Copying template from ${pathToCopy} to ${toPath}`);
     if (!pathToCopy)

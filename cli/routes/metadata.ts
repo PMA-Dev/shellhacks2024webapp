@@ -8,6 +8,7 @@ import {
     query,
     editMetadataInPlace,
     getDefaultGalacticId,
+    getRandomInt,
 } from '../db';
 
 import {
@@ -18,7 +19,13 @@ import {
     ComponentMetadata,
     MetadataType,
 } from '../models';
-import { bootGalaxy, runBackendStart, runFrontendStart, setupWholeBackend, setupWholeFrontend } from './commands';
+import {
+    bootGalaxy,
+    runBackendStart,
+    runFrontendStart,
+    setupWholeBackend,
+    setupWholeFrontend,
+} from './commands';
 import path from 'path';
 import {
     createHomePageIdempotent,
@@ -286,6 +293,21 @@ export const postProjectMetadata = async (
         await setupWholeFrontend(metadataId);
         await setupWholeBackend(metadataId);
 
+        // add table to list of pages
+        const tablePage = {
+            pageName: 'Table',
+            routerPath: '/table',
+            templateId: 1,
+        };
+
+        const tablePageId = await pushMetadata(MetadataType.Page, tablePage);
+
+        await editMetadataInPlace<ProjectMetadata>(
+            MetadataType.Project,
+            metadataId,
+            (x) => x.pageIds.push(tablePageId)
+        );
+
         console.log(
             `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${metadataId}`
         );
@@ -315,9 +337,7 @@ export const postPageMetadata = async (
             res.status(400).json({ errors });
             return;
         }
-        const pagesBasePath = await getPagesPath(
-            Number(req.query.projectId)
-        );
+        const pagesBasePath = await getPagesPath(Number(req.query.projectId));
         data.physicalPath = path.join(pagesBasePath, `${data.pageName}.tsx`);
         const metadataId = await pushMetadata(MetadataType.Page, data);
         await editMetadataInPlace<ProjectMetadata>(

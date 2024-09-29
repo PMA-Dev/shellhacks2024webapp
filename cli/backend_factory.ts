@@ -4,6 +4,8 @@ import {
     getProjectData,
     writeToFileForced,
 } from './routes/commands';
+import { copyTemplateFileToProject } from './factory';
+import { runCmd } from './shellProxy';
 
 export const writeConfigForBackendInFrontend = async (projectId: number) => {
     const project = await getProjectData(projectId);
@@ -41,42 +43,24 @@ export const makeFetchRequest = async (endpoint: string, options: RequestInit = 
 };
 
 export const writeNewFileForBackendServer = async (projectId: number) => {
-    const filePath = path.join(
+    const toPath = path.join(
         await getBackendWorkingDir(projectId),
         'src/router/index.ts'
     );
-    const content = `
-import express from 'express';
-
-import authentication from './authentication.rt';
-import emojis from './emojis.rt';
-
-const router = express.Router();
-
-export default (): express.Router => {
-  router.get('/', (req, res) => {
-    res.json({
-      message: 'API - 👋🌎🌍🌏',
-    });
-  });
-
-  router.get('/data', (req, res) => {
-    const id = parseInt(req.query.id as string, 10);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid or missing id query parameter' });
-    }
-    const data = [
-      { logName: 'Log entry ' + id + '-1', timestamp: new Date().toISOString() },
-      { logName: 'Log entry ' + id + '-2', timestamp: new Date().toISOString() },
-      { logName: 'Log entry ' + id + '-3', timestamp: new Date().toISOString() },
-    ];
-    res.json(data);
-  });
-
-  authentication(router);
-  emojis(router);
-  return router;
+    runCmd('rm', ['-f', toPath]);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    await copyTemplateFileToProject('index.ts', projectId, toPath);
 };
-    `;
-    await writeToFileForced(filePath, content);
+
+export const writeDbFileForBackendServer = async (projectId: number) => {
+    const toPath = path.join(
+        await getBackendWorkingDir(projectId),
+        'src/db.ts'
+    );
+    await copyTemplateFileToProject('db.ts', projectId, toPath);
+};
+
+export const writeDbDataForBackendServer = async (projectId: number) => {
+    const toPath = path.join(await getBackendWorkingDir(projectId), 'db.json');
+    await copyTemplateFileToProject('db.json', projectId, toPath);
 };
