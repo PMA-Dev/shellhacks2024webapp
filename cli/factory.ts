@@ -11,12 +11,36 @@ import {
 import { runCmd } from './shellProxy';
 import path from 'path';
 import { innerPostTemplateMetadata } from './routes/metadata';
+import { getProjectData } from './routes/commands';
+
+export const copyTemplateFileToProject = async (
+    templateFileName: string,
+    projectId: number,
+    overridePath?: string
+) => {
+    const project = await getProjectData(projectId);
+    const toPath = path.join(await getPagesPath(projectId), templateFileName);
+    console.log('Checking if page already exists at:', toPath);
+    if (toPath && (await doesPathExist(toPath))) return;
+    console.log(`Page does not exist at ${toPath}, creating...`);
+
+    await createPagesPath((await getDefaultGalacticId())!, projectId);
+
+    const pathToCopy = path.join(overridePath ?? __dirname, 'templates', templateFileName);
+
+    console.log(`Copying template from ${pathToCopy} to ${toPath}`);
+    if (!pathToCopy)
+        throw new Error('No template path found for page id: ' + templateFileName);
+
+    console.log(`Copying template from ${pathToCopy} to ${toPath}`);
+    runCmd('cp', [pathToCopy, toPath!]);
+};
 
 export const createPagesPath = async (
     galacticId: number,
     projectId: number
 ) => {
-    const pagesPath = await getPagesPath(galacticId, projectId);
+    const pagesPath = await getPagesPath(projectId);
     runCmd('mkdir', [pagesPath]);
 };
 
@@ -47,7 +71,6 @@ export const createHomePageIdempotent = async (projectId: number) => {
     const homePagePath = path.join(__dirname, 'templates', `Home.tsx`);
 
     const pagesPath = await getPagesPath(
-        (await getDefaultGalacticId())!,
         projectId
     );
 
@@ -93,7 +116,7 @@ export const getWorkingDir = async () => {
     return workingDir;
 };
 
-export const getPagesPath = async (galacticId: number, projectId: number) => {
+export const getPagesPath = async (projectId: number) => {
     const workingDir = await getWorkingDir();
     const project = await query<ProjectMetadata>(
         MetadataType.Project,

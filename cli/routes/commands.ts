@@ -12,6 +12,7 @@ import {
 import path from 'path';
 import { getWorkingDir } from '../factory';
 import { run } from 'node:test';
+import { writeConfigForBackendInFrontend } from '../backend_factory';
 
 export const startBackendApp = async (
     req: Request,
@@ -167,17 +168,29 @@ console.log('Listening: http://localhost:' + port);
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const filePath = path.join(workingDir!, 'backend', 'src', 'index.ts');
+    await writeToFileForced(filePath, indexTsContents);
+    return port;
+};
+
+export const setupWholeFrontend = async (projectId: number) => {
+    await writeConfigForBackendInFrontend(projectId);
+}
+
+
+export const setupWholeBackend = async (projectId: number) => {
+}
+
+export const writeToFileForced = async (filePath: string, contents: string) => {
     console.log(`going to rm ${filePath}`);
     // rm the file
     runCmd('rm', ['-f', filePath]);
     await new Promise((resolve) => setTimeout(resolve, 500));
     console.log(
-        `Writing index.ts to ${path.join(workingDir!, 'backend', 'src', 'index.ts')}`
+        `Writing index.ts to ${filePath}`
     );
-    await fs.writeFile(filePath, indexTsContents);
+    await fs.writeFile(filePath, contents);
     console.log(`DONE!`);
-    return port;
-};
+}
 
 export const getBackendWorkingDir = async (projectId: number) => {
     const project = await getProjectData(projectId);
