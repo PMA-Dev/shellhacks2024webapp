@@ -1,10 +1,9 @@
-// components/LandingPage.tsx
+// components/Home.tsx
 
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export default function LandingPage() {
+export const Home = () => {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 text-white p-6">
             {/* Hero Section */}
