@@ -67,6 +67,28 @@ export const createPageIdempotent = async (
     runCmd('cp', [pathToCopy, pagesPath!]);
 };
 
+export const createTablePageIdempotent = async (projectId: number) => {
+    const tablePagePath = path.join(__dirname, 'templates', `Table.tsx`);
+
+    const pagesPath = await getPagesPath(
+        projectId
+    );
+
+    console.log(`Copying template from ${tablePagePath} to ${pagesPath}`);
+    if (!(await doesPathExist(pagesPath))) {
+        await createPagesPath((await getDefaultGalacticId())!, projectId);
+    }
+
+    const pathToCopy = tablePagePath;
+
+    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
+    if (!pathToCopy)
+        throw new Error('No template path found for page id: ' + projectId);
+
+    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
+    runCmd('cp', [pathToCopy, pagesPath! + '/']);
+};
+
 export const createHomePageIdempotent = async (projectId: number) => {
     const homePagePath = path.join(__dirname, 'templates', `Home.tsx`);
 

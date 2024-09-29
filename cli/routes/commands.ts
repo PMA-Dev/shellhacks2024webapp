@@ -10,9 +10,9 @@ import {
     TemplateMetadata,
 } from '../models';
 import path from 'path';
-import { getWorkingDir } from '../factory';
+import { createTablePageIdempotent, getWorkingDir } from '../factory';
 import { run } from 'node:test';
-import { writeConfigForBackendInFrontend } from '../backend_factory';
+import { writeConfigForBackendInFrontend, writeNewFileForBackendServer } from '../backend_factory';
 
 export const startBackendApp = async (
     req: Request,
@@ -174,10 +174,12 @@ console.log('Listening: http://localhost:' + port);
 
 export const setupWholeFrontend = async (projectId: number) => {
     await writeConfigForBackendInFrontend(projectId);
+    await createTablePageIdempotent(projectId);
 }
 
 
 export const setupWholeBackend = async (projectId: number) => {
+    await writeNewFileForBackendServer(projectId);
 }
 
 export const writeToFileForced = async (filePath: string, contents: string) => {

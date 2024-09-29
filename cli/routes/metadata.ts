@@ -267,8 +267,6 @@ export const postProjectMetadata = async (
         await new Promise((resolve) => setTimeout(resolve, 2500));
         await createHomePageIdempotent(metadataId);
         const backendPort = await runBackendStart(metadataId);
-        await setupWholeFrontend(metadataId);
-        // await setupWholeBackend(metadataId);
         await editMetadataInPlace<GalacticMetadata>(
             MetadataType.Galactic,
             galacticId,
@@ -284,6 +282,9 @@ export const postProjectMetadata = async (
                 x.backendPort = backendPort!;
             }
         );
+
+        await setupWholeFrontend(metadataId);
+        await setupWholeBackend(metadataId);
 
         console.log(
             `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${metadataId}`
