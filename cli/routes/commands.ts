@@ -205,7 +205,7 @@ export const runFrontendStart = async (
         'sh',
         [
             '-c',
-            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} && rm -r ${workingDir}/${projectName}/.git && cd ${workingDir}/${projectName} && git init && git config init.defaultBranch main && bun add @types/react-router-dom clsx tailwind-merge react-router-dom && bunx shadcn-ui add button input && git add . && git commit -am "init commit" && bun install`,
+            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} && rm -r ${workingDir}/${projectName}/.git && cd ${workingDir}/${projectName} && git init && git config init.defaultBranch main && bun add @types/react-router-dom clsx tailwind-merge react-router-dom && bunx shadcn add input card && git add . && git commit -am "init commit" && bun install`,
         ],
         { cwd: workingDir }
     );
