@@ -10,7 +10,7 @@ import {
     TemplateMetadata,
 } from '../models';
 import path from 'path';
-import { createTablePageIdempotent, getWorkingDir } from '../factory';
+import { createGradientIdempotent, createTablePageIdempotent, getWorkingDir } from '../factory';
 import { run } from 'node:test';
 import { writeConfigForBackendInFrontend, writeNewFileForBackendServer } from '../backend_factory';
 
@@ -178,6 +178,7 @@ console.log('Listening: http://localhost:' + port);
 export const setupWholeFrontend = async (projectId: number) => {
     await writeConfigForBackendInFrontend(projectId);
     await createTablePageIdempotent(projectId);
+    await createGradientIdempotent(projectId);
 }
 
 
