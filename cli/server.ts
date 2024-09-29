@@ -26,7 +26,9 @@ import {
 } from './routes/metadata';
 import {
     runCreateReactApp,
+    startBackendApp,
     startViteApp,
+    stopBackendApp,
     stopViteApp,
 } from './routes/commands';
 
@@ -108,6 +110,8 @@ const initializeRoutes = async (app: Express) => {
     app.post('/commands/boot/frontend/', runCreateReactApp);
     app.get('/commands/stopVite/', stopViteApp);
     app.get('/commands/startVite/', startViteApp);
+    app.get('/commands/stopBackend/', stopBackendApp);
+    app.get('/commands/startBackend/', startBackendApp);
 };
 
 export const listen = async () => {

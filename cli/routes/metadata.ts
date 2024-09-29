@@ -18,7 +18,7 @@ import {
     ComponentMetadata,
     MetadataType,
 } from '../models';
-import { bootGalaxy, runFrontendStart } from './commands';
+import { bootGalaxy, runBackendStart, runFrontendStart } from './commands';
 import path from 'path';
 import { createPageIdempotent, getPagesPath, populateTemplates } from '../factory';
 import { createAppTsxFileForProject } from '../create_app_tsx';
@@ -258,6 +258,7 @@ export const postProjectMetadata = async (
         }
         const metadataId = await pushMetadata(MetadataType.Project, data);
         const port = await runFrontendStart(galacticId, metadataId);
+        const backendPort = await runBackendStart(metadataId);
         await editMetadataInPlace<GalacticMetadata>(
             MetadataType.Galactic,
             galacticId,
@@ -270,6 +271,7 @@ export const postProjectMetadata = async (
             (x) => {
                 x.sitePath = `http://localhost:${port}`;
                 x.port = port;
+                x.backendPort = backendPort!;
             }
         );
         res.json({ id: metadataId });
