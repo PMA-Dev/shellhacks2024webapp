@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import { Request, Response, NextFunction } from 'express';
 import { runCmd } from '../shellProxy';
 import { getDefaultGalacticId, getRandomInt, query } from '../db';
@@ -10,6 +11,51 @@ import {
 } from '../models';
 import path from 'path';
 import { getWorkingDir } from '../factory';
+
+export const startBackendApp = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        if (!req.query.projectId) {
+            res.status(400).json({ error: 'projectId is required' });
+            return;
+        }
+        const galacticId = await getDefaultGalacticId();
+        const projectId = Number(req.query.projectId);
+        const project = await query<ProjectMetadata>(
+            MetadataType.Project,
+            projectId
+        );
+        startBackend(projectId);
+        res.status(200).json({
+            message: 'Backend started at: ' + project?.sitePath,
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
+export const stopBackendApp = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        if (!req.query.projectId) {
+            res.status(400).json({ error: 'projectId is required' });
+            return;
+        }
+        const galacticId = await getDefaultGalacticId();
+        const projectId = Number(req.query.projectId);
+        await stopBackend(projectId);
+        res.status(200).json({ message: 'Backend stopped' });
+    } catch (e) {
+        next(e);
+    }
+};
+
 
 export const startViteApp = async (
     req: Request,
@@ -73,9 +119,11 @@ export const runCreateReactApp = async (
     }
 };
 
-export const runBackendStart = async (projectId: number): Promise<void> => {
-    const workingDir = await getBackendWorkingDir(projectId);
+export const runBackendStart = async (projectId: number): Promise<number> => {
+    const workingDir = path.join(await getBackendWorkingDir(projectId), '..');
     console.log(`Working dir: ${workingDir}`);
+
+    const port = getRandomInt(1024, 49151);
 
     const indexTsContents = `
 import 'dotenv/config';
@@ -83,7 +131,7 @@ import 'dotenv/config';
 import app from './app';
 
 // Default port value
-let port = 3000;
+let port = ${port};
 
 // Get the command-line arguments after the script name
 const args = process.argv.slice(2);
@@ -101,14 +149,18 @@ app.listen(port, () => {
 console.log('Listening: http://localhost:' + port);
 });
     `;
+    console.log(`Cloning backend template to ${workingDir}`);
     runCmd(
         'sh',
         [
             '-c',
-            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && rm -r ${workingDir}/.git && cd ${workingDir} && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit" && bun install`,
+            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && rm -r ${workingDir}/backend/.git && cd ${workingDir}/backend && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit" && bun install`,
         ],
         { cwd: workingDir! }
     );
+
+    await fs.writeFile(path.join(workingDir!, 'backed', 'src', 'index.ts'), indexTsContents);
+    return port;
 };
 
 export const getBackendWorkingDir = async (projectId: number) => {
@@ -119,6 +171,7 @@ export const getBackendWorkingDir = async (projectId: number) => {
         project.projectName,
         'backend'
     );
+    return workingDir;
 };
 
 export const getProjectData = async (
@@ -183,6 +236,23 @@ export const startFrontendVite = async (
         cwd: path.join(workingDir, projectName),
     });
 };
+
+export const startBackend = async (
+    projectId: number
+) => {
+    const project = await getProjectData(projectId);
+    const workingDir = await getBackendWorkingDir(projectId);
+    runCmd('bun', ['run', `src/index.ts --port=${project.backendPort}`], {
+        cwd: workingDir,
+    });
+};
+
+export const stopBackend = async (
+    projectId: number
+) => {
+    const project = await getProjectData(projectId);
+    killOnPort(project.backendPort!);
+}
 
 export const stopFrontendVite = async (
     galacticId: number,
