@@ -16,7 +16,7 @@ export const createAppTsxFileForProject = async (
     galacticId: number,
     projectId: number
 ) => {
-    const workingDir = await getWorkingDir(galacticId);
+    const workingDir = await getWorkingDir();
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId
