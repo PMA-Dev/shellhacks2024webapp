@@ -60,7 +60,8 @@ export const doesPathExist = async (pathStr: string): Promise<boolean> => {
     }
 };
 
-export const getWorkingDir = async (galacticId: number) => {
+export const getWorkingDir = async () => {
+    const galacticId = (await getDefaultGalacticId())!;
     const workingDir = (
         await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
     )?.workingDir;
@@ -70,7 +71,7 @@ export const getWorkingDir = async (galacticId: number) => {
 };
 
 export const getPagesPath = async (galacticId: number, projectId: number) => {
-    const workingDir = await getWorkingDir(galacticId);
+    const workingDir = await getWorkingDir();
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId

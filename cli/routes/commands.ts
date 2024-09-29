@@ -9,6 +9,7 @@ import {
     TemplateMetadata,
 } from '../models';
 import path from 'path';
+import { getWorkingDir } from '../factory';
 
 export const startViteApp = async (
     req: Request,
@@ -22,9 +23,14 @@ export const startViteApp = async (
         }
         const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
-        const project = await query<ProjectMetadata>(MetadataType.Project, projectId);
+        const project = await query<ProjectMetadata>(
+            MetadataType.Project,
+            projectId
+        );
         startFrontendVite(galacticId!, projectId);
-        res.status(200).json({ message: 'Vite started at: ' + project?.sitePath });
+        res.status(200).json({
+            message: 'Vite started at: ' + project?.sitePath,
+        });
     } catch (e) {
         next(e);
     }
@@ -65,6 +71,66 @@ export const runCreateReactApp = async (
     } catch (e) {
         next(e);
     }
+};
+
+export const runBackendStart = async (projectId: number): Promise<void> => {
+    const workingDir = await getBackendWorkingDir(projectId);
+    console.log(`Working dir: ${workingDir}`);
+
+    const indexTsContents = `
+import 'dotenv/config';
+
+import app from './app';
+
+// Default port value
+let port = 3000;
+
+// Get the command-line arguments after the script name
+const args = process.argv.slice(2);
+
+// Loop through arguments to find '--port' parameter
+args.forEach((arg) => {
+if (arg.startsWith('--port=')) {
+    const portValue = arg.split('=')[1];
+    if (portValue) {
+    port = parseInt(portValue, 10);
+    }
+}
+});
+app.listen(port, () => {
+console.log('Listening: http://localhost:' + port);
+});
+    `;
+    runCmd(
+        'sh',
+        [
+            '-c',
+            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && rm -r ${workingDir}/.git && cd ${workingDir} && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit" && bun install`,
+        ],
+        { cwd: workingDir! }
+    );
+};
+
+export const getBackendWorkingDir = async (projectId: number) => {
+    const project = await getProjectData(projectId);
+    const workingDirBase = await getWorkingDir();
+    const workingDir = path.join(
+        workingDirBase,
+        project.projectName,
+        'backend'
+    );
+};
+
+export const getProjectData = async (
+    projectId: number
+): Promise<ProjectMetadata> => {
+    const project = await query<ProjectMetadata>(
+        MetadataType.Project,
+        projectId
+    );
+    if (!project)
+        throw new Error('No project metadata found for id: ' + projectId);
+    return project;
 };
 
 export const runFrontendStart = async (
