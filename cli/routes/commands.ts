@@ -11,6 +11,7 @@ import {
 } from '../models';
 import path from 'path';
 import { getWorkingDir } from '../factory';
+import { run } from 'node:test';
 
 export const startBackendApp = async (
     req: Request,
@@ -30,7 +31,7 @@ export const startBackendApp = async (
         );
         startBackend(projectId);
         res.status(200).json({
-            message: 'Backend started at: ' + project?.sitePath,
+            message: 'Backend started at: ' + `localhost:${project?.backendPort}`,
         });
     } catch (e) {
         next(e);
@@ -154,12 +155,32 @@ console.log('Listening: http://localhost:' + port);
         'sh',
         [
             '-c',
-            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && rm -r ${workingDir}/backend/.git && cd ${workingDir}/backend && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit" && bun install`,
+            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && sudo rm -r ${workingDir}/backend/.git && cd ${workingDir}/backend && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit"`,
         ],
         { cwd: workingDir! }
     );
 
-    await fs.writeFile(path.join(workingDir!, 'backed', 'src', 'index.ts'), indexTsContents);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    runCmd(
+        'sh',
+        [
+            '-c',
+            `cd backend && bun install`,
+        ],
+        { cwd: workingDir! }
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const filePath = path.join(workingDir!, 'backend', 'src', 'index.ts');
+    console.log(`going to rm ${filePath}`);
+    // rm the file
+    runCmd('rm', ['-f', filePath]);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    console.log(`Writing index.ts to ${path.join(workingDir!, 'backend', 'src', 'index.ts')}`);
+    await fs.writeFile(filePath, indexTsContents);
+    console.log(`DONE!`);
     return port;
 };
 
@@ -205,7 +226,7 @@ export const runFrontendStart = async (
         'sh',
         [
             '-c',
-            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} && rm -r ${workingDir}/${projectName}/.git && cd ${workingDir}/${projectName} && git init && git config init.defaultBranch main && bun add @types/react-router-dom clsx tailwind-merge react-router-dom && bunx shadcn add input card && git add . && git commit -am "init commit" && bun install`,
+            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} && rm -r ${workingDir}/${projectName}/.git && cd ${workingDir}/${projectName} && git init && git config init.defaultBranch main && bun add @types/react-router-dom react-router-dom && git add . && git commit -am "init commit" && bun install`,
         ],
         { cwd: workingDir }
     );
@@ -242,7 +263,7 @@ export const startBackend = async (
 ) => {
     const project = await getProjectData(projectId);
     const workingDir = await getBackendWorkingDir(projectId);
-    runCmd('bun', ['run', `src/index.ts --port=${project.backendPort}`], {
+    runCmd('bun', [`src/index.ts`], {
         cwd: workingDir,
     });
 };

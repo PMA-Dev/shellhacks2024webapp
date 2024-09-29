@@ -266,7 +266,7 @@ export const postProjectMetadata = async (
         // wait for 1s
         await new Promise((resolve) => setTimeout(resolve, 2500));
         await createHomePageIdempotent(metadataId);
-        // const backendPort = await runBackendStart(metadataId);
+        const backendPort = await runBackendStart(metadataId);
         await editMetadataInPlace<GalacticMetadata>(
             MetadataType.Galactic,
             galacticId,
@@ -279,7 +279,7 @@ export const postProjectMetadata = async (
             (x) => {
                 x.sitePath = `http://localhost:${port}`;
                 x.port = port;
-                // x.backendPort = backendPort!;
+                x.backendPort = backendPort!;
             }
         );
 
