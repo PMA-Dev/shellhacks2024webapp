@@ -264,7 +264,7 @@ export const postProjectMetadata = async (
         const metadataId = await pushMetadata(MetadataType.Project, data);
         const port = await runFrontendStart(galacticId, metadataId);
         // wait for 1s
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 2500));
         await createHomePageIdempotent(metadataId);
         // const backendPort = await runBackendStart(metadataId);
         await editMetadataInPlace<GalacticMetadata>(
