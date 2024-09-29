@@ -16,8 +16,9 @@ import {
 } from '@/components/ui/dialog';
 import { UserCircle } from 'lucide-react';
 import { useProjects } from '@/hooks/useProjects';
-import { toast } from "sonner"
-
+import { toast } from 'sonner';
+import { Canvas } from '@react-three/fiber';
+import SolarSystem from '@/components/SolarSystem';
 
 function DashboardPage() {
     const [projectName, setProjectName] = useState('');
@@ -31,7 +32,7 @@ function DashboardPage() {
                 const newProject = {
                     projectName,
                     pages: [],
-                    pageIds: []
+                    pageIds: [],
                 };
                 await addProject(newProject);
                 setProjectName('');
@@ -42,8 +43,7 @@ function DashboardPage() {
             toast.error('Failed to create a new project!');
             console.error(error);
         }
-    }
-
+    };
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -89,15 +89,27 @@ function DashboardPage() {
                 {projects.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {projects.map((project) => (
-                            // add galatic particles to the background of these containers
                             <div
                                 key={project.id}
-                                className="px-4 py-6 bg-white rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
+                                className="relative px-4 py-32 bg-black rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer overflow-hidden"
                                 onClick={() => navigate(`/projects/${project.id}/general`)}
                             >
-                                <h2 className="mb-2 text-xl font-semibold text-gray-800">
-                                    {project.projectName}
-                                </h2>
+                                {/* Solar System Animation */}
+                                <div className="absolute inset-0">
+                                    <Canvas camera={{ position: [10, 10, 10], fov: 75 }}>
+                                        <SolarSystem
+                                            seed={project.id}
+                                        />
+                                    </Canvas>
+                                </div>
+                                {/* Overlay for readability */}
+                                <div className="absolute inset-0 bg-black opacity-30"></div>
+                                {/* Project Title */}
+                                <div className="relative z-10">
+                                    <h2 className="mb-2 text-xl font-semibold text-white">
+                                        {project.projectName}
+                                    </h2>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -138,6 +150,23 @@ function DashboardPage() {
             </main>
         </div>
     );
+}
+
+// Helper function to generate a consistent sun color per project
+function getSunColor(id: string) {
+    const colors = ['#ffcc00', '#ff6600', '#ff0066']; // Yellow, Orange, Pink
+    const index = Math.abs(hashString(id)) % colors.length;
+    return colors[index];
+}
+
+// Simple hash function
+function hashString(str: string) {
+    let hash = 0;
+    if (str.length === 0) return hash;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
 }
 
 export default DashboardPage;

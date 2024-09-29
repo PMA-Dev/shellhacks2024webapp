@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Gradient } from '../components/Gradient.js';
+import { Gradient } from './Gradient.js';
 import { useEffect } from 'react';
 
 export const Home = () => {
