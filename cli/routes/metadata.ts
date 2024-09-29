@@ -18,7 +18,7 @@ import {
     ComponentMetadata,
     MetadataType,
 } from '../models';
-import { bootGalaxy, runBackendStart, runFrontendStart } from './commands';
+import { bootGalaxy, runBackendStart, runFrontendStart, setupWholeBackend, setupWholeFrontend } from './commands';
 import path from 'path';
 import {
     createHomePageIdempotent,
@@ -266,7 +266,7 @@ export const postProjectMetadata = async (
         // wait for 1s
         await new Promise((resolve) => setTimeout(resolve, 2500));
         await createHomePageIdempotent(metadataId);
-        // const backendPort = await runBackendStart(metadataId);
+        const backendPort = await runBackendStart(metadataId);
         await editMetadataInPlace<GalacticMetadata>(
             MetadataType.Galactic,
             galacticId,
@@ -279,9 +279,12 @@ export const postProjectMetadata = async (
             (x) => {
                 x.sitePath = `http://localhost:${port}`;
                 x.port = port;
-                // x.backendPort = backendPort!;
+                x.backendPort = backendPort!;
             }
         );
+
+        await setupWholeFrontend(metadataId);
+        await setupWholeBackend(metadataId);
 
         console.log(
             `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${metadataId}`
@@ -313,7 +316,6 @@ export const postPageMetadata = async (
             return;
         }
         const pagesBasePath = await getPagesPath(
-            (await getDefaultGalacticId())!,
             Number(req.query.projectId)
         );
         data.physicalPath = path.join(pagesBasePath, `${data.pageName}.tsx`);
@@ -331,8 +333,13 @@ export const postPageMetadata = async (
         if (data.templateId) {
             console.log(`Creating page idempotent inside for ${metadataId}`);
             await createPageIdempotent(metadataId, Number(req.query.projectId));
-            console.log(`Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${req.query.projectId}`);
-            await createAppTsxFileForProject((await getDefaultGalacticId())!, Number(req.query.projectId));
+            console.log(
+                `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${req.query.projectId}`
+            );
+            await createAppTsxFileForProject(
+                (await getDefaultGalacticId())!,
+                Number(req.query.projectId)
+            );
         }
         res.json({ id: metadataId });
     } catch (error) {

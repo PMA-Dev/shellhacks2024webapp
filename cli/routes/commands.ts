@@ -10,7 +10,9 @@ import {
     TemplateMetadata,
 } from '../models';
 import path from 'path';
-import { getWorkingDir } from '../factory';
+import { createTablePageIdempotent, getWorkingDir } from '../factory';
+import { run } from 'node:test';
+import { writeConfigForBackendInFrontend, writeNewFileForBackendServer } from '../backend_factory';
 
 export const startBackendApp = async (
     req: Request,
@@ -30,7 +32,8 @@ export const startBackendApp = async (
         );
         startBackend(projectId);
         res.status(200).json({
-            message: 'Backend started at: ' + project?.sitePath,
+            message:
+                'Backend started at: ' + `localhost:${project?.backendPort}`,
         });
     } catch (e) {
         next(e);
@@ -56,7 +59,6 @@ export const stopBackendApp = async (
     }
 };
 
-
 export const startViteApp = async (
     req: Request,
     res: Response,
@@ -74,6 +76,8 @@ export const startViteApp = async (
             projectId
         );
         startFrontendVite(galacticId!, projectId);
+        // TODO tmp
+        startBackend(projectId);
         res.status(200).json({
             message: 'Vite started at: ' + project?.sitePath,
         });
@@ -95,6 +99,7 @@ export const stopViteApp = async (
         const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
         await stopFrontendVite(galacticId!, projectId);
+        await stopBackend(projectId);
         res.status(200).json({ message: 'Vite stopped' });
     } catch (e) {
         next(e);
@@ -154,14 +159,43 @@ console.log('Listening: http://localhost:' + port);
         'sh',
         [
             '-c',
-            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && rm -r ${workingDir}/backend/.git && cd ${workingDir}/backend && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit" && bun install`,
+            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && sudo rm -r ${workingDir}/backend/.git && cd ${workingDir}/backend && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit"`,
         ],
         { cwd: workingDir! }
     );
 
-    await fs.writeFile(path.join(workingDir!, 'backed', 'src', 'index.ts'), indexTsContents);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    runCmd('sh', ['-c', `cd backend && bun install`], { cwd: workingDir! });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const filePath = path.join(workingDir!, 'backend', 'src', 'index.ts');
+    await writeToFileForced(filePath, indexTsContents);
     return port;
 };
+
+export const setupWholeFrontend = async (projectId: number) => {
+    await writeConfigForBackendInFrontend(projectId);
+    await createTablePageIdempotent(projectId);
+}
+
+
+export const setupWholeBackend = async (projectId: number) => {
+    await writeNewFileForBackendServer(projectId);
+}
+
+export const writeToFileForced = async (filePath: string, contents: string) => {
+    console.log(`going to rm ${filePath}`);
+    // rm the file
+    runCmd('rm', ['-f', filePath]);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    console.log(
+        `Writing index.ts to ${filePath}`
+    );
+    await fs.writeFile(filePath, contents);
+    console.log(`DONE!`);
+}
 
 export const getBackendWorkingDir = async (projectId: number) => {
     const project = await getProjectData(projectId);
@@ -205,7 +239,7 @@ export const runFrontendStart = async (
         'sh',
         [
             '-c',
-            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} && rm -r ${workingDir}/${projectName}/.git && cd ${workingDir}/${projectName} && git init && git config init.defaultBranch main && bun add @types/react-router-dom clsx tailwind-merge react-router-dom && bunx shadcn add input card && git add . && git commit -am "init commit" && bun install`,
+            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} && rm -r ${workingDir}/${projectName}/.git && cd ${workingDir}/${projectName} && git init && git config init.defaultBranch main && bun add @types/react-router-dom react-router-dom && git add . && git commit -am "init commit" && bun install`,
         ],
         { cwd: workingDir }
     );
@@ -237,22 +271,18 @@ export const startFrontendVite = async (
     });
 };
 
-export const startBackend = async (
-    projectId: number
-) => {
+export const startBackend = async (projectId: number) => {
     const project = await getProjectData(projectId);
     const workingDir = await getBackendWorkingDir(projectId);
-    runCmd('bun', ['run', `src/index.ts --port=${project.backendPort}`], {
+    runCmd('bun', [`src/index.ts`], {
         cwd: workingDir,
     });
 };
 
-export const stopBackend = async (
-    projectId: number
-) => {
+export const stopBackend = async (projectId: number) => {
     const project = await getProjectData(projectId);
     killOnPort(project.backendPort!);
-}
+};
 
 export const stopFrontendVite = async (
     galacticId: number,

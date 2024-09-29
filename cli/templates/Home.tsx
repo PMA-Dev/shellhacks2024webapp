@@ -34,7 +34,8 @@ export const Home = () => {
                     Hackathon Project
                 </h1>
                 <p className="text-lg sm:text-xl max-w-md mx-auto">
-                    Building the future, one hack at a time. Stay tuned for something amazing!
+                    Building the future, one hack at a time. Stay tuned for
+                    something amazing!
                 </p>
                 <Button className="bg-yellow-300 text-black hover:bg-yellow-400">
                     Learn More
@@ -62,4 +63,4 @@ export const Home = () => {
             </div>
         </div>
     );
-}
+};

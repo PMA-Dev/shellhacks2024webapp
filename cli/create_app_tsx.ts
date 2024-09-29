@@ -35,7 +35,12 @@ export const createAppTsxFileForProject = async (
         routerPath: '/',
         templateId: 0,
     };
-    const pages = [...(await Promise.all(pagePromises)), homePage];
+    const tablePage = {
+        pageName: 'Table',
+        routerPath: '/table',
+        templateId: 1,
+    };
+    const pages = [...(await Promise.all(pagePromises)), homePage, tablePage];
     const templates = await queryAll<TemplateMetadata>(MetadataType.Template);
 
     const pageImports = pages
@@ -45,6 +50,12 @@ export const createAppTsxFileForProject = async (
                 page?.templateId == homePage.templateId
             ) {
                 return `import { Home } from './pages/${page!.pageName}';`;
+            }
+            if (
+                page?.pageName == tablePage.pageName ||
+                page?.templateId == tablePage.templateId
+            ) {
+                return `import { Table } from './pages/${page!.pageName}';`;
             }
             const template = templates!.find((t) => t.id === page?.templateId);
             return `import {${template!.templateType} as ${
