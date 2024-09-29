@@ -80,11 +80,11 @@ function GeneralProjectPage() {
             <div className=" w-1/2 h-full ">
                 <div className="flex flex-col">
                     <h1 className="text-2xl font-bold pb-5">Your Live Site</h1>
-                    <div className='min-h-[60vh] h-full w-full border-2 border-gray-100 p-4 rounded-xl shadow-lg relative'>
+                    <div className='min-h-[60vh] h-full w-full border-2 border-gray-100 pt-2 rounded-xl shadow-lg relative'>
                         <iframe
                             src={project.sitePath}
                             title="Live Site"
-                            style={{ width: '100%', height: '100%', border: 'none', position: 'absolute', top: 0, left: 0, borderRadius: 'inherit', padding: "10px" }}
+                            style={{ width: '100%', height: '100%', border: 'none', position: 'absolute', top: 0, left: 0, borderRadius: 'inherit', paddingTop: "0px" }}
                         ></iframe>
                     </div>
 
@@ -161,11 +161,13 @@ function GeneralProjectPage() {
                                         <ExternalLink className="w-4 h-4" />
                                     </a>
                                 </div>
+                                <div className='h-full min-h-[55vh] w-full'>
                                 <iframe
                                     src={`${project.sitePath}${page.routerPath}`}
                                     title={page.pageName}
-                                    style={{ width: '100%', height: '200px', border: 'none' }}
+                                    style={{ width: '100%', height: '100%', border: 'none' }}
                                 ></iframe>
+                                </div>
                             </div>
                         ))
                     ) : (

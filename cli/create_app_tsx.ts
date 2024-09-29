@@ -69,7 +69,7 @@ export const createAppTsxFileForProject = async (
             (page) =>
                 `<Link to="${
                     page!.routerPath
-                }" style={{ marginRight: '10px' }}>${page!.pageName}</Link>`
+                }" style={{ marginRight: '10px' }} className="text-grey-700 hover:text-grey-900 hover:scale-105 transition-all duration-200 z-10">${page!.pageName}</Link>`
         )
         .join('\n                ');
 
@@ -90,7 +90,7 @@ ${pageImports}
 const App = () => {
     return (
         <Router>
-            <nav classname="absolute top-0 left-0 w-full h-full backdrop-blur-sm p-4">
+            <nav class="absolute top-0 left-0 w-full h-[32px] backdrop-blur-sm p-4">
                 ${navLinks}
             </nav>
             <Routes>

@@ -92,7 +92,7 @@ function DashboardPage() {
                             // add galatic particles to the background of these containers
                             <div
                                 key={project.id}
-                                className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
+                                className="px-4 py-6 bg-white rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
                                 onClick={() => navigate(`/projects/${project.id}/general`)}
                             >
                                 <h2 className="mb-2 text-xl font-semibold text-gray-800">
