@@ -293,21 +293,6 @@ export const postProjectMetadata = async (
         await setupWholeFrontend(metadataId);
         await setupWholeBackend(metadataId);
 
-        // add table to list of pages
-        const tablePage = {
-            pageName: 'Table',
-            routerPath: '/table',
-            templateId: 1,
-        };
-
-        const tablePageId = await pushMetadata(MetadataType.Page, tablePage);
-
-        await editMetadataInPlace<ProjectMetadata>(
-            MetadataType.Project,
-            metadataId,
-            (x) => x.pageIds.push(tablePageId)
-        );
-
         console.log(
             `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${metadataId}`
         );

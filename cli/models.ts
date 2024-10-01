@@ -79,6 +79,8 @@ export class TemplateMetadata extends BaseDataRecord {
 
 export enum TemplateTypes {
     Blog = 'Blog',
+    DataEntry = 'DataEntry',
+    Table = 'Table',
 }
 
 // Component Metadata with validation decorators

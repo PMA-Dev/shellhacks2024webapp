@@ -4,139 +4,69 @@
       "metadata": [
         {
           "projectIds": [
-            38416706,
-            84070166,
-            95682775,
-            50535773,
-            18833195,
-            86825667,
-            65946987,
-            79752137,
-            25299606
+            94293391,
+            54422806
           ],
-          "githubPat": "your-github-pat",
+          "githubPat": "test",
           "workingDir": "/Users/felipearce/Desktop/projects/shellhacks2024webapp/cli/tmp/galactic",
-          "id": 25403370
+          "id": 66557518
         }
       ]
     },
     "project": {
       "metadata": [
         {
-          "pageIds": [],
-          "projectName": "testproject",
-          "id": 38416706,
-          "sitePath": "http://localhost:6848",
-          "port": 6848,
-          "backendPort": 19517
-        },
-        {
-          "pageIds": [],
-          "projectName": "testproject1",
-          "id": 84070166,
-          "sitePath": "http://localhost:27515",
-          "port": 27515,
-          "backendPort": 28276
+          "pageIds": [
+            84758502,
+            61833528,
+            31497338
+          ],
+          "projectName": "Shop",
+          "pages": [],
+          "id": 94293391,
+          "sitePath": "http://localhost:31241",
+          "port": 31241,
+          "backendPort": 18979
         },
         {
           "pageIds": [],
-          "projectName": "testproject2",
-          "id": 95682775,
-          "sitePath": "http://localhost:37011",
-          "port": 37011,
-          "backendPort": 4242
-        },
-        {
-          "pageIds": [],
-          "projectName": "testproject3",
-          "id": 50535773,
-          "sitePath": "http://localhost:1588",
-          "port": 1588,
-          "backendPort": 11123
-        },
-        {
-          "pageIds": [
-            11635030
-          ],
-          "projectName": "testproject4",
-          "id": 18833195,
-          "sitePath": "http://localhost:8593",
-          "port": 8593,
-          "backendPort": 15380
-        },
-        {
-          "pageIds": [
-            24279419
-          ],
-          "projectName": "testproject5",
-          "id": 86825667,
-          "sitePath": "http://localhost:33526",
-          "port": 33526,
-          "backendPort": 44973
-        },
-        {
-          "pageIds": [
-            40592646
-          ],
-          "projectName": "testproject6",
-          "id": 65946987,
-          "sitePath": "http://localhost:47541",
-          "port": 47541,
-          "backendPort": 10641
-        },
-        {
-          "pageIds": [
-            37100798
-          ],
-          "projectName": "testproject7",
-          "id": 79752137,
-          "sitePath": "http://localhost:10834",
-          "port": 10834,
-          "backendPort": 40018
-        },
-        {
-          "pageIds": [
-            35281943
-          ],
-          "projectName": "testproject8",
-          "id": 25299606,
-          "sitePath": "http://localhost:46348",
-          "port": 46348,
-          "backendPort": 3693
+          "projectName": "test",
+          "pages": [],
+          "id": 54422806,
+          "sitePath": "http://localhost:31777",
+          "port": 31777,
+          "backendPort": 11577
         }
       ]
     },
     "page": {
       "metadata": [
         {
-          "pageName": "Table",
-          "routerPath": "/table",
-          "templateId": 1,
-          "id": 11635030
+          "pageName": "Recipes",
+          "templateId": 55895380,
+          "projectId": 94293391,
+          "routerPath": "/route",
+          "templateType": "Blog",
+          "physicalPath": "/Users/felipearce/Desktop/projects/shellhacks2024webapp/cli/tmp/galactic/Shop/src/pages/Recipes.tsx",
+          "id": 84758502
         },
         {
-          "pageName": "Table",
+          "pageName": "EarningTable",
+          "templateId": 16970983,
+          "projectId": 94293391,
           "routerPath": "/table",
-          "templateId": 1,
-          "id": 24279419
+          "templateType": "Table",
+          "physicalPath": "/Users/felipearce/Desktop/projects/shellhacks2024webapp/cli/tmp/galactic/Shop/src/pages/EarningTable.tsx",
+          "id": 61833528
         },
         {
-          "pageName": "Table",
-          "routerPath": "/table",
-          "templateId": 1,
-          "id": 40592646
-        },
-        {
-          "pageName": "Table",
-          "routerPath": "/table",
-          "templateId": 1,
-          "id": 37100798
-        },
-        {
-          "pageName": "Table",
-          "routerPath": "/table",
-          "templateId": 1,
-          "id": 35281943
+          "pageName": "EarningsEntry",
+          "templateId": 97489322,
+          "projectId": 94293391,
+          "routerPath": "/entry",
+          "templateType": "DataEntry",
+          "physicalPath": "/Users/felipearce/Desktop/projects/shellhacks2024webapp/cli/tmp/galactic/Shop/src/pages/EarningsEntry.tsx",
+          "id": 31497338
         }
       ]
     },
@@ -147,7 +77,21 @@
           "templateType": "Blog",
           "componentIds": [],
           "physicalPath": "/Users/felipearce/Desktop/projects/shellhacks2024webapp/cli/templates/Blog.tsx",
-          "id": 83022219
+          "id": 55895380
+        },
+        {
+          "templateName": "DataEntry",
+          "templateType": "DataEntry",
+          "componentIds": [],
+          "physicalPath": "/Users/felipearce/Desktop/projects/shellhacks2024webapp/cli/templates/DataEntry.tsx",
+          "id": 97489322
+        },
+        {
+          "templateName": "Table",
+          "templateType": "Table",
+          "componentIds": [],
+          "physicalPath": "/Users/felipearce/Desktop/projects/shellhacks2024webapp/cli/templates/Table.tsx",
+          "id": 16970983
         }
       ]
     },

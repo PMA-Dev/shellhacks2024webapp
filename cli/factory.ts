@@ -186,4 +186,47 @@ export const populateTemplates = async () => {
         data,
         physicalPathOverride
     );
+
+    await populateTemplates2();
+    await populateTemplates3();
+};
+
+
+export const populateTemplates2 = async () => {
+    const data = {
+        templateName: 'DataEntry',
+        templateType: TemplateTypes.DataEntry,
+        componentIds: [],
+    };
+
+    const physicalPathOverride = path.join(
+        __dirname,
+        'templates',
+        `${data.templateName}.tsx`
+    );
+    const metadataId = await innerPostTemplateMetadata(
+        data,
+        physicalPathOverride
+    );
+
+};
+
+
+export const populateTemplates3 = async () => {
+    const data = {
+        templateName: 'Table',
+        templateType: TemplateTypes.Table,
+        componentIds: [],
+    };
+
+    const physicalPathOverride = path.join(
+        __dirname,
+        'templates',
+        `${data.templateName}.tsx`
+    );
+    const metadataId = await innerPostTemplateMetadata(
+        data,
+        physicalPathOverride
+    );
+
 };
