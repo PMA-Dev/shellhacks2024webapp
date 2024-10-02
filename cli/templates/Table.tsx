@@ -46,7 +46,7 @@ export const Table = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center pt-12">
       <div className="w-full max-w-2xl">
         <h1 className="text-4xl font-bold mb-8 text-center">Log Data</h1>
         <div className="space-y-4">

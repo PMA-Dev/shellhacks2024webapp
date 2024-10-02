@@ -3,3 +3,5 @@ frontend/dist
 frontend/node_modules/*
 tmp
 tmp/*
+cli/node_modules
+cli/node_modules/*
