@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:electron": "tsc electron-main.ts preload.ts",
+    "electron-start": "bun run electron:serve",
+    "electron-build": "bun run build:react && bun run build:electron"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
@@ -23,18 +26,21 @@
     "clsx": "^2.0.0",
     "lucide-react": "^0.446.0",
     "next-themes": "^0.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
     "sonner": "^1.5.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.169.0"
+    "three": "^0.169.0",
+    "electron": "^32.1.2",
+    "electron-builder": "^25.0.5"
   },
   "devDependencies": {
     "@types/node": "^20.8.7",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
@@ -46,5 +52,23 @@
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
+  },
+  "build": {
+    "appId": "com.yourdomain.galactic",
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.developer-tools"
+    },
+    "files": [
+      "dist/**/*",
+      "build/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "../cli/**/*"
+    ],
+    "extraMetadata": {
+      "main": "dist/electron-main.js"
+    },
+    "asar": true
   }
 }
