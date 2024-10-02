@@ -10,9 +10,18 @@ import {
     TemplateMetadata,
 } from '../models';
 import path from 'path';
-import { createGradientIdempotent, createTablePageIdempotent, getWorkingDir } from '../factory';
+import {
+    createGradientIdempotent,
+    createTablePageIdempotent,
+    getWorkingDir,
+} from '../factory';
 import { run } from 'node:test';
-import { writeConfigForBackendInFrontend, writeNewFileForBackendServer } from '../backend_factory';
+import {
+    writeConfigForBackendInFrontend,
+    writeDbDataForBackendServer,
+    writeDbFileForBackendServer,
+    writeNewFileForBackendServer,
+} from '../backend_factory';
 
 export const startBackendApp = async (
     req: Request,
@@ -159,7 +168,7 @@ console.log('Listening: http://localhost:' + port);
         'sh',
         [
             '-c',
-            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && sudo rm -r ${workingDir}/backend/.git && cd ${workingDir}/backend && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit"`,
+            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && sudo rm -r ${workingDir}/backend/.git && cd ${workingDir}/backend && bun add @types/lowdb lowdb && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit"`,
         ],
         { cwd: workingDir! }
     );
@@ -179,24 +188,23 @@ export const setupWholeFrontend = async (projectId: number) => {
     await writeConfigForBackendInFrontend(projectId);
     await createTablePageIdempotent(projectId);
     await createGradientIdempotent(projectId);
-}
-
+};
 
 export const setupWholeBackend = async (projectId: number) => {
     await writeNewFileForBackendServer(projectId);
-}
+    await writeDbFileForBackendServer(projectId);
+    await writeDbDataForBackendServer(projectId);
+};
 
 export const writeToFileForced = async (filePath: string, contents: string) => {
     console.log(`going to rm ${filePath}`);
     // rm the file
     runCmd('rm', ['-f', filePath]);
     await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log(
-        `Writing index.ts to ${filePath}`
-    );
+    console.log(`Writing index.ts to ${filePath}`);
     await fs.writeFile(filePath, contents);
     console.log(`DONE!`);
-}
+};
 
 export const getBackendWorkingDir = async (projectId: number) => {
     const project = await getProjectData(projectId);

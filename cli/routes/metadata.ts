@@ -8,6 +8,7 @@ import {
     query,
     editMetadataInPlace,
     getDefaultGalacticId,
+    getRandomInt,
 } from '../db';
 
 import {
@@ -18,7 +19,13 @@ import {
     ComponentMetadata,
     MetadataType,
 } from '../models';
-import { bootGalaxy, runBackendStart, runFrontendStart, setupWholeBackend, setupWholeFrontend } from './commands';
+import {
+    bootGalaxy,
+    runBackendStart,
+    runFrontendStart,
+    setupWholeBackend,
+    setupWholeFrontend,
+} from './commands';
 import path from 'path';
 import {
     createHomePageIdempotent,
@@ -315,9 +322,7 @@ export const postPageMetadata = async (
             res.status(400).json({ errors });
             return;
         }
-        const pagesBasePath = await getPagesPath(
-            Number(req.query.projectId)
-        );
+        const pagesBasePath = await getPagesPath(Number(req.query.projectId));
         data.physicalPath = path.join(pagesBasePath, `${data.pageName}.tsx`);
         const metadataId = await pushMetadata(MetadataType.Page, data);
         await editMetadataInPlace<ProjectMetadata>(

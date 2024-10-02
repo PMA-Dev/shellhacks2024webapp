@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { makeFetchRequest } from '../fetchConfig';
 import { toast } from 'sonner';
 
-const DataEntry = () => {
+export const DataEntry = () => {
     const [logName, setLogName] = useState('');
     const [timestamp, setTimestamp] = useState('');
     const navigate = useNavigate();
@@ -22,7 +22,7 @@ const DataEntry = () => {
         }
 
         try {
-            await makeFetchRequest('/api/v1/data', {
+            await makeFetchRequest('/api/v1/post', {
                 method: 'POST',
                 body: JSON.stringify({ logName, timestamp }),
                 headers: {
@@ -75,5 +75,3 @@ const DataEntry = () => {
         </div>
     );
 };
-
-export default DataEntry;
