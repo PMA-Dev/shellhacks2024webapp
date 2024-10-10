@@ -5,12 +5,7 @@ import {
     writeDbFileForBackendServer,
     writeNewFileForBackendServer,
 } from '../backend_factory';
-import {
-    getDefaultGalacticId,
-    getProjectData,
-    getRandomInt,
-    query,
-} from '../db';
+import { getProjectData, getRandomInt, query } from '../db';
 import { MetadataType, ProjectMetadata } from '../models';
 import { killOnPort, runCmd, writeToFileForced } from '../shellProxy';
 
@@ -24,7 +19,6 @@ export const startBackendApp = async (
             res.status(400).json({ error: 'projectId is required' });
             return;
         }
-        const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
         const project = await query<ProjectMetadata>(
             MetadataType.Project,
@@ -50,7 +44,6 @@ export const stopBackendApp = async (
             res.status(400).json({ error: 'projectId is required' });
             return;
         }
-        const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
         await stopBackend(projectId);
         res.status(200).json({ message: 'Backend stopped' });

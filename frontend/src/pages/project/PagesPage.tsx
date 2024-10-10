@@ -1,29 +1,29 @@
-import { useEffect, useState } from 'react';
+import PageOverviewWidget from '@/components/PageOverviewWidget.tsx';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Dialog,
-    DialogTrigger,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogDescription,
     DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from '@/components/ui/dialog';
-import { useProject } from '../../context/ProjectContext.tsx';
-import { usePages } from '@/hooks/usePages';
-import { Page } from '@/models';
-import { toast } from 'sonner';
-import PageOverviewWidget from '@/components/PageOverviewWidget.tsx';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import api from '@/hooks/api.ts';
+import { usePages } from '@/hooks/usePages';
+import { Template } from '@/models';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useProject } from '../../context/ProjectContext.tsx';
 
 function PagesPage() {
     const [pageName, setPageName] = useState('');
     const [pageRoute, setPageRoute] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedTemplate, setSelectedTemplate] = useState();
-    const [templates, setTemplates] = useState([]);
+    const [selectedTemplate, setSelectedTemplate] = useState<Template>();
+    const [templates, setTemplates] = useState<Template[]>([]);
     const project = useProject();
     const { pages, addPage } = usePages(project?.id || '');
 
@@ -46,10 +46,10 @@ function PagesPage() {
                 console.log('selectedTemplate:', selectedTemplate?.templateName);
                 const newPage = {
                     pageName,
-                    templateId: selectedTemplate?.id,
-                    projectId: project.id,
+                    templateId: selectedTemplate!.id!,
+                    projectId: project.id!,
                     routerPath: pageRoute,
-                    templateType: selectedTemplate?.templateType,
+                    templateType: selectedTemplate!.templateType!,
                 };
                 await addPage(newPage);
                 setPageName('');

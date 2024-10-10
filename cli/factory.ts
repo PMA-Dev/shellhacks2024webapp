@@ -1,8 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { getDefaultGalacticId, query, queryAll } from './db';
+import { query, queryAll } from './db';
 import {
-    GalacticMetadata,
     MetadataType,
     PageMetadata,
     ProjectMetadata,
@@ -143,22 +142,12 @@ export const doesPathExist = async (pathStr: string): Promise<boolean> => {
     }
 };
 
-export const getWorkingDir = async () => {
-    const galacticId = (await getDefaultGalacticId())!;
-    const workingDir = (
-        await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
-    )?.workingDir;
-    if (!workingDir)
-        throw new Error('No galactic metadata found for id: ' + galacticId);
-    return workingDir;
-};
-
 export const getPagesPath = async (projectId: number) => {
-    const workingDir = await getWorkingDir();
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId
     );
+    const workingDir = project?.workingDir!;
     const projectName = project?.projectName;
     if (!projectName)
         throw new Error('No project metadata found for id: ' + projectId);

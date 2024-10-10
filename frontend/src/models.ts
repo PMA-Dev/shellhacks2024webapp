@@ -20,9 +20,11 @@ export interface Template {
   id?: string;
   componentIds: number[];
   templateName: string;
+  templateType?: string;
 }
 
 export interface GalacticMetadata {
+  id?: number;
   githubPat: string;
   workingDir: string;
   projectIds?: number[];

@@ -49,6 +49,10 @@ export class ProjectMetadata extends BaseDataRecord {
     @IsOptional()
     @IsNumber()
     backendPort?: number;
+
+    @IsOptional()
+    @IsNumber()
+    galaxyId?: number;
 }
 
 // Page Metadata with validation decorators

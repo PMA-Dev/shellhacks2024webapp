@@ -1,18 +1,18 @@
 // src/pages/OnboardingPage.tsx
 
-import { useNavigate } from 'react-router-dom';
+import Galaxy from '@/components/Galaxy';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
-import { toast } from 'sonner';
 import { Canvas } from '@react-three/fiber';
-import Galaxy from '@/components/Galaxy';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 function OnboardingPage() {
     const navigate = useNavigate();
-    const [githubPat, setPat] = useState('');
+    const [githubPat, setPat] = useState("testpat");
     const [workingDir, setDir] = useState('');
     const { createGalaticMetadata } = useGalaticMetadata();
 
@@ -21,7 +21,7 @@ function OnboardingPage() {
             if (githubPat && workingDir) {
                 await createGalaticMetadata({ githubPat, workingDir });
             }
-            navigate('/dashboard');
+            navigate('/dashboard/');
             toast.success('Successfully saved your Galactic metadata!');
         } catch (error) {
             toast.error('Failed to save your Galactic metadata!');
@@ -47,6 +47,7 @@ function OnboardingPage() {
                             id="githubPat"
                             placeholder="Your GitHub Personal Access Token"
                             value={githubPat}
+                            defaultValue={"testpat"}
                             onChange={(e) => setPat(e.target.value)}
                         />
                     </div>

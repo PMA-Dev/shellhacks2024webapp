@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { query, queryAll } from '../db';
+import { getDefaultGalacticId, query, queryAll } from '../db';
 
 import {
     ComponentMetadata,
@@ -31,8 +31,21 @@ export const getProjectMetadata = async (
     res: Response,
     next: NextFunction
 ) => {
+    const galacticId = req.query.galacticId
+        ? Number(req.query.galacticId)
+        : await getDefaultGalacticId();
+    if (!galacticId) {
+        res.status(400).json({
+            error: `Galactic metadata not found query is: ${JSON.stringify(
+                req.query
+            )}`,
+        });
+        return;
+    }
     try {
-        const metadata = await queryAll<ProjectMetadata>(MetadataType.Project);
+        const metadata = (
+            await queryAll<ProjectMetadata>(MetadataType.Project)
+        )?.filter((x) => x.galaxyId === galacticId);
         res.json(metadata);
     } catch (error) {
         next(error);

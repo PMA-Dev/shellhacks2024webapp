@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 import { editMetadataInPlace, pushMetadata } from '../db';
 
 import path from 'path';
-import { createAppTsxFileForProject } from '../create_app_tsx';
+import { createAppTsxFileForProject } from '../createAppTsx';
 import { createPageIdempotent, getPagesPath } from '../factory';
 import { MetadataType, PageMetadata, ProjectMetadata } from '../models';
 

@@ -10,12 +10,18 @@ export const useProjects = () => {
     setProjects(response.data);
   };
 
+  const getProjectsForGalaxy = async (galaxyId: number): Promise<Project[]> => {
+    const response = await api.get(`/metadata/all/project?galacticId=${galaxyId}`);
+    return response.data;
+  }
+
   useEffect(() => {
     fetchProjects();
   }, []);
 
-  const addProject = async (project: Project): Promise<void> => {
-    await api.post("/metadata/post/project", project);
+  const addProject = async (project: Project, galaxyId?: number): Promise<void> => {
+    const url = galaxyId ? `/metadata/post/project?galacticId=${galaxyId}` : "/metadata/post/project";
+    await api.post(url, project);
     await fetchProjects();
   };
 
@@ -37,5 +43,6 @@ export const useProjects = () => {
     addProject,
     updateProject,
     getProjectById,
+    getProjectsForGalaxy
   };
 };

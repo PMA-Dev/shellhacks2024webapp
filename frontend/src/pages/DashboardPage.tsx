@@ -10,19 +10,31 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { Dropdown } from "@/components/ui/dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useGalaticMetadata } from "@/hooks/useGalaticMetadata";
 import { useProjects } from "@/hooks/useProjects";
+import { GalacticMetadata, Project } from "@/models";
 import { Canvas } from "@react-three/fiber";
 import { UserCircle } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { toast } from "sonner";
 
-function DashboardPage() {
+const getLabelFromDir = (dir: string) => {
+  const parts = dir.split("/");
+  return parts[parts.length - 2];
+};
+
+const DashboardPage = () => {
   const [projectName, setProjectName] = useState("");
-  const { projects, addProject } = useProjects();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const { getProjectsForGalaxy, addProject } = useProjects();
+  const { getAllGalacticMetadata } = useGalaticMetadata();
+  const [galaxyId, setGalaxyId] = useState<number | undefined>(undefined);
+  const [allGalaxyData, setAllGalaxyData] = useState<GalacticMetadata[]>();
   const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +48,7 @@ function DashboardPage() {
           pageIds: [],
         };
         setIsLoading(true);
-        await addProject(newProject);
+        await addProject(newProject, galaxyId);
         setProjectName("");
         setIsDialogOpen(false);
         toast.success("Successfully created a new project!");
@@ -46,7 +58,32 @@ function DashboardPage() {
       toast.error("Failed to create a new project!");
       console.error(error);
     }
-  }, [addProject, projectName]);
+  }, [addProject, galaxyId, projectName]);
+
+  useEffect(() => {
+    const fetchAndSetGalaxies = async () => {
+      const allGalaxies = await getAllGalacticMetadata();
+      setAllGalaxyData(allGalaxies);
+
+      if (allGalaxies.length > 0 && !galaxyId) {
+        setGalaxyId(allGalaxies[0].id);
+      }
+    };
+    fetchAndSetGalaxies();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [galaxyId]);
+
+  useEffect(() => {
+    const fetchAndSetProjects = async () => {
+      if (!galaxyId) {
+        return;
+      }
+      const allProjects = await getProjectsForGalaxy(galaxyId);
+      setProjects(allProjects);
+    };
+    fetchAndSetProjects();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [galaxyId]);
 
   const CreateProjectDialog = useMemo(() => {
     return (
@@ -73,8 +110,8 @@ function DashboardPage() {
             <DialogFooter>
               <Button onClick={handleCreateProject} disabled={isLoading}>
                 {isLoading ? (
-                    <div id="submit-project-spinner">
-                  <ClipLoader size={20} color="#fff"/>
+                  <div id="submit-project-spinner">
+                    <ClipLoader size={20} color="#fff" />
                   </div>
                 ) : (
                   "Create Project"
@@ -93,6 +130,22 @@ function DashboardPage() {
       <header className="bg-white shadow">
         <div className="container flex items-center justify-between px-6 py-4 mx-auto">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+          <div className="flex items-center space-x-4">
+            <Dropdown
+              value={galaxyId}
+              options={
+                allGalaxyData?.map((data) => ({
+                  value: data.id!,
+                  label: getLabelFromDir(data.workingDir!),
+                })) ?? []
+              }
+              defaultValue={allGalaxyData?.at(0)?.id ?? undefined}
+              onChange={(data) => {
+                const galaxyId = data.target.value;
+                setGalaxyId(Number(galaxyId));
+              }}
+            />
+          </div>
           <div className="flex items-center space-x-4">
             <Button onClick={() => setIsDialogOpen(true)}>
               Create New Project

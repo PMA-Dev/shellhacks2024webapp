@@ -11,7 +11,7 @@ import {
 import path from 'path';
 import { runBackendStart, setupWholeBackend } from '../bootstrapper/backend';
 import { runFrontendStart, setupWholeFrontend } from '../bootstrapper/frontend';
-import { createAppTsxFileForProject } from '../create_app_tsx';
+import { createAppTsxFileForProject } from '../createAppTsx';
 import { createHomePageIdempotent } from '../factory';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 
@@ -21,9 +21,25 @@ export const postProjectMetadata = async (
     next: NextFunction
 ) => {
     try {
-        const galacticId = await getDefaultGalacticId();
+        const galacticId = req.query.galacticId
+            ? Number(req.query.galacticId)
+            : await getDefaultGalacticId();
         if (!galacticId) {
-            res.status(400).json({ error: 'Galactic metadata not found' });
+            res.status(400).json({
+                error: `Galactic metadata not found query is: ${JSON.stringify(
+                    req.query
+                )}`,
+            });
+            return;
+        }
+        const galaxy = await query<GalacticMetadata>(
+            MetadataType.Galactic,
+            galacticId
+        );
+        if (!galaxy) {
+            res.status(400).json({
+                error: 'Galactic metadata not found for id:' + galacticId,
+            });
             return;
         }
         const data = plainToInstance(ProjectMetadata, req.body);
@@ -34,15 +50,11 @@ export const postProjectMetadata = async (
         }
         const metadataId = await pushMetadata(MetadataType.Project, data);
 
-        const galaxy = await query<GalacticMetadata>(
-            MetadataType.Galactic,
-            galacticId
-        );
-
         await editMetadataInPlace<ProjectMetadata>(
             MetadataType.Project,
             metadataId,
             (x) => {
+                x.galaxyId = galacticId;
                 x.workingDir = path.join(galaxy!.workingDir, data.projectName);
                 x.backendWorkingDir = path.join(
                     galaxy!.workingDir,
@@ -50,6 +62,9 @@ export const postProjectMetadata = async (
                     'backend'
                 );
             }
+        );
+        console.log(
+            `edited in place and now is: ${JSON.stringify(await query(MetadataType.Project, metadataId))}`
         );
         console.log('~~~~~~~~~~~~~~~galaxy at mdt', galaxy);
 

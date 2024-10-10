@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import path from 'path';
 import { writeConfigForBackendInFrontend } from '../backend_factory';
 import { getDefaultGalacticId, getRandomInt, query } from '../db';
 import {
@@ -7,7 +6,7 @@ import {
     createTablePageIdempotent,
 } from '../factory';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
-import { runCmd } from '../shellProxy';
+import { killOnPort, runCmd } from '../shellProxy';
 import { startBackend, stopBackend } from './backend';
 
 export const startViteApp = async (
@@ -61,11 +60,10 @@ export const runCreateReactApp = async (
     next: NextFunction
 ) => {
     try {
-        if (!req.query.galacticId || !req.query.projectId) {
+        if (!req.query.projectId) {
             res.status(400).json({ error: 'id is required' });
             return;
         }
-        const galacticId = Number(req.query.galacticId);
         const projectId = Number(req.query.projectId);
         await runFrontendStart(projectId);
     } catch (e) {
@@ -80,15 +78,17 @@ export const setupWholeFrontend = async (projectId: number) => {
 };
 
 export const runFrontendStart = async (projectId: number): Promise<number> => {
-    const galacticId = await getDefaultGalacticId();
+    const project = await query<ProjectMetadata>(
+        MetadataType.Project,
+        projectId
+    );
+    const galacticId = project?.galaxyId ?? (await getDefaultGalacticId());
+    const projectName = project?.projectName;
     const workingDir = (
         await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
     )?.workingDir;
     if (!workingDir)
         throw new Error('No galactic metadata found for id: ' + galacticId);
-    const projectName = (
-        await query<ProjectMetadata>(MetadataType.Project, projectId)
-    )?.projectName;
     if (!projectName)
         throw new Error('No project metadata found for id: ' + projectId);
     const port = getRandomInt(1024, 49151);
@@ -104,21 +104,18 @@ export const runFrontendStart = async (projectId: number): Promise<number> => {
 };
 
 export const startFrontendVite = async (projectId: number) => {
-    const galacticId = await getDefaultGalacticId();
-    const workingDir = (
-        await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
-    )?.workingDir;
-    if (!workingDir)
-        throw new Error('No galactic metadata found for id: ' + galacticId);
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId
     );
-    const projectName = project?.projectName;
-    if (!projectName)
-        throw new Error('No project metadata found for id: ' + projectId);
+    const galacticId = project?.galaxyId ?? (await getDefaultGalacticId());
+
+    const workingDir = project?.workingDir;
+    if (!workingDir)
+        throw new Error('No galactic metadata found for id: ' + galacticId);
+
     runCmd('bun', ['vite', '--port', `${project.port}`], {
-        cwd: path.join(workingDir, projectName),
+        cwd: workingDir,
     });
 };
 
