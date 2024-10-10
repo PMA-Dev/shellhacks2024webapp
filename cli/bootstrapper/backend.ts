@@ -4,7 +4,7 @@ import {
     writeDbDataForBackendServer,
     writeDbFileForBackendServer,
     writeNewFileForBackendServer,
-} from '../backend_factory';
+} from '../backendFactory';
 import { getProjectData, getRandomInt, query } from '../db';
 import { MetadataType, ProjectMetadata } from '../models';
 import { killOnPort, runCmd, writeToFileForced } from '../shellProxy';

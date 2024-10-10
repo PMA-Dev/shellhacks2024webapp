@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { writeConfigForBackendInFrontend } from '../backend_factory';
+import { writeConfigForBackendInFrontend } from '../backendFactory';
 import { getDefaultGalacticId, getRandomInt, query } from '../db';
 import {
     createGradientIdempotent,
