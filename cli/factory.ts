@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import path from 'path';
 import { getDefaultGalacticId, query, queryAll } from './db';
 import {
     GalacticMetadata,
@@ -8,9 +9,8 @@ import {
     TemplateMetadata,
     TemplateTypes,
 } from './models';
+import { innerPostTemplateMetadata } from './routes/postTemplateMetadata';
 import { runCmd } from './shellProxy';
-import path from 'path';
-import { innerPostTemplateMetadata } from './routes/metadata';
 
 export const copyTemplateFileToProject = async (
     templateFileName: string,

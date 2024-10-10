@@ -1,13 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
-import { queryAll, query } from '../db';
+import { NextFunction, Request, Response } from 'express';
+import { query, queryAll } from '../db';
 
 import {
-    GalacticMetadata,
-    ProjectMetadata,
-    PageMetadata,
-    TemplateMetadata,
     ComponentMetadata,
+    GalacticMetadata,
     MetadataType,
+    PageMetadata,
+    ProjectMetadata,
+    TemplateMetadata,
 } from '../models';
 
 // GET Handlers

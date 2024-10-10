@@ -1,31 +1,6 @@
-import express, { type Express } from 'express';
-import { NextFunction, Request, Response } from 'express';
-import { Config } from './config';
 import cors from 'cors';
-import {
-    postGalacticMetadata,
-    postProjectMetadata,
-    postPageMetadata,
-    postTemplateMetadata,
-    postComponentMetadata,
-    patchGalacticMetadata,
-    patchProjectMetadata,
-    patchPageMetadata,
-    patchTemplateMetadata,
-    patchComponentMetadata,
-} from './routes/metadata';
-import {
-    getGalacticMetadata,
-    getProjectMetadata,
-    getPageMetadata,
-    getTemplateMetadata,
-    getComponentMetadata,
-    getGalacticMetadataById,
-    getProjectMetadataById,
-    getPageMetadataById,
-    getTemplateMetadataById,
-    getComponentMetadataById,
-} from './routes/getMetadata';
+import express, { NextFunction, Request, Response, type Express } from 'express';
+import { Config } from './config';
 import {
     runCreateReactApp,
     startBackendApp,
@@ -33,6 +8,24 @@ import {
     stopBackendApp,
     stopViteApp,
 } from './routes/commands';
+import {
+    getComponentMetadata,
+    getComponentMetadataById,
+    getGalacticMetadata,
+    getGalacticMetadataById,
+    getPageMetadata,
+    getPageMetadataById,
+    getProjectMetadata,
+    getProjectMetadataById,
+    getTemplateMetadata,
+    getTemplateMetadataById,
+} from './routes/getMetadata';
+import { patchComponentMetadata, patchGalacticMetadata, patchPageMetadata, patchProjectMetadata, patchTemplateMetadata } from './routes/patch_methods';
+import { postComponentMetadata } from './routes/postComponentMetadata';
+import { postGalacticMetadata } from './routes/postGalacticMetadata';
+import { postPageMetadata } from './routes/postPageMetadata';
+import { postProjectMetadata } from './routes/postProjectMetadata';
+import { postTemplateMetadata } from './routes/postTemplateMetadata';
 
 const initializeMiddlewares = (app: Express) => {
     app.use(express.json());
