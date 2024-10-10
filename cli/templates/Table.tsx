@@ -46,7 +46,6 @@ export const Table = () => {
         );
 
     return (
-<<<<<<< HEAD
         <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
             <div className="w-full max-w-2xl">
                 <h1 className="text-4xl font-bold mb-8 text-center">
@@ -69,34 +68,6 @@ export const Table = () => {
                     ))}
                 </div>
             </div>
-=======
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
-      </div>
-    );
-  if (error)
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>{error}</p>
-      </div>
-    );
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center pt-12">
-      <div className="w-full max-w-2xl">
-        <h1 className="text-4xl font-bold mb-8 text-center">Log Data</h1>
-        <div className="space-y-4">
-          {data.map((log, index) => (
-            <Card key={index} className="border border-gray-200">
-              <CardHeader>
-                <CardTitle className="text-xl">{log.logName}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700">Timestamp: {log.timestamp}</p>
-              </CardContent>
-            </Card>
-          ))}
->>>>>>> main
         </div>
     );
 };
