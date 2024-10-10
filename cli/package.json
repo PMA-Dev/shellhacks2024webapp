@@ -5,7 +5,7 @@
     "scripts": {
         "start": "bun --hot run index.ts",
         "format": "prettier --write \"**/*.{js,ts,tsx,json}\"",
-        "test": "bun playwright test createPageForProject --ui"
+        "test": "bun playwright test checkGeneratedPage --ui"
     },
     "devDependencies": {
         "@playwright/test": "^1.48.0",

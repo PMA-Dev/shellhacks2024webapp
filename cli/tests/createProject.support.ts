@@ -1,6 +1,10 @@
 import { fillOutGalacticFormAndSubmit } from './createGalaxy.support';
 
-export const checkNoProjectPage = async ({ page }: any, test: any, expect: any) => {
+export const checkNoProjectPage = async (
+    { page }: any,
+    test: any,
+    expect: any
+) => {
     await fillOutGalacticFormAndSubmit({ page }, test, expect);
     await test.step('Check for dashboard title and no projects', async () => {
         await page.goto('http://localhost:5173/dashboard');
@@ -19,7 +23,11 @@ export const checkNoProjectPage = async ({ page }: any, test: any, expect: any) 
     });
 };
 
-export const createFirstProject = async ({ page }: any, test: any, expect: any) => {
+export const createFirstProject = async (
+    { page }: any,
+    test: any,
+    expect: any
+) => {
     await checkNoProjectPage({ page }, test, expect);
     await test.step('Create first project', async () => {
         await page.goto('http://localhost:5173/dashboard');

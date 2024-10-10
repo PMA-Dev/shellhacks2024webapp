@@ -1,6 +1,10 @@
 import { checkDefaultProjectPage } from './projectDashboard.support';
 
-export const createPageForProject = async ({ page }: any, test: any, expect: any) => {
+export const createPageForProject = async (
+    { page }: any,
+    test: any,
+    expect: any
+) => {
     await checkDefaultProjectPage({ page }, test, expect);
 
     await test.step('Checks that create page modal renders', async () => {
@@ -31,9 +35,9 @@ export const createPageForProject = async ({ page }: any, test: any, expect: any
     });
 
     await test.step('Fill in new page details and create the page', async () => {
-        await page.fill('#pageName', 'TestPage');
+        await page.fill('#pageName', 'TestTable');
 
-        await page.fill('#pageRoute', '/TestPage');
+        await page.fill('#pageRoute', '/TestTable');
 
         await expect(page.locator('input[name="template"]')).toHaveCount(3);
 
@@ -47,7 +51,7 @@ export const createPageForProject = async ({ page }: any, test: any, expect: any
 
         await page.waitForTimeout(500);
         await expect(
-            page.getByRole('heading', { name: 'TestPage' })
+            page.getByRole('heading', { name: 'TestTable' })
         ).toBeVisible();
     });
 
@@ -56,7 +60,7 @@ export const createPageForProject = async ({ page }: any, test: any, expect: any
             await page.locator('text=No pages created yet.').isVisible()
         ).toBe(false);
         await expect(
-            page.getByRole('heading', { name: 'TestPage' })
+            page.getByRole('heading', { name: 'TestTable' })
         ).toBeVisible();
     });
 
