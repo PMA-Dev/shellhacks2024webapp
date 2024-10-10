@@ -5,3 +5,5 @@ tmp
 tmp/*
 *vscode*
 *test-results*
+cli/node_modules
+cli/node_modules/*

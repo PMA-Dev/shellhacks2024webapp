@@ -12,7 +12,10 @@ export const checkGalacticHomepage = async ({ page }: any, test: any) => {
     });
 };
 
-export const fillOutGalacticFormAndSubmit = async ({ page }: any, test: any) => {
+export const fillOutGalacticFormAndSubmit = async (
+    { page }: any,
+    test: any
+) => {
     await checkGalacticHomepage({ page }, test);
     await test.step('Fill out the form and submit', async () => {
         await page.goto('http://localhost:5173');
