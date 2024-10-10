@@ -15,7 +15,7 @@ import {
     Database,
     UploadCloud,
     HomeIcon,
-    Undo2Icon
+    Undo2Icon,
 } from 'lucide-react';
 
 function Sidebar() {
@@ -26,29 +26,61 @@ function Sidebar() {
         {
             title: '',
             items: [
-                { to: `/projects/${projectId}/general`, label: 'General', icon: <HomeIcon size={24} /> },
-            ]
+                {
+                    to: `/projects/${projectId}/general`,
+                    label: 'General',
+                    icon: <HomeIcon size={24} />,
+                },
+            ],
         },
         {
             title: 'Frontend',
             items: [
-                { to: `/projects/${projectId}/pages`, label: 'Pages', icon: <FileText size={24} /> },
-                { to: `/projects/${projectId}/templates`, label: 'Templates', icon: <LayoutTemplate size={24} /> },
-                { to: `/projects/${projectId}/components`, label: 'Components', icon: <Box size={24} /> },
+                {
+                    to: `/projects/${projectId}/pages`,
+                    label: 'Pages',
+                    icon: <FileText size={24} />,
+                },
+                {
+                    to: `/projects/${projectId}/templates`,
+                    label: 'Templates',
+                    icon: <LayoutTemplate size={24} />,
+                },
+                {
+                    to: `/projects/${projectId}/components`,
+                    label: 'Components',
+                    icon: <Box size={24} />,
+                },
             ],
         },
         {
             title: 'Backend',
             items: [
-                { to: `/projects/${projectId}/router`, label: 'Router', icon: <Server size={24} /> },
-                { to: `/projects/${projectId}/assets`, label: 'Content', icon: <Image size={24} /> },
-                { to: `/projects/${projectId}/dbschema`, label: 'DB Schema', icon: <Database size={24} /> },
+                {
+                    to: `/projects/${projectId}/router`,
+                    label: 'Router',
+                    icon: <Server size={24} />,
+                },
+                {
+                    to: `/projects/${projectId}/assets`,
+                    label: 'Content',
+                    icon: <Image size={24} />,
+                },
+                {
+                    to: `/projects/${projectId}/dbschema`,
+                    label: 'DB Schema',
+                    icon: <Database size={24} />,
+                },
             ],
         },
         {
             title: 'Deployment',
             items: [
-                { to: `/projects/${projectId}/deployment`, label: 'Deployment', icon: <UploadCloud size={24} /> },
+                {
+                    to: `/projects/${projectId}/deployment`,
+                    label: 'Deployment',
+                    icon: <UploadCloud size={24} />,
+                },
             ],
         },
     ];
@@ -61,7 +93,9 @@ function Sidebar() {
             )}
         >
             <div className="flex items-center justify-between p-4 border-b border-gray-300">
-                {!isCollapsed && <span className="text-xl font-bold">Menu</span>}
+                {!isCollapsed && (
+                    <span className="text-xl font-bold">Menu</span>
+                )}
                 <Button
                     variant="ghost"
                     size="icon"
@@ -86,7 +120,9 @@ function Sidebar() {
                                 className={({ isActive }) =>
                                     cn(
                                         'flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200',
-                                        isActive ? 'bg-gray-300 font-semibold' : ''
+                                        isActive
+                                            ? 'bg-gray-300 font-semibold'
+                                            : ''
                                     )
                                 }
                             >
@@ -94,7 +130,6 @@ function Sidebar() {
                                     {item.icon}
                                     {!isCollapsed && <span>{item.label}</span>}
                                 </div>
-
                             </NavLink>
                         ))}
                     </div>
@@ -107,7 +142,6 @@ function Sidebar() {
                     <Undo2Icon className="" />
                     {!isCollapsed && <span>All Projects</span>}
                 </NavLink>
-
             </nav>
         </div>
     );

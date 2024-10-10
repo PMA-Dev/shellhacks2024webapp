@@ -4,7 +4,14 @@ import React, { useState } from 'react';
 import { useContent } from '@/hooks/useContent';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
 import { Plus, Trash } from 'lucide-react';
 
 function AssetsPage() {
@@ -16,7 +23,9 @@ function AssetsPage() {
         content: '',
     });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
         setAssetData({ ...assetData, [e.target.name]: e.target.value });
     };
 
@@ -36,7 +45,10 @@ function AssetsPage() {
         <div>
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Assets</h2>
-                <Button onClick={() => setIsDialogOpen(true)} className="flex items-center">
+                <Button
+                    onClick={() => setIsDialogOpen(true)}
+                    className="flex items-center"
+                >
                     <Plus className="mr-2" />
                     Add Asset
                 </Button>
@@ -47,13 +59,23 @@ function AssetsPage() {
                 {assets.map((asset) => (
                     <div key={asset.id} className="border rounded-lg p-4">
                         <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-lg font-semibold">{asset.name}</h3>
-                            <Button variant="ghost" size="icon" onClick={() => deleteAsset(asset.id)}>
+                            <h3 className="text-lg font-semibold">
+                                {asset.name}
+                            </h3>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => deleteAsset(asset.id)}
+                            >
                                 <Trash className="w-4 h-4 text-red-500" />
                             </Button>
                         </div>
                         {asset.type === 'image' ? (
-                            <img src={asset.content} alt={asset.name} className="w-full h-auto" />
+                            <img
+                                src={asset.content}
+                                alt={asset.name}
+                                className="w-full h-auto"
+                            />
                         ) : (
                             <p>{asset.content}</p>
                         )}
@@ -69,7 +91,10 @@ function AssetsPage() {
                     </DialogHeader>
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                            <label
+                                htmlFor="name"
+                                className="block text-sm font-medium text-gray-700"
+                            >
                                 Asset Name
                             </label>
                             <Input
@@ -81,7 +106,10 @@ function AssetsPage() {
                             />
                         </div>
                         <div>
-                            <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+                            <label
+                                htmlFor="type"
+                                className="block text-sm font-medium text-gray-700"
+                            >
                                 Type
                             </label>
                             <select
@@ -100,7 +128,9 @@ function AssetsPage() {
                                 htmlFor="content"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                {assetData.type === 'image' ? 'Image URL' : 'Text Content'}
+                                {assetData.type === 'image'
+                                    ? 'Image URL'
+                                    : 'Text Content'}
                             </label>
                             <Input
                                 id="content"

@@ -6,7 +6,14 @@ import { BackendRoute } from '@/models/BackendRoute';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
 import { Plus, Trash, Edit } from 'lucide-react';
 
 function RouterPage() {
@@ -30,7 +37,9 @@ function RouterPage() {
         setRouteData({ ...routeData, method: e.target.value });
     };
 
-    const handleMiddlewaresChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleMiddlewaresChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
         setRouteData({ ...routeData, middlewares: e.target.value.split(',') });
     };
 
@@ -95,10 +104,16 @@ function RouterPage() {
                         <tr key={route.id} className="border-t">
                             <td className="px-4 py-2">{route.path}</td>
                             <td className="px-4 py-2">{route.method}</td>
-                            <td className="px-4 py-2">{route.middlewares.join(', ')}</td>
+                            <td className="px-4 py-2">
+                                {route.middlewares.join(', ')}
+                            </td>
                             <td className="px-4 py-2">
                                 <div className="flex space-x-2">
-                                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(route)}>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => openEditDialog(route)}
+                                    >
                                         <Edit className="w-4 h-4" />
                                     </Button>
                                     <Button
@@ -119,11 +134,16 @@ function RouterPage() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{editingRoute ? 'Edit Route' : 'Add New Route'}</DialogTitle>
+                        <DialogTitle>
+                            {editingRoute ? 'Edit Route' : 'Add New Route'}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="path" className="block text-sm font-medium text-gray-700">
+                            <label
+                                htmlFor="path"
+                                className="block text-sm font-medium text-gray-700"
+                            >
                                 Path
                             </label>
                             <Input
@@ -135,7 +155,10 @@ function RouterPage() {
                             />
                         </div>
                         <div>
-                            <label htmlFor="method" className="block text-sm font-medium text-gray-700">
+                            <label
+                                htmlFor="method"
+                                className="block text-sm font-medium text-gray-700"
+                            >
                                 Method
                             </label>
                             <select
