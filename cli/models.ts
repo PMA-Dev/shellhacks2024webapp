@@ -6,6 +6,9 @@ export class BaseDataRecord {
     @IsOptional()
     @IsNumber()
     id?: number;
+
+    @IsOptional()
+    lastUpdated?: Date;
 }
 
 // Galactic Metadata with validation decorators

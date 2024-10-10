@@ -28,4 +28,5 @@ export interface GalacticMetadata {
   githubPat: string;
   workingDir: string;
   projectIds?: number[];
+  lastUpdated?: Date;
 }

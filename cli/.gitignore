@@ -176,3 +176,5 @@ dist
 run
 ./db.json
 tmp
+
+db.json

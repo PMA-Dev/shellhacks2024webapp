@@ -52,12 +52,14 @@ const DashboardPage = () => {
         setProjectName("");
         setIsDialogOpen(false);
         toast.success("Successfully created a new project!");
+        await fetchAndSetProjects();
         setIsLoading(false);
       }
     } catch (error) {
       toast.error("Failed to create a new project!");
       console.error(error);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addProject, galaxyId, projectName]);
 
   useEffect(() => {
@@ -70,19 +72,20 @@ const DashboardPage = () => {
       }
     };
     fetchAndSetGalaxies();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [galaxyId]);
 
+  const fetchAndSetProjects = async () => {
+    if (!galaxyId) {
+      return;
+    }
+    const allProjects = await getProjectsForGalaxy(galaxyId);
+    setProjects(allProjects);
+  };
+
   useEffect(() => {
-    const fetchAndSetProjects = async () => {
-      if (!galaxyId) {
-        return;
-      }
-      const allProjects = await getProjectsForGalaxy(galaxyId);
-      setProjects(allProjects);
-    };
     fetchAndSetProjects();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [galaxyId]);
 
   const CreateProjectDialog = useMemo(() => {
@@ -197,6 +200,6 @@ const DashboardPage = () => {
       </main>
     </div>
   );
-}
+};
 
 export default DashboardPage;
