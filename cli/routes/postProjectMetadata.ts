@@ -33,6 +33,26 @@ export const postProjectMetadata = async (
             return;
         }
         const metadataId = await pushMetadata(MetadataType.Project, data);
+
+        const galaxy = await query<GalacticMetadata>(
+            MetadataType.Galactic,
+            galacticId
+        );
+
+        await editMetadataInPlace<ProjectMetadata>(
+            MetadataType.Project,
+            metadataId,
+            (x) => {
+                x.workingDir = path.join(galaxy!.workingDir, data.projectName);
+                x.backendWorkingDir = path.join(
+                    galaxy!.workingDir,
+                    data.projectName,
+                    'backend'
+                );
+            }
+        );
+        console.log('~~~~~~~~~~~~~~~galaxy at mdt', galaxy);
+
         const port = await runFrontendStart(metadataId);
         await createHomePageIdempotent(metadataId);
         const backendPort = await runBackendStart(metadataId);
@@ -42,10 +62,6 @@ export const postProjectMetadata = async (
             (x) => x.projectIds.push(metadataId)
         );
 
-        const galaxy = await query<GalacticMetadata>(
-            MetadataType.Galactic,
-            galacticId
-        );
         await editMetadataInPlace<ProjectMetadata>(
             MetadataType.Project,
             metadataId,
@@ -53,12 +69,6 @@ export const postProjectMetadata = async (
                 x.sitePath = `http://localhost:${port}`;
                 x.port = port;
                 x.backendPort = backendPort!;
-                x.workingDir = path.join(galaxy!.workingDir, data.projectName);
-                x.backendWorkingDir = path.join(
-                    galaxy!.workingDir,
-                    data.projectName,
-                    'backend'
-                );
             }
         );
 

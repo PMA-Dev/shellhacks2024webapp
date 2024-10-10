@@ -1,7 +1,7 @@
 // src/types.ts
 
 export interface Project {
-  id: string;
+  id?: string;
   projectName: string;
   pageIds: string[];
   sitePath?: string;

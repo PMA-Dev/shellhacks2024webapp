@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { Project } from "@/models";
+import { useEffect, useState } from "react";
 import api from "./api";
 
 export const useProjects = () => {
@@ -14,7 +14,7 @@ export const useProjects = () => {
     fetchProjects();
   }, []);
 
-  const addProject = async (project: Project) => {
+  const addProject = async (project: Project): Promise<void> => {
     await api.post("/metadata/post/project", project);
     await fetchProjects();
   };

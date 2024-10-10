@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
     testDir: './tests', // Directory for test files
+    timeout: 10000,
     use: {
         headless: true, // Run tests in headless mode
         baseURL: 'http://127.0.0.1:5173',
