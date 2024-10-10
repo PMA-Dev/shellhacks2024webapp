@@ -153,7 +153,7 @@ export const getPagesPath = async (projectId: number) => {
     return path.join(workingDir, 'src/pages');
 };
 
-export const populateTemplates  = async () => {
+export const populateTemplates = async () => {
     const datas = [
         {
             templateName: 'Table',
@@ -174,7 +174,9 @@ export const populateTemplates  = async () => {
         },
     ];
 
-    const existingData = await queryAll<TemplateMetadata>(MetadataType.Template);
+    const existingData = await queryAll<TemplateMetadata>(
+        MetadataType.Template
+    );
     if (existingData && existingData.length == datas.length) {
         return;
     }

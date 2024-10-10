@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
-  checkNoProjectPage,
-  createFirstProject,
+    checkNoProjectPage,
+    createFirstProject,
 } from './createProject.support';
 
 test('Project onboarding flow', async ({ page }) => {

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
-  checkGalacticHomepage,
-  fillOutGalacticFormAndSubmit,
+    checkGalacticHomepage,
+    fillOutGalacticFormAndSubmit,
 } from './createGalaxy.support';
 
 test('has Galactic title', async ({ page }) => {

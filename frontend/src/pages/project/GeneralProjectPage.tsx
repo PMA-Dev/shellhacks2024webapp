@@ -1,14 +1,13 @@
 // src/pages/project/GeneralProjectPage.tsx
 
-import React, { useEffect, useState } from 'react';
-import { useProject } from '../../context/ProjectContext.tsx';
-import { usePages } from '@/hooks/usePages';
-import { ExternalLink, Copy } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { Play, Pause } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import api from '@/hooks/api.ts';
+import { usePages } from '@/hooks/usePages';
+import { Copy, ExternalLink, Pause, Play } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useProject } from '../../context/ProjectContext.tsx';
 
 function GeneralProjectPage() {
     const project = useProject();
@@ -44,6 +43,7 @@ function GeneralProjectPage() {
 
         iframes.forEach((iframe) => {
             console.log('resetting iframe...', iframe);
+            // eslint-disable-next-line no-self-assign
             iframe.src = iframe.src;
         });
     }
@@ -81,6 +81,7 @@ function GeneralProjectPage() {
                     <h1 className="text-2xl font-bold pb-5">Your Live Site</h1>
                     <div className="min-h-[60vh] h-full w-full border-2 border-gray-100 pt-2 rounded-xl shadow-lg relative">
                         <iframe
+                            id="main-iframe"
                             src={project.sitePath}
                             title="Live Site"
                             style={{
@@ -106,6 +107,7 @@ function GeneralProjectPage() {
                     <div className="relative">
                         {isServing ? (
                             <Button
+                                id="stop-server"
                                 disabled={disableServerButton}
                                 variant="ghost"
                                 size="icon"
@@ -120,6 +122,7 @@ function GeneralProjectPage() {
                             </Button>
                         ) : (
                             <Button
+                                id="start-server"
                                 disabled={disableServerButton}
                                 variant="ghost"
                                 size="icon"
@@ -162,7 +165,7 @@ function GeneralProjectPage() {
                 </div>
 
                 {/* Grid of Page Iframes */}
-                <div className="grid grid-cols-1 gap-4 mt-4">
+                <div className="grid grid-cols-1 gap-4 mt-4" id="iframe-list">
                     {pages && pages.length > 0 ? (
                         pages.map((page) => (
                             <div
