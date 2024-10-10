@@ -1,24 +1,13 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import {
-    editMetadataInPlace,
-    getDefaultGalacticId,
-    pushMetadata
-} from '../db';
+import { editMetadataInPlace, getDefaultGalacticId, pushMetadata } from '../db';
 
 import path from 'path';
 import { createAppTsxFileForProject } from '../create_app_tsx';
-import {
-    createPageIdempotent,
-    getPagesPath
-} from '../factory';
-import {
-    MetadataType,
-    PageMetadata,
-    ProjectMetadata
-} from '../models';
-// Generated from routes/metadata.ts
+import { createPageIdempotent, getPagesPath } from '../factory';
+import { MetadataType, PageMetadata, ProjectMetadata } from '../models';
+
 export const postPageMetadata = async (
     req: Request,
     res: Response,
@@ -64,4 +53,3 @@ export const postPageMetadata = async (
         next(error);
     }
 };
-

@@ -5,26 +5,20 @@ import {
     editMetadataInPlace,
     getDefaultGalacticId,
     pushMetadata,
-    query
+    query,
 } from '../db';
 
 import path from 'path';
 import { createAppTsxFileForProject } from '../create_app_tsx';
-import {
-    createHomePageIdempotent
-} from '../factory';
-import {
-    GalacticMetadata,
-    MetadataType,
-    ProjectMetadata
-} from '../models';
+import { createHomePageIdempotent } from '../factory';
+import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import {
     runBackendStart,
     runFrontendStart,
     setupWholeBackend,
-    setupWholeFrontend
+    setupWholeFrontend,
 } from './commands';
-// Generated from routes/metadata.ts
+
 export const postProjectMetadata = async (
     req: Request,
     res: Response,
@@ -82,4 +76,3 @@ export const postProjectMetadata = async (
         next(error);
     }
 };
-

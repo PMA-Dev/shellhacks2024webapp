@@ -1,9 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import {
-    patchMetadata
-} from '../db';
+import { patchMetadata } from '../db';
 
 import {
     ComponentMetadata,
@@ -13,7 +11,7 @@ import {
     ProjectMetadata,
     TemplateMetadata,
 } from '../models';
-// Generated from routes/metadata.ts
+
 export const patchGalacticMetadata = async (
     req: Request,
     res: Response,

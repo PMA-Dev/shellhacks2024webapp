@@ -1,15 +1,10 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import {
-    pushMetadata
-} from '../db';
+import { pushMetadata } from '../db';
 
-import {
-    ComponentMetadata,
-    MetadataType
-} from '../models';
-// Generated from routes/metadata.ts
+import { ComponentMetadata, MetadataType } from '../models';
+
 export const postComponentMetadata = async (
     req: Request,
     res: Response,

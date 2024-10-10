@@ -1,22 +1,13 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import {
-    pushMetadata
-} from '../db';
+import { pushMetadata } from '../db';
 
 import path from 'path';
-import {
-    populateTemplates
-} from '../factory';
-import {
-    GalacticMetadata,
-    MetadataType
-} from '../models';
-import {
-    bootGalaxy
-} from './commands';
-// Generated from routes/metadata.ts
+import { populateTemplates } from '../factory';
+import { GalacticMetadata, MetadataType } from '../models';
+import { bootGalaxy } from './commands';
+
 export const postGalacticMetadata = async (
     req: Request,
     res: Response,
@@ -38,4 +29,3 @@ export const postGalacticMetadata = async (
         next(error);
     }
 };
-

@@ -1,5 +1,10 @@
 import cors from 'cors';
-import express, { NextFunction, Request, Response, type Express } from 'express';
+import express, {
+    NextFunction,
+    Request,
+    Response,
+    type Express,
+} from 'express';
 import { Config } from './config';
 import {
     runCreateReactApp,
@@ -20,7 +25,13 @@ import {
     getTemplateMetadata,
     getTemplateMetadataById,
 } from './routes/getMetadata';
-import { patchComponentMetadata, patchGalacticMetadata, patchPageMetadata, patchProjectMetadata, patchTemplateMetadata } from './routes/patch_methods';
+import {
+    patchComponentMetadata,
+    patchGalacticMetadata,
+    patchPageMetadata,
+    patchProjectMetadata,
+    patchTemplateMetadata,
+} from './routes/patch_methods';
 import { postComponentMetadata } from './routes/postComponentMetadata';
 import { postGalacticMetadata } from './routes/postGalacticMetadata';
 import { postPageMetadata } from './routes/postPageMetadata';

@@ -13,11 +13,7 @@ import {
     createTablePageIdempotent,
     getWorkingDir,
 } from '../factory';
-import {
-    GalacticMetadata,
-    MetadataType,
-    ProjectMetadata
-} from '../models';
+import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import { runCmd } from '../shellProxy';
 
 export const startBackendApp = async (

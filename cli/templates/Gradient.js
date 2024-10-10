@@ -716,7 +716,7 @@ class Gradient {
                           )),
                           this.waitForCssVars());
                   }));
-                  /*
+        /*
           this.scrollObserver = await s.create(.1, !1),
           this.scrollObserver.observe(this.el),
           this.scrollObserver.onSeparate(() => {

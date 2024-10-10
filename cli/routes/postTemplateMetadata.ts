@@ -1,16 +1,11 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import {
-    pushMetadata
-} from '../db';
+import { pushMetadata } from '../db';
 
 import path from 'path';
-import {
-    MetadataType,
-    TemplateMetadata
-} from '../models';
-// Generated from routes/metadata.ts
+import { MetadataType, TemplateMetadata } from '../models';
+
 export const postTemplateMetadata = async (
     req: Request,
     res: Response,
@@ -43,4 +38,3 @@ export const innerPostTemplateMetadata = async (
     console.log(`Created template with id: ${metadataId}`);
     return metadataId;
 };
-
