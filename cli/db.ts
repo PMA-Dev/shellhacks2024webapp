@@ -1,3 +1,4 @@
+import { Low } from 'lowdb';
 import { JSONFilePreset } from 'lowdb/node';
 import { Config } from './config';
 import {
@@ -5,9 +6,9 @@ import {
     GalacticMetadata,
     GenericMetadata,
     MetadataType,
+    ProjectMetadata,
     type DbData,
 } from './models';
-import { Low } from 'lowdb';
 
 let GLOBAL_DB: Low<DbData> | null = null;
 
@@ -182,8 +183,22 @@ export const query = async <T extends BaseDataRecord>(
     return fetchedData;
 };
 
-export const getDefaultGalacticId = async (): Promise<number | null> => {
-    return Number(
-        (await queryAll<GalacticMetadata>(MetadataType.Galactic))?.[0]?.id
+export const getDefaultGalacticId = async (): Promise<number> => {
+    return (
+        Number(
+            (await queryAll<GalacticMetadata>(MetadataType.Galactic))?.[0]?.id
+        ) || 0
     );
+};
+
+export const getProjectData = async (
+    projectId: number
+): Promise<ProjectMetadata> => {
+    const project = await query<ProjectMetadata>(
+        MetadataType.Project,
+        projectId
+    );
+    if (!project)
+        throw new Error('No project metadata found for id: ' + projectId);
+    return project;
 };

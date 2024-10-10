@@ -1,22 +1,24 @@
- {"logs": [
-  {
-    "logName": "User Login",
-    "timestamp": "2023-09-29T10:30:00Z",
-    "id": 1
-  },
-  {
-    "logName": "Data Backup",
-    "timestamp": "2023-09-29T11:00:00Z",
-    "id": 2
-  },
-  {
-    "logName": "Server Restart",
-    "timestamp": "2023-09-29T12:15:00Z",
-    "id": 3
-  },
-  {
-    "logName": "New User Signup",
-    "timestamp": "2023-09-29T12:45:00Z",
-    "id": 4
-  }
-]}
+{
+    "logs": [
+        {
+            "logName": "User Login",
+            "timestamp": "2023-09-29T10:30:00Z",
+            "id": 1
+        },
+        {
+            "logName": "Data Backup",
+            "timestamp": "2023-09-29T11:00:00Z",
+            "id": 2
+        },
+        {
+            "logName": "Server Restart",
+            "timestamp": "2023-09-29T12:15:00Z",
+            "id": 3
+        },
+        {
+            "logName": "New User Signup",
+            "timestamp": "2023-09-29T12:45:00Z",
+            "id": 4
+        }
+    ]
+}

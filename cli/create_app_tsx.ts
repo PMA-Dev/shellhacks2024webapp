@@ -1,21 +1,15 @@
 import { promises as fs } from 'fs';
-import { getDefaultGalacticId, query, queryAll } from './db';
+import path from 'path';
+import { query, queryAll } from './db';
+import { getWorkingDir } from './factory';
 import {
-    GalacticMetadata,
     MetadataType,
     PageMetadata,
     ProjectMetadata,
     TemplateMetadata,
 } from './models';
-import { runCmd } from './shellProxy';
-import path from 'path';
-import { innerPostTemplateMetadata } from './routes/metadata';
-import { getWorkingDir } from './factory';
 
-export const createAppTsxFileForProject = async (
-    galacticId: number,
-    projectId: number
-) => {
+export const createAppTsxFileForProject = async (projectId: number) => {
     const workingDir = await getWorkingDir();
     const project = await query<ProjectMetadata>(
         MetadataType.Project,

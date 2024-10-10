@@ -1,5 +1,5 @@
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import 'reflect-metadata';
-import { IsNumber, IsOptional, IsString, IsArray } from 'class-validator';
 
 // Base data record with validation for id
 export class BaseDataRecord {
@@ -25,6 +25,14 @@ export class GalacticMetadata extends BaseDataRecord {
 export class ProjectMetadata extends BaseDataRecord {
     @IsString()
     projectName!: string;
+
+    @IsString()
+    @IsOptional()
+    workingDir?: string;
+
+    @IsString()
+    @IsOptional()
+    backendWorkingDir?: string;
 
     @IsArray()
     @IsNumber({}, { each: true })

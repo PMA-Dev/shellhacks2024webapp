@@ -3,5 +3,7 @@ frontend/dist
 frontend/node_modules/*
 tmp
 tmp/*
+*vscode*
+*test-results*
 cli/node_modules
 cli/node_modules/*

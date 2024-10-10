@@ -1,11 +1,7 @@
 import path from 'path';
-import {
-    getBackendWorkingDir,
-    getProjectData,
-    writeToFileForced,
-} from './routes/commands';
+import { getProjectData } from './db';
 import { copyTemplateFileToProject } from './factory';
-import { runCmd } from './shellProxy';
+import { runCmd, writeToFileForced } from './shellProxy';
 
 export const writeConfigForBackendInFrontend = async (projectId: number) => {
     const project = await getProjectData(projectId);
@@ -34,33 +30,25 @@ export const makeFetchRequest = async (endpoint: string, options: RequestInit = 
   }
 };
     `;
-    const filePath = path.join(
-        await getBackendWorkingDir(projectId),
-        '..',
-        'src/fetchConfig.ts'
-    );
+    const filePath = path.join(project.workingDir!, 'src/fetchConfig.ts');
     await writeToFileForced(filePath, config);
 };
 
 export const writeNewFileForBackendServer = async (projectId: number) => {
-    const toPath = path.join(
-        await getBackendWorkingDir(projectId),
-        'src/router/index.ts'
-    );
+    const project = await getProjectData(projectId);
+    const toPath = path.join(project.backendWorkingDir!, 'src/router/index.ts');
     runCmd('rm', ['-f', toPath]);
-    await new Promise((resolve) => setTimeout(resolve, 100));
     await copyTemplateFileToProject('index.ts', projectId, toPath);
 };
 
 export const writeDbFileForBackendServer = async (projectId: number) => {
-    const toPath = path.join(
-        await getBackendWorkingDir(projectId),
-        'src/db.ts'
-    );
+    const project = await getProjectData(projectId);
+    const toPath = path.join(project.backendWorkingDir!, 'src/db.ts');
     await copyTemplateFileToProject('db.ts', projectId, toPath);
 };
 
 export const writeDbDataForBackendServer = async (projectId: number) => {
-    const toPath = path.join(await getBackendWorkingDir(projectId), 'db.json');
+    const project = await getProjectData(projectId);
+    const toPath = path.join(project.backendWorkingDir!, 'db.json');
     await copyTemplateFileToProject('db.json', projectId, toPath);
 };
