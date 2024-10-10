@@ -1,38 +1,11 @@
-import { expect, test } from '@playwright/test';
-import { createTempDir } from './util';
+import { test } from '@playwright/test';
+import { checkGalacticHomepage, fillOutGalacticFormAndSubmit } from './createGalaxy.support';
 
 test('has Galactic title', async ({ page }) => {
-    await checkGalacticHomepage({ page });
+    await checkGalacticHomepage({ page }, test);
 });
 
-export const checkGalacticHomepage = async ({ page }: any) => {
-    await test.step('has Galactic homepage data', async () => {
-        await page.goto('http://localhost:5173');
-
-        // expect text to contain galactic
-        const textExists = await page
-            .locator('text=Welcome to GALACTIC')
-            .isVisible();
-        expect(textExists).toBe(true);
-    });
-};
 
 test('fills out the form and clicks Get Started', async ({ page }) => {
-    await fillOutGalacticFormAndSubmit({ page });
+    await fillOutGalacticFormAndSubmit({ page }, test);
 });
-
-export const fillOutGalacticFormAndSubmit = async ({ page }: any) => {
-    await checkGalacticHomepage({ page });
-    await test.step('Fill out the form and submit', async () => {
-        await page.goto('http://localhost:5173');
-        await page.fill('#githubPat', 'your-github-pat-here');
-
-        const tempPath = createTempDir();
-        console.log(`tempPath: ${tempPath}`);
-        await page.fill('#workingDir', tempPath);
-
-        await page.click('text=Get Started');
-
-        await expect(page).toHaveURL(/dashboard/);
-    });
-};
