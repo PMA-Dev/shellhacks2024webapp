@@ -1,7 +1,7 @@
 import path from 'path';
+import { getProjectData } from './db';
 import { copyTemplateFileToProject } from './factory';
-import { getProjectData, writeToFileForced } from './routes/commands';
-import { runCmd } from './shellProxy';
+import { runCmd, writeToFileForced } from './shellProxy';
 
 export const writeConfigForBackendInFrontend = async (projectId: number) => {
     const project = await getProjectData(projectId);

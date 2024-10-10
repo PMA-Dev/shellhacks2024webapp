@@ -6,6 +6,7 @@ import {
     GalacticMetadata,
     GenericMetadata,
     MetadataType,
+    ProjectMetadata,
     type DbData,
 } from './models';
 
@@ -188,4 +189,16 @@ export const getDefaultGalacticId = async (): Promise<number> => {
             (await queryAll<GalacticMetadata>(MetadataType.Galactic))?.[0]?.id
         ) || 0
     );
+};
+
+export const getProjectData = async (
+    projectId: number
+): Promise<ProjectMetadata> => {
+    const project = await query<ProjectMetadata>(
+        MetadataType.Project,
+        projectId
+    );
+    if (!project)
+        throw new Error('No project metadata found for id: ' + projectId);
+    return project;
 };

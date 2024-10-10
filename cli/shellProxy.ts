@@ -1,3 +1,5 @@
+import { promises as fs } from 'fs';
+
 export const runCmd = (
     command: string,
     args: string[],
@@ -59,4 +61,20 @@ export const runCmd = (
     fn().catch((err) => {
         console.error('Unhandled error in runCmd:', err);
     });
+};
+
+export const writeToFileForced = async (filePath: string, contents: string) => {
+    console.log(`going to rm ${filePath}`);
+    // rm the file
+    runCmd('rm', ['-f', filePath]);
+    console.log(`Writing index.ts to ${filePath}`);
+    await fs.writeFile(filePath, contents);
+    console.log(`DONE!`);
+};
+
+export const killOnPort = (port: number) => {
+    runCmd('sh', [
+        '-c',
+        `(lsof -t -i :${port} &>/dev/null && kill -9 $(lsof -t -i :${port}) || echo "No process running on port ${port}")`,
+    ]);
 };

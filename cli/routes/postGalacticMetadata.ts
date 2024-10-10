@@ -4,9 +4,9 @@ import { NextFunction, Request, Response } from 'express';
 import { pushMetadata } from '../db';
 
 import path from 'path';
+import { bootGalaxy } from '../bootstrapper/appStart';
 import { populateTemplates } from '../factory';
 import { GalacticMetadata, MetadataType } from '../models';
-import { bootGalaxy } from './commands';
 
 export const postGalacticMetadata = async (
     req: Request,

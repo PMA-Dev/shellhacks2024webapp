@@ -5,14 +5,13 @@ import express, {
     Response,
     type Express,
 } from 'express';
-import { Config } from './config';
+import { startBackendApp, stopBackendApp } from './bootstrapper/backend';
 import {
     runCreateReactApp,
-    startBackendApp,
     startViteApp,
-    stopBackendApp,
     stopViteApp,
-} from './routes/commands';
+} from './bootstrapper/frontend';
+import { Config } from './config';
 import {
     getComponentMetadata,
     getComponentMetadataById,

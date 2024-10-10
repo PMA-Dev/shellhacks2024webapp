@@ -9,15 +9,11 @@ import {
 } from '../db';
 
 import path from 'path';
+import { runBackendStart, setupWholeBackend } from '../bootstrapper/backend';
+import { runFrontendStart, setupWholeFrontend } from '../bootstrapper/frontend';
 import { createAppTsxFileForProject } from '../create_app_tsx';
 import { createHomePageIdempotent } from '../factory';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
-import {
-    runBackendStart,
-    runFrontendStart,
-    setupWholeBackend,
-    setupWholeFrontend,
-} from './commands';
 
 export const postProjectMetadata = async (
     req: Request,

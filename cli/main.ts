@@ -1,6 +1,6 @@
 import { Command } from 'commander';
+import { runFrontendStart } from './bootstrapper/frontend';
 import { listen } from './server';
-import { runFrontendStart } from './routes/commands';
 
 const registerListenCmd = async (program: Command) => {
     const fn = async () => {
@@ -12,9 +12,8 @@ const registerListenCmd = async (program: Command) => {
 
 const registerTestCmd = async (program: Command) => {
     const fn = async () => {
-        const galId = 24438924;
         const projId = 43639080;
-        await runFrontendStart(galId, projId);
+        await runFrontendStart(projId);
     };
 
     program.command('test').description('Dev test').action(fn);
