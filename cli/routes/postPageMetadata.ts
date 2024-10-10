@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import { editMetadataInPlace, getDefaultGalacticId, pushMetadata } from '../db';
+import { editMetadataInPlace, pushMetadata } from '../db';
 
 import path from 'path';
 import { createAppTsxFileForProject } from '../create_app_tsx';
@@ -43,10 +43,7 @@ export const postPageMetadata = async (
             console.log(
                 `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${req.query.projectId}`
             );
-            await createAppTsxFileForProject(
-                (await getDefaultGalacticId())!,
-                Number(req.query.projectId)
-            );
+            await createAppTsxFileForProject(Number(req.query.projectId));
         }
         res.json({ id: metadataId });
     } catch (error) {

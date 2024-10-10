@@ -24,7 +24,7 @@ export const copyTemplateFileToProject = async (
     if (toPath && (await doesPathExist(toPath))) return;
     console.log(`Page does not exist at ${toPath}, creating...`);
 
-    await createPagesPath((await getDefaultGalacticId())!, projectId);
+    await createPagesPath(projectId);
 
     const pathToCopy = path.join(__dirname, 'templates', templateFileName);
 
@@ -38,10 +38,7 @@ export const copyTemplateFileToProject = async (
     runCmd('cp', [pathToCopy, toPath!]);
 };
 
-export const createPagesPath = async (
-    galacticId: number,
-    projectId: number
-) => {
+export const createPagesPath = async (projectId: number) => {
     const pagesPath = await getPagesPath(projectId);
     runCmd('mkdir', [pagesPath]);
 };
@@ -57,7 +54,7 @@ export const createPageIdempotent = async (
     if (pagesPath && (await doesPathExist(pagesPath))) return;
     console.log(`Page does not exist at ${pagesPath}, creating...`);
 
-    await createPagesPath((await getDefaultGalacticId())!, projectId);
+    await createPagesPath(projectId);
 
     const pathToCopy = await getTemplatePathToCopy(page?.templateId!);
 
@@ -76,7 +73,7 @@ export const createTablePageIdempotent = async (projectId: number) => {
 
     console.log(`Copying template from ${tablePagePath} to ${pagesPath}`);
     if (!(await doesPathExist(pagesPath))) {
-        await createPagesPath((await getDefaultGalacticId())!, projectId);
+        await createPagesPath(projectId);
     }
 
     const pathToCopy = tablePagePath;
@@ -96,7 +93,7 @@ export const createGradientIdempotent = async (projectId: number) => {
 
     console.log(`Copying template from ${tablePagePath} to ${pagesPath}`);
     if (!(await doesPathExist(pagesPath))) {
-        await createPagesPath((await getDefaultGalacticId())!, projectId);
+        await createPagesPath(projectId);
     }
 
     const pathToCopy = tablePagePath;
@@ -116,7 +113,7 @@ export const createHomePageIdempotent = async (projectId: number) => {
 
     console.log(`Copying template from ${homePagePath} to ${pagesPath}`);
     if (!(await doesPathExist(pagesPath))) {
-        await createPagesPath((await getDefaultGalacticId())!, projectId);
+        await createPagesPath(projectId);
     }
 
     const pathToCopy = homePagePath;

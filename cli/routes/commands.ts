@@ -11,7 +11,6 @@ import { getDefaultGalacticId, getRandomInt, query } from '../db';
 import {
     createGradientIdempotent,
     createTablePageIdempotent,
-    getWorkingDir,
 } from '../factory';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import { runCmd } from '../shellProxy';
@@ -71,13 +70,12 @@ export const startViteApp = async (
             res.status(400).json({ error: 'projectId is required' });
             return;
         }
-        const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
         const project = await query<ProjectMetadata>(
             MetadataType.Project,
             projectId
         );
-        startFrontendVite(galacticId!, projectId);
+        startFrontendVite(projectId);
         // TODO tmp
         startBackend(projectId);
         res.status(200).json({
@@ -98,9 +96,8 @@ export const stopViteApp = async (
             res.status(400).json({ error: 'projectId is required' });
             return;
         }
-        const galacticId = await getDefaultGalacticId();
         const projectId = Number(req.query.projectId);
-        await stopFrontendVite(galacticId!, projectId);
+        await stopFrontendVite(projectId);
         await stopBackend(projectId);
         res.status(200).json({ message: 'Vite stopped' });
     } catch (e) {
@@ -120,14 +117,15 @@ export const runCreateReactApp = async (
         }
         const galacticId = Number(req.query.galacticId);
         const projectId = Number(req.query.projectId);
-        await runFrontendStart(galacticId, projectId);
+        await runFrontendStart(projectId);
     } catch (e) {
         next(e);
     }
 };
 
 export const runBackendStart = async (projectId: number): Promise<number> => {
-    const workingDir = path.join(await getBackendWorkingDir(projectId), '..');
+    const project = await getProjectData(projectId);
+    const workingDir = project.workingDir;
     console.log(`Working dir: ${workingDir}`);
 
     const port = getRandomInt(1024, 49151);
@@ -194,17 +192,6 @@ export const writeToFileForced = async (filePath: string, contents: string) => {
     console.log(`DONE!`);
 };
 
-export const getBackendWorkingDir = async (projectId: number) => {
-    const project = await getProjectData(projectId);
-    const workingDirBase = await getWorkingDir();
-    const workingDir = path.join(
-        workingDirBase,
-        project.projectName,
-        'backend'
-    );
-    return workingDir;
-};
-
 export const getProjectData = async (
     projectId: number
 ): Promise<ProjectMetadata> => {
@@ -217,10 +204,8 @@ export const getProjectData = async (
     return project;
 };
 
-export const runFrontendStart = async (
-    galacticId: number,
-    projectId: number
-): Promise<number> => {
+export const runFrontendStart = async (projectId: number): Promise<number> => {
+    const galacticId = await getDefaultGalacticId();
     const workingDir = (
         await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
     )?.workingDir;
@@ -247,10 +232,8 @@ export const bootGalaxy = async (galaxy: GalacticMetadata) => {
     runCmd('mkdir', ['-p', galaxy.workingDir]);
 };
 
-export const startFrontendVite = async (
-    galacticId: number,
-    projectId: number
-) => {
+export const startFrontendVite = async (projectId: number) => {
+    const galacticId = await getDefaultGalacticId();
     const workingDir = (
         await query<GalacticMetadata>(MetadataType.Galactic, galacticId)
     )?.workingDir;
@@ -270,9 +253,8 @@ export const startFrontendVite = async (
 
 export const startBackend = async (projectId: number) => {
     const project = await getProjectData(projectId);
-    const workingDir = await getBackendWorkingDir(projectId);
     runCmd('bun', [`src/index.ts`], {
-        cwd: workingDir,
+        cwd: project.backendWorkingDir,
     });
 };
 
@@ -281,10 +263,7 @@ export const stopBackend = async (projectId: number) => {
     killOnPort(project.backendPort!);
 };
 
-export const stopFrontendVite = async (
-    galacticId: number,
-    projectId: number
-) => {
+export const stopFrontendVite = async (projectId: number) => {
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId

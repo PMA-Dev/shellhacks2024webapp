@@ -37,7 +37,7 @@ export const postProjectMetadata = async (
             return;
         }
         const metadataId = await pushMetadata(MetadataType.Project, data);
-        const port = await runFrontendStart(galacticId, metadataId);
+        const port = await runFrontendStart(metadataId);
         await createHomePageIdempotent(metadataId);
         const backendPort = await runBackendStart(metadataId);
         await editMetadataInPlace<GalacticMetadata>(
@@ -58,6 +58,11 @@ export const postProjectMetadata = async (
                 x.port = port;
                 x.backendPort = backendPort!;
                 x.workingDir = path.join(galaxy!.workingDir, data.projectName);
+                x.backendWorkingDir = path.join(
+                    galaxy!.workingDir,
+                    data.projectName,
+                    'backend'
+                );
             }
         );
 
@@ -67,10 +72,7 @@ export const postProjectMetadata = async (
         console.log(
             `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${metadataId}`
         );
-        await createAppTsxFileForProject(
-            (await getDefaultGalacticId())!,
-            metadataId
-        );
+        await createAppTsxFileForProject(metadataId);
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
