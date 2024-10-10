@@ -1,13 +1,13 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import {
-    checkNoProjectPage,
-    createFirstProject,
+  checkNoProjectPage,
+  createFirstProject,
 } from './createProject.support';
 
 test('Project onboarding flow', async ({ page }) => {
-    await checkNoProjectPage({ page }, test);
+    await checkNoProjectPage({ page }, test, expect);
 });
 
 test('Create first project', async ({ page }) => {
-    await createFirstProject({ page }, test);
+    await createFirstProject({ page }, test, expect);
 });

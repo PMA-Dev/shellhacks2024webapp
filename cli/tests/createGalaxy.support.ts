@@ -1,6 +1,5 @@
-import { expect } from '@playwright/test';
 import { createTempDir } from './util';
-export const checkGalacticHomepage = async ({ page }: any, test: any) => {
+export const checkGalacticHomepage = async ({ page }: any, test: any, expect: any) => {
     await test.step('has Galactic homepage data', async () => {
         await page.goto('http://localhost:5173');
 
@@ -12,11 +11,8 @@ export const checkGalacticHomepage = async ({ page }: any, test: any) => {
     });
 };
 
-export const fillOutGalacticFormAndSubmit = async (
-    { page }: any,
-    test: any
-) => {
-    await checkGalacticHomepage({ page }, test);
+export const fillOutGalacticFormAndSubmit = async ( { page }: any, test: any, expect: any) => {
+    await checkGalacticHomepage({ page }, test, expect);
     await test.step('Fill out the form and submit', async () => {
         await page.goto('http://localhost:5173');
         await page.fill('#githubPat', 'your-github-pat-here');

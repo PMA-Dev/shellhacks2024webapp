@@ -1,8 +1,7 @@
-import { expect } from '@playwright/test';
 import { checkDefaultProjectPage } from './projectDashboard.support';
 
-export const createPageForProject = async ({ page }: any, test: any) => {
-    await checkDefaultProjectPage({ page }, test);
+export const createPageForProject = async ({ page }: any, test: any, expect: any) => {
+    await checkDefaultProjectPage({ page }, test, expect);
 
     await test.step('Checks that create page modal renders', async () => {
         expect(

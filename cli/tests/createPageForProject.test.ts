@@ -1,6 +1,6 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { createPageForProject } from './createPageForProject.support';
 
 test('Create page for project', async ({ page }) => {
-    await createPageForProject({ page }, test);
+    await createPageForProject({ page }, test, expect);
 });
