@@ -4,7 +4,7 @@ import {
     writeDbDataForBackendServer,
     writeDbFileForBackendServer,
     writeNewFileForBackendServer,
-} from '../backend_factory';
+} from '../backendFactory';
 import { getProjectData, getRandomInt, query } from '../db';
 import { MetadataType, ProjectMetadata } from '../models';
 import { killOnPort, runCmd, writeToFileForced } from '../shellProxy';
@@ -88,7 +88,7 @@ console.log('Listening: http://localhost:' + port);
         'sh',
         [
             '-c',
-            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend && sudo rm -r ${workingDir}/backend/.git && cd ${workingDir}/backend && bun add @types/lowdb lowdb && git init && git config init.defaultBranch main &&  git add . && git commit -am "init commit"`,
+            `git clone https://github.com/bassamanator/express-api-starter-template-ts backend || true && sudo rm -r ${workingDir}/backend/.git || true && cd ${workingDir}/backend && bun add @types/lowdb lowdb || true && bun add lowdb || true && git init && git config init.defaultBranch main && git add . && git commit -am "init commit" || true`,
         ],
         { cwd: workingDir! }
     );

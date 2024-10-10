@@ -1,8 +1,7 @@
-import { expect } from '@playwright/test';
 import { createFirstProject } from './createProject.support';
 
-export const checkDefaultProjectPage = async ({ page }: any, test: any) => {
-    await createFirstProject({ page }, test);
+export const checkDefaultProjectPage = async ({ page }: any, test: any, expect: any) => {
+    await createFirstProject({ page }, test, expect);
     await test.step('Checks that default dashboard page renders', async () => {
         await page.goto('http://localhost:5173/dashboard');
 

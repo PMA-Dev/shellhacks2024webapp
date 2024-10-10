@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { writeConfigForBackendInFrontend } from '../backend_factory';
+import { writeConfigForBackendInFrontend } from '../backendFactory';
 import { getDefaultGalacticId, getRandomInt, query } from '../db';
 import {
     createGradientIdempotent,
@@ -96,7 +96,7 @@ export const runFrontendStart = async (projectId: number): Promise<number> => {
         'sh',
         [
             '-c',
-            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} && rm -r ${workingDir}/${projectName}/.git && cd ${workingDir}/${projectName} && git init && git config init.defaultBranch main && bunx shadcn add card input label sonner && bun add @types/react-router-dom react-router-dom && git add . && git commit -am "init commit" && bun install`,
+            `git clone https://github.com/varun-d/template_react_ts_tw ${projectName} || true && rm -r ${workingDir}/${projectName}/.git || true && cd ${workingDir}/${projectName} && git init || true && git config init.defaultBranch main || true && bunx shadcn add card input label sonner || true && bun add @types/react-router-dom react-router-dom || true && git add . || true && git commit -am "init commit" || true && bun install || true`,
         ],
         { cwd: workingDir }
     );
