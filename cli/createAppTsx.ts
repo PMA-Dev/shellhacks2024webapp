@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { query, queryAll } from './db';
-import { getWorkingDir } from './factory';
 import {
     MetadataType,
     PageMetadata,
@@ -10,16 +9,12 @@ import {
 } from './models';
 
 export const createAppTsxFileForProject = async (projectId: number) => {
-    const workingDir = await getWorkingDir();
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId
     );
-    const appTsxPath = path.join(
-        workingDir,
-        project?.projectName!,
-        'src/App.tsx'
-    );
+    const workingDir = project?.workingDir!;
+    const appTsxPath = path.join(workingDir, 'src/App.tsx');
     const pagePromises =
         project?.pageIds.map((pageId) =>
             query<PageMetadata>(MetadataType.Page, pageId)

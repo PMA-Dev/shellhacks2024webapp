@@ -15,7 +15,10 @@ interface SolarSystemProps {
 }
 
 const SolarSystem: React.FC<SolarSystemProps> = ({ seed }) => {
-    const { sunColor, planets } = useMemo(() => generateSolarSystem(seed), [seed]);
+    const { sunColor, planets } = useMemo(
+        () => generateSolarSystem(seed),
+        [seed]
+    );
     const groupRefs = useRef<Array<THREE.Mesh>>([]);
 
     useFrame(({ clock }) => {

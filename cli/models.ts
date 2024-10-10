@@ -6,6 +6,9 @@ export class BaseDataRecord {
     @IsOptional()
     @IsNumber()
     id?: number;
+
+    @IsOptional()
+    lastUpdated?: Date;
 }
 
 // Galactic Metadata with validation decorators
@@ -49,6 +52,10 @@ export class ProjectMetadata extends BaseDataRecord {
     @IsOptional()
     @IsNumber()
     backendPort?: number;
+
+    @IsOptional()
+    @IsNumber()
+    galaxyId?: number;
 }
 
 // Page Metadata with validation decorators

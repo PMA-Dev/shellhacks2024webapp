@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import api from './api';
 import { GalacticMetadata } from '@/models';
+import { useEffect, useState } from 'react';
+import api from './api';
 
 export const useGalaticMetadata = () => {
     const [galaticMetadata, setGalaticMetadata] = useState<GalacticMetadata>();
@@ -24,9 +24,28 @@ export const useGalaticMetadata = () => {
         setGalaticMetadata(response.data);
     };
 
+    const getAllGalacticMetadata = async (): Promise<GalacticMetadata[]> => {
+        const response = await api.get('/metadata/all/galactic');
+        const values = response.data.sort(
+            (a: GalacticMetadata, b: GalacticMetadata) =>
+                new Date(b.lastUpdated!).getTime() -
+                new Date(a.lastUpdated!).getTime()
+        );
+        return values;
+    };
+
+    const getGalacticMetadataById = async (
+        id: number
+    ): Promise<GalacticMetadata> => {
+        const response = await api.get('/metadata/get/galactic?id=' + id);
+        return response.data;
+    };
+
     return {
         galaticMetadata,
         updateGalaticMetadata,
         createGalaticMetadata,
+        getAllGalacticMetadata,
+        getGalacticMetadataById,
     };
 };

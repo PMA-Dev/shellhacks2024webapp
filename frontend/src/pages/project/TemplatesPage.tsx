@@ -1,8 +1,8 @@
 // src/pages/project/TemplatesPage.tsx
 
-import api from "@/hooks/api";
-import { useState, useEffect } from "react";
-import { TemplateMetadata } from "../../../../cli/models";
+import api from '@/hooks/api';
+import { useState, useEffect } from 'react';
+import { TemplateMetadata } from '../../../../cli/models';
 
 function TemplatesPage() {
     const [templates, setTemplates] = useState<TemplateMetadata[]>([]);
@@ -22,8 +22,12 @@ function TemplatesPage() {
                 {templates && templates.length > 0 ? (
                     <div className="mt-4 space-y-2">
                         {templates.map((template) => (
-                            <div key={template.id} className="p-2 bg-gray-100 rounded">
-                                {template.templateName} ({template.templateType})
+                            <div
+                                key={template.id}
+                                className="p-2 bg-gray-100 rounded"
+                            >
+                                {template.templateName} ({template.templateType}
+                                )
                             </div>
                         ))}
                     </div>

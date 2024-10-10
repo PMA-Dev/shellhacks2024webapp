@@ -41,7 +41,7 @@ function GeneralProjectPage() {
         // get all iframes
         console.log('resetting iframes...');
         const iframes = document.querySelectorAll('iframe');
-        
+
         iframes.forEach((iframe) => {
             console.log('resetting iframe...', iframe);
             iframe.src = iframe.src;
@@ -64,7 +64,6 @@ function GeneralProjectPage() {
                 resetIframes();
             }, 1500);
 
-
             setIsServing(true);
         } else {
             // stop the server
@@ -80,14 +79,22 @@ function GeneralProjectPage() {
             <div className=" w-1/2 h-full ">
                 <div className="flex flex-col">
                     <h1 className="text-2xl font-bold pb-5">Your Live Site</h1>
-                    <div className='min-h-[60vh] h-full w-full border-2 border-gray-100 pt-2 rounded-xl shadow-lg relative'>
+                    <div className="min-h-[60vh] h-full w-full border-2 border-gray-100 pt-2 rounded-xl shadow-lg relative">
                         <iframe
                             src={project.sitePath}
                             title="Live Site"
-                            style={{ width: '100%', height: '100%', border: 'none', position: 'absolute', top: 0, left: 0, borderRadius: 'inherit', paddingTop: "0px" }}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                border: 'none',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                borderRadius: 'inherit',
+                                paddingTop: '0px',
+                            }}
                         ></iframe>
                     </div>
-
                 </div>
             </div>
 
@@ -105,7 +112,11 @@ function GeneralProjectPage() {
                                 className="h-8 w-8 p-1 rounded-full bg-red-600 hover:bg-red-700 mr-2 ${disableServerButton ? 'opacity-50' : ''"
                                 onClick={() => handleServer(false)}
                             >
-                                <Pause className="w-4 h-4" fill='white' stroke='white' />
+                                <Pause
+                                    className="w-4 h-4"
+                                    fill="white"
+                                    stroke="white"
+                                />
                             </Button>
                         ) : (
                             <Button
@@ -115,7 +126,11 @@ function GeneralProjectPage() {
                                 className={`h-8 w-8 p-1 rounded-full bg-green-600 hover:bg-green-700 mr-2 ${disableServerButton ? 'opacity-50' : ''}`}
                                 onClick={() => handleServer(true)}
                             >
-                                <Play className="w-4 h-4" stroke='white' fill='white' />
+                                <Play
+                                    className="w-4 h-4"
+                                    stroke="white"
+                                    fill="white"
+                                />
                             </Button>
                         )}
                     </div>
@@ -150,7 +165,10 @@ function GeneralProjectPage() {
                 <div className="grid grid-cols-1 gap-4 mt-4">
                     {pages && pages.length > 0 ? (
                         pages.map((page) => (
-                            <div key={page.id} className="border rounded-lg overflow-hidden">
+                            <div
+                                key={page.id}
+                                className="border rounded-lg overflow-hidden"
+                            >
                                 <div className="bg-gray-200 p-2 flex justify-between items-center">
                                     <span>{page.pageName}</span>
                                     <a
@@ -161,12 +179,16 @@ function GeneralProjectPage() {
                                         <ExternalLink className="w-4 h-4" />
                                     </a>
                                 </div>
-                                <div className='h-full min-h-[55vh] w-full'>
-                                <iframe
-                                    src={`${project.sitePath}${page.routerPath}`}
-                                    title={page.pageName}
-                                    style={{ width: '100%', height: '100%', border: 'none' }}
-                                ></iframe>
+                                <div className="h-full min-h-[55vh] w-full">
+                                    <iframe
+                                        src={`${project.sitePath}${page.routerPath}`}
+                                        title={page.pageName}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            border: 'none',
+                                        }}
+                                    ></iframe>
                                 </div>
                             </div>
                         ))

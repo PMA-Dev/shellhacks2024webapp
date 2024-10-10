@@ -1,41 +1,59 @@
-import { Project } from "@/models";
-import { useEffect, useState } from "react";
-import api from "./api";
+import { Project } from '@/models';
+import { useEffect, useState } from 'react';
+import api from './api';
 
 export const useProjects = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
+    const [projects, setProjects] = useState<Project[]>([]);
 
-  const fetchProjects = async () => {
-    const response = await api.get("/metadata/all/project");
-    setProjects(response.data);
-  };
+    const fetchProjects = async () => {
+        const response = await api.get('/metadata/all/project');
+        setProjects(response.data);
+    };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+    const getProjectsForGalaxy = async (
+        galaxyId: number
+    ): Promise<Project[]> => {
+        const response = await api.get(
+            `/metadata/all/project?galacticId=${galaxyId}`
+        );
+        return response.data;
+    };
 
-  const addProject = async (project: Project): Promise<void> => {
-    await api.post("/metadata/post/project", project);
-    await fetchProjects();
-  };
+    useEffect(() => {
+        fetchProjects();
+    }, []);
 
-  const updateProject = async (project: Project) => {
-    const response = await api.patch(
-      `/metadata/patch/project?id=${project.id}`,
-      project
-    );
-    setProjects(projects.map((p) => (p.id === project.id ? response.data : p)));
-  };
+    const addProject = async (
+        project: Project,
+        galaxyId?: number
+    ): Promise<void> => {
+        const url = galaxyId
+            ? `/metadata/post/project?galacticId=${galaxyId}`
+            : '/metadata/post/project';
+        await api.post(url, project);
+        await fetchProjects();
+    };
 
-  const getProjectById = async (projectId: string) => {
-    const response = await api.get(`/metadata/get/project?id=${projectId}`);
-    return response.data;
-  };
+    const updateProject = async (project: Project) => {
+        const response = await api.patch(
+            `/metadata/patch/project?id=${project.id}`,
+            project
+        );
+        setProjects(
+            projects.map((p) => (p.id === project.id ? response.data : p))
+        );
+    };
 
-  return {
-    projects,
-    addProject,
-    updateProject,
-    getProjectById,
-  };
+    const getProjectById = async (projectId: string) => {
+        const response = await api.get(`/metadata/get/project?id=${projectId}`);
+        return response.data;
+    };
+
+    return {
+        projects,
+        addProject,
+        updateProject,
+        getProjectById,
+        getProjectsForGalaxy,
+    };
 };

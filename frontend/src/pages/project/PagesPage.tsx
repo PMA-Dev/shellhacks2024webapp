@@ -1,29 +1,29 @@
-import { useEffect, useState } from 'react';
+import PageOverviewWidget from '@/components/PageOverviewWidget.tsx';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Dialog,
-    DialogTrigger,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogDescription,
     DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from '@/components/ui/dialog';
-import { useProject } from '../../context/ProjectContext.tsx';
-import { usePages } from '@/hooks/usePages';
-import { Page } from '@/models';
-import { toast } from 'sonner';
-import PageOverviewWidget from '@/components/PageOverviewWidget.tsx';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import api from '@/hooks/api.ts';
+import { usePages } from '@/hooks/usePages';
+import { Template } from '@/models';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useProject } from '../../context/ProjectContext.tsx';
 
 function PagesPage() {
     const [pageName, setPageName] = useState('');
     const [pageRoute, setPageRoute] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedTemplate, setSelectedTemplate] = useState();
-    const [templates, setTemplates] = useState([]);
+    const [selectedTemplate, setSelectedTemplate] = useState<Template>();
+    const [templates, setTemplates] = useState<Template[]>([]);
     const project = useProject();
     const { pages, addPage } = usePages(project?.id || '');
 
@@ -43,13 +43,16 @@ function PagesPage() {
     const handleAddPage = async () => {
         try {
             if (pageName.trim() !== '') {
-                console.log('selectedTemplate:', selectedTemplate?.templateName);
+                console.log(
+                    'selectedTemplate:',
+                    selectedTemplate?.templateName
+                );
                 const newPage = {
                     pageName,
-                    templateId: selectedTemplate?.id,
-                    projectId: project.id,
+                    templateId: selectedTemplate!.id!,
+                    projectId: project.id!,
                     routerPath: pageRoute,
-                    templateType: selectedTemplate?.templateType,
+                    templateType: selectedTemplate!.templateType!,
                 };
                 await addPage(newPage);
                 setPageName('');
@@ -76,7 +79,8 @@ function PagesPage() {
                     <DialogHeader>
                         <DialogTitle>Create New Page</DialogTitle>
                         <DialogDescription>
-                            Enter a name and select a template for your new page.
+                            Enter a name and select a template for your new
+                            page.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
@@ -101,30 +105,53 @@ function PagesPage() {
                         <div>
                             <Label>Template</Label>
                             <div className="space-y-2">
-                                {templates?.length && templates.map((template) => (
-                                    <div key={template.id} className="flex items-center space-x-2">
-                                        <input
-                                            type="radio"
-                                            id={template.id}
-                                            name="template"
-                                            value={template.id}
-                                            onChange={(e) => {
-                                                console.log('selected template:', e.target.value);
-                                                const selectedId = e.target.value;
-                                                const selected = templates.find((t) => t.id == selectedId);
-                                                console.log('selected:', selected);
-                                                setSelectedTemplate(selected);
-                                            }}
-                                            className="w-4 h-4"
-                                        />
-                                        <Label htmlFor={template.id}>{template.templateName}</Label>
-                                    </div>
-                                ))}
+                                {templates?.length &&
+                                    templates.map((template) => (
+                                        <div
+                                            key={template.id}
+                                            className="flex items-center space-x-2"
+                                        >
+                                            <input
+                                                type="radio"
+                                                id={template.id}
+                                                name="template"
+                                                value={template.id}
+                                                onChange={(e) => {
+                                                    console.log(
+                                                        'selected template:',
+                                                        e.target.value
+                                                    );
+                                                    const selectedId =
+                                                        e.target.value;
+                                                    const selected =
+                                                        templates.find(
+                                                            (t) =>
+                                                                t.id ==
+                                                                selectedId
+                                                        );
+                                                    console.log(
+                                                        'selected:',
+                                                        selected
+                                                    );
+                                                    setSelectedTemplate(
+                                                        selected
+                                                    );
+                                                }}
+                                                className="w-4 h-4"
+                                            />
+                                            <Label htmlFor={template.id}>
+                                                {template.templateName}
+                                            </Label>
+                                        </div>
+                                    ))}
                             </div>
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button onClick={handleAddPage} disabled={!pageName || !selectedTemplate}>
+                        <Button
+                            onClick={handleAddPage}
+                            disabled={!pageName || !selectedTemplate}
+                        >
                             Create Page
                         </Button>
                     </DialogFooter>
@@ -136,7 +163,11 @@ function PagesPage() {
                 {pages && pages.length > 0 ? (
                     <div className="mt-4 space-y-2">
                         {pages.map((page) => (
-                            <PageOverviewWidget key={page.id} page={page} project={project} />
+                            <PageOverviewWidget
+                                key={page.id}
+                                page={page}
+                                project={project}
+                            />
                         ))}
                     </div>
                 ) : (

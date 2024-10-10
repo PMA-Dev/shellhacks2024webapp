@@ -24,7 +24,9 @@ const ProjectList: FC<ProjectListProps> = ({ projects }) => {
                     className="p-4 cursor-pointer hover:bg-gray-100"
                     onClick={() => navigate(`/projects/${project.id}`)}
                 >
-                    <h3 className="text-lg font-semibold">{project.projectName}</h3>
+                    <h3 className="text-lg font-semibold">
+                        {project.projectName}
+                    </h3>
                 </Card>
             ))}
         </div>
