@@ -148,17 +148,12 @@ export const getPagesPath = async (projectId: number) => {
         projectId
     );
     const workingDir = project?.workingDir!;
-    const projectName = project?.projectName;
-    if (!projectName)
+    if (!workingDir)
         throw new Error('No project metadata found for id: ' + projectId);
-    return path.join(workingDir, projectName, 'src/pages');
+    return path.join(workingDir, 'src/pages');
 };
 
-export const populateTemplates = async () => {
-    await populateAllTemplates();
-};
-
-export const populateAllTemplates = async () => {
+export const populateTemplates  = async () => {
     const datas = [
         {
             templateName: 'Table',
@@ -178,6 +173,11 @@ export const populateAllTemplates = async () => {
             componentIds: [],
         },
     ];
+
+    const existingData = await queryAll<TemplateMetadata>(MetadataType.Template);
+    if (existingData && existingData.length == datas.length) {
+        return;
+    }
 
     console.log(
         '\t-------------------Populating template:',
