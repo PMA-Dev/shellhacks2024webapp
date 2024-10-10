@@ -33,200 +33,8 @@ import {
     getPagesPath,
     populateTemplates,
 } from '../factory';
+
 import { createAppTsxFileForProject } from '../create_app_tsx';
-
-// GET Handlers
-export const getGalacticMetadata = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const metadata = await queryAll<GalacticMetadata>(
-            MetadataType.Galactic
-        );
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getProjectMetadata = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const metadata = await queryAll<ProjectMetadata>(MetadataType.Project);
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getPageMetadata = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const metadata = await queryAll<PageMetadata>(MetadataType.Page);
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getTemplateMetadata = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const metadata = await queryAll<TemplateMetadata>(
-            MetadataType.Template
-        );
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getComponentMetadata = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const metadata = await queryAll<ComponentMetadata>(
-            MetadataType.Component
-        );
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-// GET by ID Handlers
-export const getGalacticMetadataById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        if (!req.query.id) {
-            res.status(400).json({ error: 'id is required' });
-            return;
-        }
-        const metadata = await query<GalacticMetadata>(
-            MetadataType.Galactic,
-            Number(req.query.id)
-        );
-        if (!metadata) {
-            res.status(404).json({ error: 'metadata not found' });
-            return;
-        }
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getProjectMetadataById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        if (!req.query.id) {
-            res.status(400).json({ error: 'id is required' });
-            return;
-        }
-        const metadata = await query<ProjectMetadata>(
-            MetadataType.Project,
-            Number(req.query.id)
-        );
-        if (!metadata) {
-            res.status(404).json({ error: 'metadata not found' });
-            return;
-        }
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getPageMetadataById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        if (!req.query.id) {
-            res.status(400).json({ error: 'id is required' });
-            return;
-        }
-        const metadata = await query<PageMetadata>(
-            MetadataType.Page,
-            Number(req.query.id)
-        );
-        if (!metadata) {
-            res.status(404).json({ error: 'metadata not found' });
-            return;
-        }
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getTemplateMetadataById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        if (!req.query.id) {
-            res.status(400).json({ error: 'id is required' });
-            return;
-        }
-        const metadata = await query<TemplateMetadata>(
-            MetadataType.Template,
-            Number(req.query.id)
-        );
-        if (!metadata) {
-            res.status(404).json({ error: 'metadata not found' });
-            return;
-        }
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const getComponentMetadataById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        if (!req.query.id) {
-            res.status(400).json({ error: 'id is required' });
-            return;
-        }
-        const metadata = await query<ComponentMetadata>(
-            MetadataType.Component,
-            Number(req.query.id)
-        );
-        if (!metadata) {
-            res.status(404).json({ error: 'metadata not found' });
-            return;
-        }
-        res.json(metadata);
-    } catch (error) {
-        next(error);
-    }
-};
 
 // POST Handlers with Validation
 export const postGalacticMetadata = async (
@@ -270,8 +78,6 @@ export const postProjectMetadata = async (
         }
         const metadataId = await pushMetadata(MetadataType.Project, data);
         const port = await runFrontendStart(galacticId, metadataId);
-        // wait for 1s
-        await new Promise((resolve) => setTimeout(resolve, 2500));
         await createHomePageIdempotent(metadataId);
         const backendPort = await runBackendStart(metadataId);
         await editMetadataInPlace<GalacticMetadata>(
@@ -280,6 +86,10 @@ export const postProjectMetadata = async (
             (x) => x.projectIds.push(metadataId)
         );
 
+        const galaxy = await query<GalacticMetadata>(
+            MetadataType.Galactic,
+            galacticId
+        );
         await editMetadataInPlace<ProjectMetadata>(
             MetadataType.Project,
             metadataId,
@@ -287,6 +97,7 @@ export const postProjectMetadata = async (
                 x.sitePath = `http://localhost:${port}`;
                 x.port = port;
                 x.backendPort = backendPort!;
+                x.workingDir = path.join(galaxy!.workingDir, data.projectName);
             }
         );
 
@@ -381,6 +192,7 @@ export const innerPostTemplateMetadata = async (
 
     console.log(`Creating template at ${data.physicalPath}`);
     const metadataId = await pushMetadata(MetadataType.Template, data);
+    console.log(`Created template with id: ${metadataId}`);
     return metadataId;
 };
 

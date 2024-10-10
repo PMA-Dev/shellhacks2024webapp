@@ -26,6 +26,10 @@ export class ProjectMetadata extends BaseDataRecord {
     @IsString()
     projectName!: string;
 
+    @IsString()
+    @IsOptional()
+    workingDir?: string;
+
     @IsArray()
     @IsNumber({}, { each: true })
     pageIds: number[] = [];

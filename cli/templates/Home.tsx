@@ -9,17 +9,17 @@ export const Home = () => {
     const gradientStyle = {
         width: '100%',
         height: '100%',
-        '--gradient-color-1': "#000022",
+        '--gradient-color-1': '#000022',
         '--gradient-color-2': '#E7D7C1',
         '--gradient-color-4': '#FD1D64',
         '--gradient-color-3': '#590004',
-    }
+    };
 
     useEffect(() => {
-        const canvasElement = document.getElementById("gradient-canvas");
+        const canvasElement = document.getElementById('gradient-canvas');
         const gradient: any = new Gradient();
         if (canvasElement) {
-            gradient.initGradient("#gradient-canvas");
+            gradient.initGradient('#gradient-canvas');
         } else {
             gradient.pause();
         }
@@ -27,7 +27,12 @@ export const Home = () => {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-transparent text-white p-6">
-            <canvas id="gradient-canvas" className='absolute -z-10' style={gradientStyle} data-transition-in />
+            <canvas
+                id="gradient-canvas"
+                className="absolute -z-10"
+                style={gradientStyle}
+                data-transition-in
+            />
             {/* Hero Section */}
             <div className="text-center space-y-6">
                 <h1 className="text-4xl font-extrabold sm:text-5xl">

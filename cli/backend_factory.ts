@@ -48,7 +48,6 @@ export const writeNewFileForBackendServer = async (projectId: number) => {
         'src/router/index.ts'
     );
     runCmd('rm', ['-f', toPath]);
-    await new Promise((resolve) => setTimeout(resolve, 100));
     await copyTemplateFileToProject('index.ts', projectId, toPath);
 };
 

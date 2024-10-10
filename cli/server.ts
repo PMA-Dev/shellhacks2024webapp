@@ -3,16 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import { Config } from './config';
 import cors from 'cors';
 import {
-    getGalacticMetadata,
-    getProjectMetadata,
-    getPageMetadata,
-    getTemplateMetadata,
-    getComponentMetadata,
-    getGalacticMetadataById,
-    getProjectMetadataById,
-    getPageMetadataById,
-    getTemplateMetadataById,
-    getComponentMetadataById,
     postGalacticMetadata,
     postProjectMetadata,
     postPageMetadata,
@@ -24,6 +14,18 @@ import {
     patchTemplateMetadata,
     patchComponentMetadata,
 } from './routes/metadata';
+import {
+    getGalacticMetadata,
+    getProjectMetadata,
+    getPageMetadata,
+    getTemplateMetadata,
+    getComponentMetadata,
+    getGalacticMetadataById,
+    getProjectMetadataById,
+    getPageMetadataById,
+    getTemplateMetadataById,
+    getComponentMetadataById,
+} from './routes/getMetadata';
 import {
     runCreateReactApp,
     startBackendApp,

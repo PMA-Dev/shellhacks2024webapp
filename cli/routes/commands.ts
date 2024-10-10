@@ -173,11 +173,7 @@ console.log('Listening: http://localhost:' + port);
         { cwd: workingDir! }
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     runCmd('sh', ['-c', `cd backend && bun install`], { cwd: workingDir! });
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const filePath = path.join(workingDir!, 'backend', 'src', 'index.ts');
     await writeToFileForced(filePath, indexTsContents);
@@ -200,7 +196,6 @@ export const writeToFileForced = async (filePath: string, contents: string) => {
     console.log(`going to rm ${filePath}`);
     // rm the file
     runCmd('rm', ['-f', filePath]);
-    await new Promise((resolve) => setTimeout(resolve, 500));
     console.log(`Writing index.ts to ${filePath}`);
     await fs.writeFile(filePath, contents);
     console.log(`DONE!`);

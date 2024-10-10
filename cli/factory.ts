@@ -17,7 +17,9 @@ export const copyTemplateFileToProject = async (
     projectId: number,
     overrideToPath?: string
 ) => {
-    const toPath = overrideToPath ?? path.join(await getPagesPath(projectId), templateFileName);
+    const toPath =
+        overrideToPath ??
+        path.join(await getPagesPath(projectId), templateFileName);
     console.log('Checking if page already exists at:', toPath);
     if (toPath && (await doesPathExist(toPath))) return;
     console.log(`Page does not exist at ${toPath}, creating...`);
@@ -28,7 +30,9 @@ export const copyTemplateFileToProject = async (
 
     console.log(`Copying template from ${pathToCopy} to ${toPath}`);
     if (!pathToCopy)
-        throw new Error('No template path found for page id: ' + templateFileName);
+        throw new Error(
+            'No template path found for page id: ' + templateFileName
+        );
 
     console.log(`Copying template from ${pathToCopy} to ${toPath}`);
     runCmd('cp', [pathToCopy, toPath!]);
@@ -68,9 +72,7 @@ export const createPageIdempotent = async (
 export const createTablePageIdempotent = async (projectId: number) => {
     const tablePagePath = path.join(__dirname, 'templates', `Table.tsx`);
 
-    const pagesPath = await getPagesPath(
-        projectId
-    );
+    const pagesPath = await getPagesPath(projectId);
 
     console.log(`Copying template from ${tablePagePath} to ${pagesPath}`);
     if (!(await doesPathExist(pagesPath))) {
@@ -90,9 +92,7 @@ export const createTablePageIdempotent = async (projectId: number) => {
 export const createGradientIdempotent = async (projectId: number) => {
     const tablePagePath = path.join(__dirname, 'templates', `Gradient.js`);
 
-    const pagesPath = await getPagesPath(
-        projectId
-    );
+    const pagesPath = await getPagesPath(projectId);
 
     console.log(`Copying template from ${tablePagePath} to ${pagesPath}`);
     if (!(await doesPathExist(pagesPath))) {
@@ -112,9 +112,7 @@ export const createGradientIdempotent = async (projectId: number) => {
 export const createHomePageIdempotent = async (projectId: number) => {
     const homePagePath = path.join(__dirname, 'templates', `Home.tsx`);
 
-    const pagesPath = await getPagesPath(
-        projectId
-    );
+    const pagesPath = await getPagesPath(projectId);
 
     console.log(`Copying template from ${homePagePath} to ${pagesPath}`);
     if (!(await doesPathExist(pagesPath))) {
@@ -171,62 +169,42 @@ export const getPagesPath = async (projectId: number) => {
 };
 
 export const populateTemplates = async () => {
-    const data = {
-        templateName: 'Blog',
-        templateType: TemplateTypes.Blog,
-        componentIds: [],
-    };
-
-    const physicalPathOverride = path.join(
-        __dirname,
-        'templates',
-        `${data.templateName}.tsx`
-    );
-    const metadataId = await innerPostTemplateMetadata(
-        data,
-        physicalPathOverride
-    );
-
-    await populateTemplates2();
-    await populateTemplates3();
+    await populateAllTemplates();
 };
 
+export const populateAllTemplates = async () => {
+    const datas = [
+        {
+            templateName: 'Table',
+            templateType: TemplateTypes.Table,
+            componentIds: [],
+        },
 
-export const populateTemplates2 = async () => {
-    const data = {
-        templateName: 'DataEntry',
-        templateType: TemplateTypes.DataEntry,
-        componentIds: [],
-    };
+        {
+            templateName: 'DataEntry',
+            templateType: TemplateTypes.DataEntry,
+            componentIds: [],
+        },
 
-    const physicalPathOverride = path.join(
-        __dirname,
-        'templates',
-        `${data.templateName}.tsx`
-    );
-    const metadataId = await innerPostTemplateMetadata(
-        data,
-        physicalPathOverride
-    );
+        {
+            templateName: 'Blog',
+            templateType: TemplateTypes.Blog,
+            componentIds: [],
+        },
+    ];
 
-};
-
-
-export const populateTemplates3 = async () => {
-    const data = {
-        templateName: 'Table',
-        templateType: TemplateTypes.Table,
-        componentIds: [],
-    };
-
-    const physicalPathOverride = path.join(
-        __dirname,
-        'templates',
-        `${data.templateName}.tsx`
-    );
-    const metadataId = await innerPostTemplateMetadata(
-        data,
-        physicalPathOverride
+    console.log(
+        '\t-------------------Populating template:',
+        JSON.stringify(datas)
     );
 
+    for (const data of datas) {
+        console.log('Populating template:', data);
+        const metadataId = await innerPostTemplateMetadata(data);
+    }
+
+    const allTemplates = await queryAll<TemplateMetadata>(
+        MetadataType.Template
+    );
+    console.log('All templates:', allTemplates);
 };

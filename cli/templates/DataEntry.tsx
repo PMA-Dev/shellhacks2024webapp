@@ -2,7 +2,13 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+    CardFooter,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -42,7 +48,9 @@ export const DataEntry = () => {
         <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
             <Card className="w-full max-w-md border border-gray-200">
                 <CardHeader>
-                    <CardTitle className="text-2xl text-center">Submit New Log</CardTitle>
+                    <CardTitle className="text-2xl text-center">
+                        Submit New Log
+                    </CardTitle>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
