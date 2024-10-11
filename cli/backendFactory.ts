@@ -34,21 +34,13 @@ export const makeFetchRequest = async (endpoint: string, options: RequestInit = 
     await writeToFileForced(filePath, config);
 };
 
-export const writeNewFileForBackendServer = async (projectId: number) => {
+export const setupAllBackendFiles = async (projectId: number) => {
     const project = await getProjectData(projectId);
-    const toPath = path.join(project.backendWorkingDir!, 'src/router/index.ts');
-    runCmd('rm', ['-f', toPath]);
-    await copyTemplateFileToProject('index.ts', projectId, toPath);
-};
-
-export const writeDbFileForBackendServer = async (projectId: number) => {
-    const project = await getProjectData(projectId);
-    const toPath = path.join(project.backendWorkingDir!, 'src/db.ts');
-    await copyTemplateFileToProject('db.ts', projectId, toPath);
-};
-
-export const writeDbDataForBackendServer = async (projectId: number) => {
-    const project = await getProjectData(projectId);
-    const toPath = path.join(project.backendWorkingDir!, 'db.json');
-    await copyTemplateFileToProject('db.json', projectId, toPath);
+    const toPaths = ['src/router/index.ts', 'src/db.ts', 'db.json'];
+    for (const pathName of toPaths) {
+        const toPath = path.join(project.backendWorkingDir!, pathName);
+        const templateName = pathName.split('/').at(-1);
+        runCmd('rm', ['-f', toPath]);
+        await copyTemplateFileToProject(templateName!, projectId, toPath);
+    }
 };

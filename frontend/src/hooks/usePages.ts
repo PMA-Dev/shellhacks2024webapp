@@ -1,7 +1,7 @@
 // src/hooks/usePages.ts
 
-import { useState, useEffect } from 'react';
 import { Page } from '@/models';
+import { useEffect, useState } from 'react';
 import api from './api';
 
 export const usePages = (projectId: string) => {
@@ -11,7 +11,7 @@ export const usePages = (projectId: string) => {
         const response = await api.get('/metadata/all/page');
         // filter out pages that don't belong to the current project
         response.data = response.data.filter(
-            (page) => page.projectId === projectId
+            (page: Page) => page.projectId === projectId
         );
         setPages(response.data);
     };

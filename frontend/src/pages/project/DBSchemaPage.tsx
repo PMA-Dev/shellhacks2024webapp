@@ -1,10 +1,10 @@
 // src/pages/project/DBSchemaPage.tsx
 
-import React, { useEffect, useState } from 'react';
-import { useDBSchema } from '@/hooks/useDBSchema';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'; // Import shadcn Tabs components
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'; // Import shadcn Tabs components
+import { useDBSchema } from '@/hooks/useDBSchema';
 import Editor from '@monaco-editor/react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 function DBSchemaPage() {
@@ -40,7 +40,7 @@ function DBSchemaPage() {
         <div>
             <h2 className="mb-4 text-2xl font-bold">Database Schema</h2>
             <Tabs
-                value={activeCollectionId}
+                value={activeCollectionId!}
                 onValueChange={setActiveCollectionId}
             >
                 <TabsList>

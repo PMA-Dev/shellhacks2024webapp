@@ -65,64 +65,23 @@ export const createPageIdempotent = async (
     runCmd('cp', [pathToCopy, pagesPath!]);
 };
 
-export const createTablePageIdempotent = async (projectId: number) => {
-    const tablePagePath = path.join(__dirname, 'templates', `Table.tsx`);
-
+export const createStaticFrontendPagesFromTemplate = async (
+    projectId: number
+) => {
+    const paths = ['Home.tsx', 'Gradient.js'];
     const pagesPath = await getPagesPath(projectId);
 
-    console.log(`Copying template from ${tablePagePath} to ${pagesPath}`);
     if (!(await doesPathExist(pagesPath))) {
         await createPagesPath(projectId);
     }
 
-    const pathToCopy = tablePagePath;
-
-    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
-    if (!pathToCopy)
-        throw new Error('No template path found for page id: ' + projectId);
-
-    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
-    runCmd('cp', [pathToCopy, pagesPath! + '/']);
-};
-
-export const createGradientIdempotent = async (projectId: number) => {
-    const tablePagePath = path.join(__dirname, 'templates', `Gradient.js`);
-
-    const pagesPath = await getPagesPath(projectId);
-
-    console.log(`Copying template from ${tablePagePath} to ${pagesPath}`);
-    if (!(await doesPathExist(pagesPath))) {
-        await createPagesPath(projectId);
+    for (const pathName of paths) {
+        const pathToCopy = path.join(__dirname, 'templates', pathName);
+        console.log(
+            `===================================COPYING TO FROM: ${pathToCopy}, ${pathName}`
+        );
+        runCmd('cp', [pathToCopy, pagesPath! + '/']);
     }
-
-    const pathToCopy = tablePagePath;
-
-    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
-    if (!pathToCopy)
-        throw new Error('No template path found for page id: ' + projectId);
-
-    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
-    runCmd('cp', [pathToCopy, pagesPath! + '/']);
-};
-
-export const createHomePageIdempotent = async (projectId: number) => {
-    const homePagePath = path.join(__dirname, 'templates', `Home.tsx`);
-
-    const pagesPath = await getPagesPath(projectId);
-
-    console.log(`Copying template from ${homePagePath} to ${pagesPath}`);
-    if (!(await doesPathExist(pagesPath))) {
-        await createPagesPath(projectId);
-    }
-
-    const pathToCopy = homePagePath;
-
-    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
-    if (!pathToCopy)
-        throw new Error('No template path found for page id: ' + projectId);
-
-    console.log(`Copying template from ${pathToCopy} to ${pagesPath}`);
-    runCmd('cp', [pathToCopy, pagesPath! + '/']);
 };
 
 export const getTemplatePathToCopy = async (templateId: number) => {
