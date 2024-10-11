@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
 import { Component } from '@/models';
+import { useEffect, useState } from 'react';
 import api from './api';
 
 export const useComponents = () => {
     const [components, setComponents] = useState<Component[]>([]);
 
     const fetchComponents = async () => {
-        // const response = await api.get("/metadata/all/component");
-        // setComponents(response.data);
         setComponents([
             {
                 id: '1',

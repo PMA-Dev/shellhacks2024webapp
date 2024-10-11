@@ -1,12 +1,11 @@
 // simple widget to render page data in the pages list
 // just a simple wrapper around the page data
 
-import { useTemplates } from '@/hooks/useTemplates';
-import { Page } from '@/models';
+import { Page, Project } from '@/models';
 
 interface PageOverviewWidgetProps {
     page: Page;
-    project: object;
+    project: Project;
 }
 
 const PageOverviewWidget = ({ page, project }: PageOverviewWidgetProps) => {

@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
-import {
-    writeDbDataForBackendServer,
-    writeDbFileForBackendServer,
-    writeNewFileForBackendServer,
-} from '../backendFactory';
+import { setupAllBackendFiles } from '../backendFactory';
 import { getProjectData, getRandomInt, query } from '../db';
 import { MetadataType, ProjectMetadata } from '../models';
 import { killOnPort, runCmd, writeToFileForced } from '../shellProxy';
@@ -101,9 +97,7 @@ console.log('Listening: http://localhost:' + port);
 };
 
 export const setupWholeBackend = async (projectId: number) => {
-    await writeNewFileForBackendServer(projectId);
-    await writeDbFileForBackendServer(projectId);
-    await writeDbDataForBackendServer(projectId);
+    await setupAllBackendFiles(projectId);
 };
 
 export const startBackend = async (projectId: number) => {

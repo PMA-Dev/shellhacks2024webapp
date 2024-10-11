@@ -1,18 +1,17 @@
 // src/pages/project/AssetsPage.tsx
 
-import React, { useState } from 'react';
-import { useContent } from '@/hooks/useContent';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     Dialog,
-    DialogTrigger,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogFooter,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Asset, useContent } from '@/hooks/useContent';
 import { Plus, Trash } from 'lucide-react';
+import React, { useState } from 'react';
 
 function AssetsPage() {
     const { assets, addAsset, deleteAsset } = useContent();

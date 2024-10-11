@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { writeConfigForBackendInFrontend } from '../backendFactory';
 import { getDefaultGalacticId, getRandomInt, query } from '../db';
-import {
-    createGradientIdempotent,
-    createTablePageIdempotent,
-} from '../factory';
+import { createStaticFrontendPagesFromTemplate } from '../factory';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import { killOnPort, runCmd } from '../shellProxy';
 import { startBackend, stopBackend } from './backend';
@@ -73,8 +70,7 @@ export const runCreateReactApp = async (
 
 export const setupWholeFrontend = async (projectId: number) => {
     await writeConfigForBackendInFrontend(projectId);
-    await createTablePageIdempotent(projectId);
-    await createGradientIdempotent(projectId);
+    await createStaticFrontendPagesFromTemplate(projectId);
 };
 
 export const runFrontendStart = async (projectId: number): Promise<number> => {

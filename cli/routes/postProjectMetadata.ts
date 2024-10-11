@@ -12,7 +12,6 @@ import path from 'path';
 import { runBackendStart, setupWholeBackend } from '../bootstrapper/backend';
 import { runFrontendStart, setupWholeFrontend } from '../bootstrapper/frontend';
 import { createAppTsxFileForProject } from '../createAppTsx';
-import { createHomePageIdempotent } from '../factory';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 
 export const postProjectMetadata = async (
@@ -69,7 +68,6 @@ export const postProjectMetadata = async (
         console.log('~~~~~~~~~~~~~~~galaxy at mdt', galaxy);
 
         const port = await runFrontendStart(metadataId);
-        await createHomePageIdempotent(metadataId);
         const backendPort = await runBackendStart(metadataId);
         await editMetadataInPlace<GalacticMetadata>(
             MetadataType.Galactic,

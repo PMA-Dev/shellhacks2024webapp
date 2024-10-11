@@ -30,3 +30,12 @@ export interface GalacticMetadata {
     projectIds?: number[];
     lastUpdated?: Date;
 }
+
+export interface Component {
+    id?: string;
+    componentName?: string;
+    componentType?: string;
+    projectId?: string;
+    lastUpdated?: Date;
+    componentIds?: number[];
+}
