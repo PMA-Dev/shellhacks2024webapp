@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
-import { setupAllBackendFiles } from '../backendFactory';
 import { getProjectData, getRandomInt, query } from '../db';
+import { setupAllBackendFiles } from '../factories/backendFactory';
 import { MetadataType, ProjectMetadata } from '../models';
 import { killOnPort, runCmd, writeToFileForced } from '../shellProxy';
 
@@ -102,7 +102,7 @@ export const setupWholeBackend = async (projectId: number) => {
 
 export const startBackend = async (projectId: number) => {
     const project = await getProjectData(projectId);
-    runCmd('bun', [`src/index.ts`], {
+    runCmd('bun', ['run', '--hot', `src/index.ts`], {
         cwd: project.backendWorkingDir,
     });
 };

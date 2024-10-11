@@ -3,10 +3,12 @@ import { getDefaultGalacticId, query, queryAll } from '../db';
 
 import {
     ComponentMetadata,
+    ControllerMetadata,
     GalacticMetadata,
     MetadataType,
     PageMetadata,
     ProjectMetadata,
+    RouteMetadata,
     TemplateMetadata,
 } from '../models';
 
@@ -88,6 +90,34 @@ export const getComponentMetadata = async (
     try {
         const metadata = await queryAll<ComponentMetadata>(
             MetadataType.Component
+        );
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getRouteMetadata = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const metadata = await queryAll<RouteMetadata>(MetadataType.Route);
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getControllerMetadata = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const metadata = await queryAll<ControllerMetadata>(
+            MetadataType.Controller
         );
         res.json(metadata);
     } catch (error) {
@@ -204,6 +234,54 @@ export const getComponentMetadataById = async (
         }
         const metadata = await query<ComponentMetadata>(
             MetadataType.Component,
+            Number(req.query.id)
+        );
+        if (!metadata) {
+            res.status(404).json({ error: 'metadata not found' });
+            return;
+        }
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getRouteMetadataById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const metadata = await query<RouteMetadata>(
+            MetadataType.Route,
+            Number(req.query.id)
+        );
+        if (!metadata) {
+            res.status(404).json({ error: 'metadata not found' });
+            return;
+        }
+        res.json(metadata);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getControllerMetadataById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        if (!req.query.id) {
+            res.status(400).json({ error: 'id is required' });
+            return;
+        }
+        const metadata = await query<ControllerMetadata>(
+            MetadataType.Controller,
             Number(req.query.id)
         );
         if (!metadata) {

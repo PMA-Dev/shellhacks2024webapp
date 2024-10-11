@@ -27,6 +27,9 @@ const getDefaultData = (): DbData => {
             [MetadataType.Page]: { metadata: [] },
             [MetadataType.Template]: { metadata: [] },
             [MetadataType.Component]: { metadata: [] },
+            [MetadataType.Route]: { metadata: [] },
+            [MetadataType.Controller]: { metadata: [] },
+            [MetadataType.DataSource]: { metadata: [] },
         },
     };
 };
@@ -63,7 +66,7 @@ export const pushMetadata = async (
     );
     const db = await getDbHandle();
     await db.read();
-    data.id = getRandomInt(10000000, 100000000);
+    data.id = getRandomInt(10000000, 1000000000);
     data.lastUpdated = new Date();
     await db.update((dbData: any) =>
         dbData.metadatas[metadataType].metadata.push(data as any)

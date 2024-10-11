@@ -1,0 +1,18 @@
+meta {
+  name: post route metadata
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{url}}/metadata/post/component
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "componentName": "Your Component Name",
+    "assetPath": "/path/to/asset"
+  }
+}

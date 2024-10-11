@@ -1,4 +1,5 @@
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import HTTPMethod from 'http-method-enum';
 import 'reflect-metadata';
 
 // Base data record with validation for id
@@ -56,6 +57,10 @@ export class ProjectMetadata extends BaseDataRecord {
     @IsOptional()
     @IsNumber()
     galaxyId?: number;
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    routeIds: number[] = [];
 }
 
 // Page Metadata with validation decorators
@@ -107,6 +112,38 @@ export class ComponentMetadata extends BaseDataRecord {
     assetPath!: string;
 }
 
+export class RouteMetadata extends BaseDataRecord {
+    @IsString()
+    @IsOptional()
+    fileName?: string;
+
+    @IsString()
+    @IsOptional()
+    physicalPath?: string;
+
+    @IsString()
+    @IsOptional()
+    routeName?: string;
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    controllerIds: number[] = [];
+}
+
+export class ControllerMetadata extends BaseDataRecord {
+    method?: HTTPMethod;
+
+    @IsString()
+    @IsOptional()
+    pathName?: string;
+
+    @IsNumber()
+    @IsOptional()
+    dataSourceId?: number;
+}
+
+export class DataSourceMetadata extends BaseDataRecord {}
+
 // Metadata Table to hold arrays of metadata records
 export class MetadataTable<T> {
     @IsArray()
@@ -120,6 +157,9 @@ export enum MetadataType {
     Page = 'page',
     Template = 'template',
     Component = 'component',
+    Route = 'route',
+    DataSource = 'dataSource',
+    Controller = 'controller',
 }
 
 // MetadatasOuter with validation decorators
@@ -138,6 +178,15 @@ export class MetadatasOuter {
 
     @IsOptional()
     component?: MetadataTable<ComponentMetadata>;
+
+    @IsOptional()
+    route?: MetadataTable<RouteMetadata>;
+
+    @IsOptional()
+    controller?: MetadataTable<ControllerMetadata>;
+
+    @IsOptional()
+    dataSource?: MetadataTable<DataSourceMetadata>;
 }
 
 // DbData interface with MetadatasOuter
@@ -151,4 +200,7 @@ export type GenericMetadata =
     | ProjectMetadata
     | PageMetadata
     | TemplateMetadata
-    | ComponentMetadata;
+    | ComponentMetadata
+    | RouteMetadata
+    | ControllerMetadata
+    | DataSourceMetadata;

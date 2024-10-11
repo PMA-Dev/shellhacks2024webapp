@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { writeConfigForBackendInFrontend } from '../backendFactory';
 import { getDefaultGalacticId, getRandomInt, query } from '../db';
-import { createStaticFrontendPagesFromTemplate } from '../factory';
+import { writeConfigForBackendInFrontend } from '../factories/backendFactory';
+import { createStaticFrontendPagesFromTemplate } from '../factories/factory';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import { killOnPort, runCmd } from '../shellProxy';
 import { startBackend, stopBackend } from './backend';

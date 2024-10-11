@@ -4,8 +4,8 @@ import { NextFunction, Request, Response } from 'express';
 import { editMetadataInPlace, pushMetadata } from '../db';
 
 import path from 'path';
-import { createAppTsxFileForProject } from '../createAppTsx';
-import { createPageIdempotent, getPagesPath } from '../factory';
+import { createAppTsxFileForProject } from '../factories/createAppTsx';
+import { createPageIdempotent, getPagesPath } from '../factories/factory';
 import { MetadataType, PageMetadata, ProjectMetadata } from '../models';
 
 export const postPageMetadata = async (
