@@ -55,5 +55,6 @@ export const useProjects = () => {
         updateProject,
         getProjectById,
         getProjectsForGalaxy,
+        fetchProjects
     };
 };

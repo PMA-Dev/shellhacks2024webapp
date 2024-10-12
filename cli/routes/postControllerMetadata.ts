@@ -44,6 +44,7 @@ export const postControllerMetadataInner = async (
     routeId: number,
     data: ControllerMetadata
 ): Promise<number> => {
+    data.routeId = routeId;
     const metadataId = await pushMetadata(MetadataType.Controller, data);
     console.log(
         `before route: ${JSON.stringify(await query(MetadataType.Route, routeId))}`

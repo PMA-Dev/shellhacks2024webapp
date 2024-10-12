@@ -1,7 +1,7 @@
 // src/contexts/ProjectContext.tsx
 
-import React, { createContext, useContext } from 'react';
 import { Project } from '@/models';
+import { createContext, useContext } from 'react';
 
 const ProjectContext = createContext<Project | null>(null);
 

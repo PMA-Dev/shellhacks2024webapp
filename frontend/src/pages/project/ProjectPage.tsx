@@ -1,18 +1,18 @@
 // src/pages/ProjectPage.tsx
 
-import { useParams, Routes, Route } from 'react-router-dom';
 import { Sidebar } from '@/components/Sidebar';
-import PagesPage from './PagesPage';
-import TemplatesPage from './TemplatesPage';
-import ComponentsPage from './ComponentsPage';
-import RouterPage from './RouterPage';
+import { useProjects } from '@/hooks/useProjects';
+import { Project } from '@/models';
+import { useEffect, useState } from 'react';
+import { Route, Routes, useParams } from 'react-router-dom';
+import ProjectContext from '../../context/ProjectContext.tsx';
 import AssetsPage from './AssetsPage';
+import ComponentsPage from './ComponentsPage';
 import DBSchemaPage from './DBSchemaPage';
 import GeneralProjectPage from './GeneralProjectPage';
-import { useProjects } from '@/hooks/useProjects';
-import { useEffect, useState } from 'react';
-import ProjectContext from '../../context/ProjectContext.tsx';
-import { Project } from '@/models';
+import PagesPage from './PagesPage';
+import RouterPage from './RouterPage';
+import TemplatesPage from './TemplatesPage';
 
 function ProjectPage() {
     const { projectId } = useParams();
@@ -52,7 +52,7 @@ function ProjectPage() {
                         <Route path="pages" element={<PagesPage />} />
                         <Route path="templates" element={<TemplatesPage />} />
                         <Route path="components" element={<ComponentsPage />} />
-                        <Route path="router" element={<RouterPage />} />
+                        <Route path="router" element={<RouterPage/>} />
                         <Route path="assets" element={<AssetsPage />} />
                         <Route path="dbschema" element={<DBSchemaPage />} />
                     </Routes>

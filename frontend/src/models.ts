@@ -3,6 +3,7 @@
 export interface Project {
     id?: string;
     projectName: string;
+    routeIds?: string[];
     pageIds: string[];
     sitePath?: string;
 }

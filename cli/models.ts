@@ -117,6 +117,10 @@ export class RouteMetadata extends BaseDataRecord {
     @IsOptional()
     fileName?: string;
 
+    @IsNumber()
+    @IsOptional()
+    projectId?: number;
+
     @IsString()
     @IsOptional()
     physicalPath?: string;
@@ -149,6 +153,10 @@ export class ControllerMetadata extends BaseDataRecord {
     @IsNumber()
     @IsOptional()
     dataSourceId?: number;
+
+    @IsNumber()
+    @IsOptional()
+    routeId?: number;
 }
 
 export class MiddleWareBase {

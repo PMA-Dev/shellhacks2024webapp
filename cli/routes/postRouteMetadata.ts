@@ -36,6 +36,7 @@ export const postRouteMetadataInner = async (
     projectId: number,
     data: RouteMetadata
 ): Promise<number> => {
+    data.projectId = projectId;
     const metadataId = await pushMetadata(MetadataType.Route, data);
     await editMetadataInPlace<ProjectMetadata>(
         MetadataType.Project,
