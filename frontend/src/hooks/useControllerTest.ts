@@ -20,7 +20,7 @@ export const useControllerTest = (project?: Project | null) => {
                 method: controller.method,
                 url: `http://127.0.0.1:${project.backendPort}${controller.pathName}`,
                 data,
-                params
+                params,
             });
             return { response, error: undefined };
         } catch (e) {

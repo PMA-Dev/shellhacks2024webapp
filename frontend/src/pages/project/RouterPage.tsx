@@ -56,9 +56,8 @@ const RouterPage = () => {
         setEditingRoute(null);
         setRouteData({ routeName: '' });
 
-        // Fetch the updated project and update the context
         const updatedProject = await getProjectById(projectId as string);
-        setProject(updatedProject); // Update the project in the context
+        setProject(updatedProject);
 
         setIsLoading(false);
     };

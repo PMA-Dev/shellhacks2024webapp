@@ -85,10 +85,12 @@ const ControllerTable = (props: IProps) => {
 
         let jsonDataParams = null;
         try {
-            jsonDataParams =
-                testController?.method != HTTPMethod.GET
-                    ? null
-                    : JSON.parse(testQueryParamsData);
+            if (testQueryParamsData) {
+                jsonDataParams =
+                    testController?.method != HTTPMethod.GET
+                        ? null
+                        : JSON.parse(testQueryParamsData);
+            }
         } catch (e) {
             setTestResultData(`Invalid json: ${JSON.stringify(e)}`);
             setIsTestLoading(false);
@@ -127,44 +129,6 @@ const ControllerTable = (props: IProps) => {
         setTestQueryParamsData('');
     }, []);
 
-    // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setControllerData({ ...controllerData, [e.target.name]: e.target.value });
-    // };
-
-    // const handleMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    //     setControllerData({ ...controllerData, method: e.target.value });
-    // };
-
-    // const handleMiddlewaresChange = (
-    //     e: React.ChangeEvent<HTMLInputElement>
-    // ) => {
-    //     setControllerData({ ...controllerData, middlewares: e.target.value.split(',') });
-    // };
-
-    // const handleAddOrUpdateController = () => {
-    //     if (editingController) {
-    //         // Update existing controller
-    //         const updatedController: BackendController = {
-    //             ...editingController,
-    //             ...controllerData,
-    //             id: editingController.id,
-    //         };
-    //         updateController(updatedController);
-    //     } else {
-    //         // Add new controller
-    //         const newController: BackendController = {
-    //             id: Date.now().toString(),
-    //             pathName: controllerData.pathName || '',
-    //             method: controllerData.method || 'GET',
-    //             middlewares: controllerData.middlewares || [],
-    //         };
-    //         addController(newController);
-    //     }
-    //     setIsDialogOpen(false);
-    //     setEditingController(null);
-    //     setControllerData({ pathName: '', method: 'GET', middlewares: [] });
-    // };
-
     const openEditDialog = (controller: BackendController) => {
         setEditingController(controller);
         setControllerData(controller);
@@ -176,13 +140,6 @@ const ControllerTable = (props: IProps) => {
         setIsTestDialogOpen(true);
         setTestQueryParamsData(controller.sampleQueryParams ?? '');
         setTestPostBodyData(controller.samplePayload ?? '');
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const openAddDialog = () => {
-        setEditingController(null);
-        setControllerData({ pathName: '', method: HTTPMethod.GET });
-        setIsDialogOpen(true);
     };
 
     return (
