@@ -23,7 +23,7 @@
 
 ## Getting Started
 
-1. Down the GALATIC package from our download page
+1. Down the GALACTIC package from our download page
 2. After installing, open the package
 
 ## License

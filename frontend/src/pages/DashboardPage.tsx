@@ -13,7 +13,7 @@ import {
 import { Dropdown } from '@/components/ui/dropdown';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
+import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
 import { useProjects } from '@/hooks/useProjects';
 import { GalacticMetadata, Project } from '@/models';
 import { Canvas } from '@react-three/fiber';
@@ -32,7 +32,7 @@ const DashboardPage = () => {
     const [projectName, setProjectName] = useState('');
     const [projects, setProjects] = useState<Project[]>([]);
     const { getProjectsForGalaxy, addProject } = useProjects();
-    const { getAllGalacticMetadata } = useGalaticMetadata();
+    const { getAllGalacticMetadata } = useGalacticMetadata();
     const [galaxyId, setGalaxyId] = useState<number | undefined>(undefined);
     const [allGalaxyData, setAllGalaxyData] = useState<GalacticMetadata[]>();
     const navigate = useNavigate();
@@ -174,7 +174,7 @@ const DashboardPage = () => {
                         {projects.map((project) => (
                             <div
                                 key={project.id}
-                                className="relative px-4 py-32 bg-black rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer overflow-hidden"
+                                className="relative px-4 py-32 rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer overflow-hidden"
                                 onClick={() =>
                                     navigate(`/projects/${project.id}/general`)
                                 }
@@ -182,15 +182,16 @@ const DashboardPage = () => {
                                 {/* Solar System Animation */}
                                 <div className="absolute inset-0">
                                     <Canvas
+                                        style={{ background: 'black' }}
                                         camera={{
                                             position: [10, 10, 10],
                                             fov: 75,
                                         }}
                                     >
-                                        <SolarSystem
-                                            seed={+(project.id || 0)}
-                                        />
+                                        <SolarSystem seed={+(project.id || 0)} />
                                     </Canvas>
+
+
                                 </div>
                                 {/* Overlay for readability */}
                                 <div className="absolute inset-0 bg-black opacity-30"></div>

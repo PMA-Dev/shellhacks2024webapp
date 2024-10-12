@@ -1,3 +1,5 @@
+// src/components/SolarSystem.tsx
+
 import { useFrame } from '@react-three/fiber';
 import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
@@ -35,6 +37,9 @@ const SolarSystem: React.FC<SolarSystemProps> = ({ seed }) => {
 
     return (
         <>
+            {/* Starfield Background */}
+            <Starfield seed={seed} />
+
             {/* Sun */}
             <mesh>
                 <sphereGeometry args={[2, 32, 32]} />
@@ -56,7 +61,11 @@ const SolarSystem: React.FC<SolarSystemProps> = ({ seed }) => {
             {/* Ambient Light */}
             <ambientLight intensity={0.5} />
             {/* Point Light at the sun's position */}
-            <pointLight position={[0, 0, 0]} intensity={10} color={sunColor} />
+            <pointLight
+                position={[0, 0, 0]}
+                intensity={100}
+                color={sunColor}
+            />
         </>
     );
 };
@@ -75,7 +84,11 @@ function generateSolarSystem(seed: number) {
     for (let i = 0; i < numPlanets; i++) {
         const distance = (i + 1) * 2 + random(); // Distance from the sun
         const size = random() * 0.5 + 0.2; // Planet size between 0.2 and 0.7
-        const color = new THREE.Color(random(), random(), random()).getStyle(); // Random color
+        const color = new THREE.Color(
+            random(),
+            random(),
+            random()
+        ).getStyle(); // Random color
         const speed = random() * 0.3 + 0.1; // Orbital speed between 0.1 and 0.4
 
         // Add a random initial angle between 0 and 2π
@@ -96,5 +109,37 @@ function mulberry32(a: number) {
         return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
 }
+
+// Starfield Component
+const Starfield: React.FC<{ seed: number }> = ({ seed }) => {
+    const starsGeometry = useMemo(() => {
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        const random = mulberry32(seed + 1); // Different seed for stars
+
+        // Number of stars
+        const numStars = 1000;
+
+        for (let i = 0; i < numStars; i++) {
+            const x = random() * 2000 - 1000;
+            const y = random() * 2000 - 1000;
+            const z = random() * 2000 - 1000;
+            vertices.push(x, y, z);
+        }
+
+        geometry.setAttribute(
+            'position',
+            new THREE.Float32BufferAttribute(vertices, 3)
+        );
+
+        return geometry;
+    }, [seed]);
+
+    return (
+        <points geometry={starsGeometry}>
+            <pointsMaterial color="#ffffff" size={3} />
+        </points>
+    );
+};
 
 export default SolarSystem;
