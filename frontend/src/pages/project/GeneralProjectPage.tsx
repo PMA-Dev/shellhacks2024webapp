@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { useProject } from '../../context/ProjectContext.tsx';
 
 function GeneralProjectPage() {
-    const project = useProject();
+    const { project } = useProject();
     const { pages } = usePages(project?.id || '');
     const [isServing, setIsServing] = useState(false);
     const [disableServerButton, setDisableServerButton] = useState(false);
@@ -31,6 +31,7 @@ function GeneralProjectPage() {
                 setIsServing(true);
             } else {
                 resetIframes();
+                setIsServing(false);
             }
         };
         pingServer();

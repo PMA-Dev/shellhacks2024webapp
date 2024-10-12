@@ -1,14 +1,14 @@
 import { Project } from '@/models';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from './api';
 
 export const useProjects = () => {
     const [projects, setProjects] = useState<Project[]>([]);
 
-    const fetchProjects = async () => {
+    const fetchProjects = useCallback(async () => {
         const response = await api.get('/metadata/all/project');
         setProjects(response.data);
-    };
+    }, []);
 
     const getProjectsForGalaxy = async (
         galaxyId: number
@@ -21,7 +21,7 @@ export const useProjects = () => {
 
     useEffect(() => {
         fetchProjects();
-    }, []);
+    }, [fetchProjects]);
 
     const addProject = async (
         project: Project,
@@ -44,10 +44,15 @@ export const useProjects = () => {
         );
     };
 
-    const getProjectById = async (projectId: string) => {
-        const response = await api.get(`/metadata/get/project?id=${projectId}`);
-        return response.data;
-    };
+    const getProjectById = useCallback(
+        async (projectId: string): Promise<Project> => {
+            const response = await api.get(
+                `/metadata/get/project?id=${projectId}`
+            );
+            return response.data;
+        },
+        []
+    );
 
     return {
         projects,
@@ -55,5 +60,6 @@ export const useProjects = () => {
         updateProject,
         getProjectById,
         getProjectsForGalaxy,
+        fetchProjects,
     };
 };

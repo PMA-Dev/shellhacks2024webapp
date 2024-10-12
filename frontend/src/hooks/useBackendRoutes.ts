@@ -1,38 +1,56 @@
 // src/hooks/useBackendRoutes.ts
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import api from './api';
 
 export interface BackendRoute {
-    id: string;
-    path: string;
-    method: string;
-    middlewares: string[];
+    id?: string;
+    lastUpdated?: string;
+    fileName?: string;
+    physicalPath?: string;
+    routeName?: string;
+    controllerIds?: number[];
+    projectId?: string;
+    middleWares?: object;
 }
 
-export const useBackendRoutes = () => {
-    const [routes, setRoutes] = useState<BackendRoute[]>([
-        // Sample initial data
-        {
-            id: '1',
-            path: '/api/users',
-            method: 'GET',
-            middlewares: ['authMiddleware'],
-        },
-        {
-            id: '2',
-            path: '/api/posts',
-            method: 'POST',
-            middlewares: ['authMiddleware', 'validatePostMiddleware'],
-        },
-    ]);
+export const useBackendRoutes = (projectId?: string) => {
+    const [routes, setRoutes] = useState<BackendRoute[]>([]);
 
-    const addRoute = (route: BackendRoute) => {
-        // TODO: Integrate with backend to add a new route
-        setRoutes([...routes, route]);
+    const fetchRoutes = useCallback(async () => {
+        const response = await api.get('/metadata/all/route');
+        response.data = response.data.filter(
+            (route: BackendRoute) => route.projectId === projectId
+        );
+        console.log(`data from route fetch is: ${response.data}`);
+        setRoutes(response.data);
+    }, [projectId]);
+
+    const fetchRoute = useCallback(async (routeId?: string) => {
+        if (!routeId) {
+            return;
+        }
+        const response = await api.get(`/metadata/get/route?id=${routeId}`);
+        console.log(`data from route fetch single is: ${response.data}`);
+        return response.data;
+    }, []);
+
+    useEffect(() => {
+        fetchRoutes();
+    }, [fetchRoutes]);
+
+    const addRoute = async (route: BackendRoute) => {
+        const response = await api.post(
+            `/metadata/post/route?projectId=${projectId}`,
+            route
+        );
+        await fetchRoutes();
+        return response.data.id;
     };
 
     const updateRoute = (updatedRoute: BackendRoute) => {
         // TODO: Integrate with backend to update the route
+        throw new Error('UnimplementedError: have not implemented updateRoute');
         setRoutes(
             routes.map((route) =>
                 route.id === updatedRoute.id ? updatedRoute : route
@@ -42,11 +60,14 @@ export const useBackendRoutes = () => {
 
     const deleteRoute = (routeId: string) => {
         // TODO: Integrate with backend to delete the route
+        throw new Error('UnimplementedError: have not implemented deleteRoute');
         setRoutes(routes.filter((route) => route.id !== routeId));
     };
 
     return {
         routes,
+        fetchRoute,
+        fetchRoutes,
         addRoute,
         updateRoute,
         deleteRoute,

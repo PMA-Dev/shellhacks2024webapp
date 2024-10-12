@@ -15,12 +15,16 @@ import { Config } from './config';
 import {
     getComponentMetadata,
     getComponentMetadataById,
+    getControllerMetadata,
+    getControllerMetadataById,
     getGalacticMetadata,
     getGalacticMetadataById,
     getPageMetadata,
     getPageMetadataById,
     getProjectMetadata,
     getProjectMetadataById,
+    getRouteMetadata,
+    getRouteMetadataById,
     getTemplateMetadata,
     getTemplateMetadataById,
 } from './routes/getMetadata';
@@ -32,9 +36,12 @@ import {
     patchTemplateMetadata,
 } from './routes/patch_methods';
 import { postComponentMetadata } from './routes/postComponentMetadata';
+import { postControllerMetadata } from './routes/postControllerMetadata';
+import { postDataSourceMetadataMetadata } from './routes/postDataSourceMetadata';
 import { postGalacticMetadata } from './routes/postGalacticMetadata';
 import { postPageMetadata } from './routes/postPageMetadata';
 import { postProjectMetadata } from './routes/postProjectMetadata';
+import { postRouteMetadata } from './routes/postRouteMetadata';
 import { postTemplateMetadata } from './routes/postTemplateMetadata';
 
 const initializeMiddlewares = (app: Express) => {
@@ -90,12 +97,16 @@ const initializeRoutes = async (app: Express) => {
     app.get('/metadata/all/page', getPageMetadata);
     app.get('/metadata/all/template', getTemplateMetadata);
     app.get('/metadata/all/component', getComponentMetadata);
+    app.get('/metadata/all/route', getRouteMetadata);
+    app.get('/metadata/all/controller', getControllerMetadata);
 
     app.get('/metadata/get/galactic', getGalacticMetadataById);
     app.get('/metadata/get/project', getProjectMetadataById);
     app.get('/metadata/get/page', getPageMetadataById);
     app.get('/metadata/get/template', getTemplateMetadataById);
     app.get('/metadata/get/component', getComponentMetadataById);
+    app.get('/metadata/get/route', getRouteMetadataById);
+    app.get('/metadata/get/controller', getControllerMetadataById);
 
     // POST Metadata Routes
     app.post('/metadata/post/galactic', postGalacticMetadata);
@@ -103,6 +114,9 @@ const initializeRoutes = async (app: Express) => {
     app.post('/metadata/post/page', postPageMetadata);
     app.post('/metadata/post/template', postTemplateMetadata);
     app.post('/metadata/post/component', postComponentMetadata);
+    app.post('/metadata/post/route', postRouteMetadata);
+    app.post('/metadata/post/controller', postControllerMetadata);
+    app.post('/metadata/post/dataSource', postDataSourceMetadataMetadata);
 
     // PATCH metadata routes
     app.patch('/metadata/patch/galactic', patchGalacticMetadata);

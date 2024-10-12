@@ -14,14 +14,16 @@ export const Table = () => {
     const [data, setData] = useState<LogData[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
-    const id = 123; // Replace with the actual id you need
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await makeFetchRequest(`/api/v1/data?id=${id}`, {
-                    method: 'GET',
-                });
+                const result = await makeFetchRequest(
+                    `/MainRoute/sampleFetch?id=123`,
+                    {
+                        method: 'GET',
+                    }
+                );
                 setData(result);
             } catch (error) {
                 setError('Error fetching data');

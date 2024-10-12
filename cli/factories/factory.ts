@@ -1,15 +1,15 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { query, queryAll } from './db';
+import { query, queryAll } from '../db';
 import {
     MetadataType,
     PageMetadata,
     ProjectMetadata,
     TemplateMetadata,
     TemplateTypes,
-} from './models';
-import { innerPostTemplateMetadata } from './routes/postTemplateMetadata';
-import { runCmd } from './shellProxy';
+} from '../models';
+import { innerPostTemplateMetadata } from '../routes/postTemplateMetadata';
+import { runCmd } from '../shellProxy';
 
 export const copyTemplateFileToProject = async (
     templateFileName: string,
@@ -25,7 +25,12 @@ export const copyTemplateFileToProject = async (
 
     await createPagesPath(projectId);
 
-    const pathToCopy = path.join(__dirname, 'templates', templateFileName);
+    const pathToCopy = path.join(
+        __dirname,
+        '..',
+        'templates',
+        templateFileName
+    );
 
     console.log(`Copying template from ${pathToCopy} to ${toPath}`);
     if (!pathToCopy)
@@ -76,7 +81,7 @@ export const createStaticFrontendPagesFromTemplate = async (
     }
 
     for (const pathName of paths) {
-        const pathToCopy = path.join(__dirname, 'templates', pathName);
+        const pathToCopy = path.join(__dirname, '..', 'templates', pathName);
         console.log(
             `===================================COPYING TO FROM: ${pathToCopy}, ${pathName}`
         );

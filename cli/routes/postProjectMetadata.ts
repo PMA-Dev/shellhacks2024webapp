@@ -11,7 +11,7 @@ import {
 import path from 'path';
 import { runBackendStart, setupWholeBackend } from '../bootstrapper/backend';
 import { runFrontendStart, setupWholeFrontend } from '../bootstrapper/frontend';
-import { createAppTsxFileForProject } from '../createAppTsx';
+import { createAppTsxFileForProject } from '../factories/createAppTsx';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 
 export const postProjectMetadata = async (

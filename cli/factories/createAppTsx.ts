@@ -1,12 +1,12 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { query, queryAll } from './db';
+import { query, queryAll } from '../db';
 import {
     MetadataType,
     PageMetadata,
     ProjectMetadata,
     TemplateMetadata,
-} from './models';
+} from '../models';
 
 export const createAppTsxFileForProject = async (projectId: number) => {
     const project = await query<ProjectMetadata>(

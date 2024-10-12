@@ -13,6 +13,7 @@ import {
 import { Dropdown } from '@/components/ui/dropdown';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useProject } from '@/context/ProjectContext';
 import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
 import { useProjects } from '@/hooks/useProjects';
 import { GalacticMetadata, Project } from '@/models';
@@ -29,6 +30,10 @@ const getLabelFromDir = (dir: string) => {
 };
 
 const DashboardPage = () => {
+    const { setProject } = useProject();
+    useEffect(() => {
+        setProject(null);
+    }, [setProject]);
     const [projectName, setProjectName] = useState('');
     const [projects, setProjects] = useState<Project[]>([]);
     const { getProjectsForGalaxy, addProject } = useProjects();

@@ -5,7 +5,7 @@ import { pushMetadata } from '../db';
 
 import path from 'path';
 import { bootGalaxy } from '../bootstrapper/appStart';
-import { populateTemplates } from '../factory';
+import { populateTemplates } from '../factories/factory';
 import { GalacticMetadata, MetadataType } from '../models';
 
 export const postGalacticMetadata = async (
