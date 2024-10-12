@@ -207,6 +207,6 @@ const ControllerTable = (props: IProps) => {
             </Dialog>
         </div>
     );
-}
+};
 
 export default ControllerTable;

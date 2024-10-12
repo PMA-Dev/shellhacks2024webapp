@@ -32,7 +32,7 @@ export const useBackendRoutes = (projectId?: string) => {
         }
         const response = await api.get(`/metadata/get/route?id=${routeId}`);
         console.log(`data from route fetch single is: ${response.data}`);
-        return response.data
+        return response.data;
     }, []);
 
     useEffect(() => {

@@ -28,7 +28,7 @@ export const DataEntry = () => {
         }
 
         try {
-            await makeFetchRequest('/api/v1/post', {
+            await makeFetchRequest('/api/v1/samplePost', {
                 method: 'POST',
                 body: JSON.stringify({ logName, timestamp }),
                 headers: {

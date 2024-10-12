@@ -23,7 +23,7 @@ function DBSchemaPage() {
             setContent(initialContent);
             console.log('initial content:', initialContent);
         }
-    }, [activeCollectionId]);
+    }, [activeCollectionId, readSchema]);
 
     const handleSave = () => {
         if (activeCollectionId) {

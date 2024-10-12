@@ -31,33 +31,27 @@ function ProjectPage() {
     }
     return (
         project && (
-                <div className="flex h-screen">
-                    <Sidebar />
-                    <div className="flex-1 p-8">
-                        <h1 className="mb-4 text-3xl font-bold">
-                            {project!.projectName}
-                        </h1>
-                        {/* Nested Routes */}
-                        <Routes>
-                            <Route
-                                path="general"
-                                element={<GeneralProjectPage />}
-                            />
-                            <Route path="pages" element={<PagesPage />} />
-                            <Route
-                                path="templates"
-                                element={<TemplatesPage />}
-                            />
-                            <Route
-                                path="components"
-                                element={<ComponentsPage />}
-                            />
-                            <Route path="router" element={<RouterPage />} />
-                            <Route path="assets" element={<AssetsPage />} />
-                            <Route path="dbschema" element={<DBSchemaPage />} />
-                        </Routes>
-                    </div>
+            <div className="flex h-screen">
+                <Sidebar />
+                <div className="flex-1 p-8">
+                    <h1 className="mb-4 text-3xl font-bold">
+                        {project!.projectName}
+                    </h1>
+                    {/* Nested Routes */}
+                    <Routes>
+                        <Route
+                            path="general"
+                            element={<GeneralProjectPage />}
+                        />
+                        <Route path="pages" element={<PagesPage />} />
+                        <Route path="templates" element={<TemplatesPage />} />
+                        <Route path="components" element={<ComponentsPage />} />
+                        <Route path="router" element={<RouterPage />} />
+                        <Route path="assets" element={<AssetsPage />} />
+                        <Route path="dbschema" element={<DBSchemaPage />} />
+                    </Routes>
                 </div>
+            </div>
         )
     );
 }

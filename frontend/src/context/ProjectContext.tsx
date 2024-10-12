@@ -16,7 +16,11 @@ export const useProject = () => {
     return context;
 };
 
-export const ProjectProvider = ({ children }: { children: React.ReactNode }) => {
+export const ProjectProvider = ({
+    children,
+}: {
+    children: React.ReactNode;
+}) => {
     const [project, setProject] = useState<Project | null>(null);
 
     return (
@@ -25,4 +29,3 @@ export const ProjectProvider = ({ children }: { children: React.ReactNode }) => 
         </ProjectContext.Provider>
     );
 };
-

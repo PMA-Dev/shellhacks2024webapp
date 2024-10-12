@@ -13,7 +13,7 @@ import {
 import { Dropdown } from '@/components/ui/dropdown';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ProjectProvider } from '@/context/ProjectContext';
+import { useProject } from '@/context/ProjectContext';
 import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
 import { useProjects } from '@/hooks/useProjects';
 import { GalacticMetadata, Project } from '@/models';
@@ -30,6 +30,10 @@ const getLabelFromDir = (dir: string) => {
 };
 
 const DashboardPage = () => {
+    const { setProject } = useProject();
+    useEffect(() => {
+        setProject(null);
+    }, [setProject]);
     const [projectName, setProjectName] = useState('');
     const [projects, setProjects] = useState<Project[]>([]);
     const { getProjectsForGalaxy, addProject } = useProjects();
@@ -136,96 +140,88 @@ const DashboardPage = () => {
     }, [handleCreateProject, isDialogOpen, isLoading, projectName]);
 
     return (
-        <ProjectProvider>
-            <div className="min-h-screen bg-gray-100">
-                {/* Header */}
-                <header className="bg-white shadow">
-                    <div className="container flex items-center justify-between px-6 py-4 mx-auto">
-                        <h1 className="text-2xl font-bold text-gray-800">
-                            Dashboard
-                        </h1>
-                        <div className="flex items-center space-x-4">
-                            <Dropdown
-                                value={galaxyId}
-                                options={
-                                    allGalaxyData?.map((data) => ({
-                                        value: data.id!,
-                                        label: getLabelFromDir(
-                                            data.workingDir!
-                                        ),
-                                    })) ?? []
-                                }
-                                defaultValue={
-                                    allGalaxyData?.at(0)?.id ?? undefined
-                                }
-                                onChange={(data) => {
-                                    const galaxyId = data.target.value;
-                                    setGalaxyId(Number(galaxyId));
-                                }}
-                            />
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <Button onClick={() => setIsDialogOpen(true)}>
-                                Create New Project
-                            </Button>
-                            <UserCircle className="w-8 h-8 text-gray-600" />
-                        </div>
+        <div className="min-h-screen bg-gray-100">
+            {/* Header */}
+            <header className="bg-white shadow">
+                <div className="container flex items-center justify-between px-6 py-4 mx-auto">
+                    <h1 className="text-2xl font-bold text-gray-800">
+                        Dashboard
+                    </h1>
+                    <div className="flex items-center space-x-4">
+                        <Dropdown
+                            value={galaxyId}
+                            options={
+                                allGalaxyData?.map((data) => ({
+                                    value: data.id!,
+                                    label: getLabelFromDir(data.workingDir!),
+                                })) ?? []
+                            }
+                            defaultValue={allGalaxyData?.at(0)?.id ?? undefined}
+                            onChange={(data) => {
+                                const galaxyId = data.target.value;
+                                setGalaxyId(Number(galaxyId));
+                            }}
+                        />
                     </div>
-                </header>
+                    <div className="flex items-center space-x-4">
+                        <Button onClick={() => setIsDialogOpen(true)}>
+                            Create New Project
+                        </Button>
+                        <UserCircle className="w-8 h-8 text-gray-600" />
+                    </div>
+                </div>
+            </header>
 
-                {/* Main Content */}
-                <main className="container px-6 py-8 mx-auto">
-                    {projects.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {projects.map((project) => (
-                                <div
-                                    key={project.id}
-                                    className="relative px-4 py-32 bg-black rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer overflow-hidden"
-                                    onClick={() =>
-                                        navigate(
-                                            `/projects/${project.id}/general`
-                                        )
-                                    }
-                                >
-                                    {/* Solar System Animation */}
-                                    <div className="absolute inset-0">
-                                        <Canvas
-                                            camera={{
-                                                position: [10, 10, 10],
-                                                fov: 75,
-                                            }}
-                                        >
-                                            <SolarSystem
-                                                seed={+(project.id || 0)}
-                                            />
-                                        </Canvas>
-                                    </div>
-                                    {/* Overlay for readability */}
-                                    <div className="absolute inset-0 bg-black opacity-30"></div>
-                                    {/* Project Title */}
-                                    <div className="relative z-10">
-                                        <h2 className="mb-2 text-xl font-semibold text-white">
-                                            {project.projectName}
-                                        </h2>
-                                    </div>
+            {/* Main Content */}
+            <main className="container px-6 py-8 mx-auto">
+                {projects.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {projects.map((project) => (
+                            <div
+                                key={project.id}
+                                className="relative px-4 py-32 bg-black rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer overflow-hidden"
+                                onClick={() =>
+                                    navigate(`/projects/${project.id}/general`)
+                                }
+                            >
+                                {/* Solar System Animation */}
+                                <div className="absolute inset-0">
+                                    <Canvas
+                                        camera={{
+                                            position: [10, 10, 10],
+                                            fov: 75,
+                                        }}
+                                    >
+                                        <SolarSystem
+                                            seed={+(project.id || 0)}
+                                        />
+                                    </Canvas>
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center mt-16">
-                            <p className="mb-4 text-lg text-gray-600">
-                                You don't have any projects yet.
-                            </p>
-                            <Button onClick={() => setIsDialogOpen(true)}>
-                                Create New Project
-                            </Button>
-                        </div>
-                    )}
+                                {/* Overlay for readability */}
+                                <div className="absolute inset-0 bg-black opacity-30"></div>
+                                {/* Project Title */}
+                                <div className="relative z-10">
+                                    <h2 className="mb-2 text-xl font-semibold text-white">
+                                        {project.projectName}
+                                    </h2>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center mt-16">
+                        <p className="mb-4 text-lg text-gray-600">
+                            You don't have any projects yet.
+                        </p>
+                        <Button onClick={() => setIsDialogOpen(true)}>
+                            Create New Project
+                        </Button>
+                    </div>
+                )}
 
-                    {CreateProjectDialog}
-                </main>
-            </div>
-        </ProjectProvider>
+                {CreateProjectDialog}
+            </main>
+        </div>
     );
 };
 

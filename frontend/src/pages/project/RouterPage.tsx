@@ -1,5 +1,3 @@
-// src/pages/project/RouterPage.tsx
-
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -15,14 +13,16 @@ import { useProjects } from '@/hooks/useProjects';
 import { Plus } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners';
 import RoutersTable from './RoutersTable';
 
 const RouterPage = () => {
     const { projectId } = useParams();
     const { addRoute, updateRoute } = useBackendRoutes(projectId);
-    const {fetchProjects} = useProjects();
-    const {project }= useProject();
+    const { getProjectById } = useProjects();
+    const { project, setProject } = useProject(); // Use setProject from context to update project
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [editingRoute, setEditingRoute] = useState<BackendRoute | null>(null);
     const [routeData, setRouteData] = useState<Partial<BackendRoute>>({
         routeName: '',
@@ -35,7 +35,8 @@ const RouterPage = () => {
         [routeData]
     );
 
-    const handleAddOrUpdateRoute = () => {
+    const handleAddOrUpdateRoute = async () => {
+        setIsLoading(true);
         if (editingRoute) {
             // Update existing route
             const updatedRoute: BackendRoute = {
@@ -43,25 +44,33 @@ const RouterPage = () => {
                 ...routeData,
                 id: editingRoute.id,
             };
-            updateRoute(updatedRoute);
+            await updateRoute(updatedRoute);
         } else {
             // Add new route
             const newRoute: BackendRoute = {
                 routeName: routeData.routeName || '',
             };
-            addRoute(newRoute);
+            await addRoute(newRoute);
         }
         setIsDialogOpen(false);
         setEditingRoute(null);
         setRouteData({ routeName: '' });
-        fetchProjects();
+
+        // Fetch the updated project and update the context
+        const updatedProject = await getProjectById(projectId as string);
+        setProject(updatedProject); // Update the project in the context
+
+        setIsLoading(false);
     };
 
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Backend Routes</h2>
-                <Button onClick={() => setIsDialogOpen(true)} className="flex items-center">
+                <Button
+                    onClick={() => setIsDialogOpen(true)}
+                    className="flex items-center"
+                >
                     <Plus className="mr-2" />
                     Add Route
                 </Button>
@@ -99,7 +108,15 @@ const RouterPage = () => {
                     </div>
                     <DialogFooter>
                         <Button onClick={handleAddOrUpdateRoute}>
-                            {editingRoute ? 'Update Route' : 'Add Route'}
+                            {isLoading ? (
+                                <div id="add-route-spinner">
+                                    <ClipLoader size={20} color="#fff" />
+                                </div>
+                            ) : editingRoute ? (
+                                'Update Route'
+                            ) : (
+                                'Add Route'
+                            )}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

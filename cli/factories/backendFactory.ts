@@ -63,12 +63,12 @@ export const registerSetupAndCopyInitialRouteAndControllers = async (
     const controllers = [
         {
             method: 'POST',
-            pathName: '/post',
+            pathName: '/samplePost',
             injectedCode: `const logData = req.body; if (!logData || !logData.logName || !logData.timestamp) { return res.status(400).json({ error: 'Missing required log data' }); } pushLog(logData) .then((newLogId) => { res.json({ success: true, id: newLogId }); }) .catch((err) => { res.status(500).json({ error: err.message }); });`,
         },
         {
             method: 'GET',
-            pathName: '/data',
+            pathName: '/sampleFetch',
             injectedCode: `const id = parseInt(req.query.id as string, 10); if (isNaN(id)) { return res .status(400) .json({ error: 'Invalid or missing id query parameter' }); } queryAll().then((data) => { res.json(data); });`,
         },
     ];
