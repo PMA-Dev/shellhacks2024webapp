@@ -126,8 +126,13 @@ export class RouteMetadata extends BaseDataRecord {
     routeName?: string;
 
     @IsArray()
+    @IsOptional()
     @IsNumber({}, { each: true })
     controllerIds: number[] = [];
+
+    @IsArray()
+    @IsOptional()
+    middleWares?: MiddleWareBase[] = [];
 }
 
 export class ControllerMetadata extends BaseDataRecord {
@@ -137,9 +142,28 @@ export class ControllerMetadata extends BaseDataRecord {
     @IsOptional()
     pathName?: string;
 
+    @IsString()
+    @IsOptional()
+    injectedCode?: string;
+
     @IsNumber()
     @IsOptional()
     dataSourceId?: number;
+}
+
+export class MiddleWareBase {
+    @IsString()
+    @IsOptional()
+    name?: string;
+
+    @IsString()
+    @IsOptional()
+    importString?: string;
+}
+
+export class DbMiddleWare extends MiddleWareBase {
+    @IsString()
+    importString = "import { pushLog, queryAll } from '../db';";
 }
 
 export class DataSourceMetadata extends BaseDataRecord {}

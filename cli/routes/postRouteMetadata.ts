@@ -22,24 +22,31 @@ export const postRouteMetadata = async (
             res.status(400).json({ errors });
             return;
         }
-        const metadataId = await pushMetadata(MetadataType.Route, data);
-        await editMetadataInPlace<ProjectMetadata>(
-            MetadataType.Project,
+        const metadataId = await postRouteMetadataInner(
             Number(req.query.projectId),
-            (x) => x.routeIds.push(metadataId)
-        );
-
-        console.log(
-            `finished editing project metadata for ${req.query.projectId}`
-        );
-
-        console.log(`Creating route idempotent for ${metadataId}`);
-        await createRouteAndUpdateIndex(
-            Number(req.query.projectId),
-            metadataId
+            data
         );
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
     }
+};
+
+export const postRouteMetadataInner = async (
+    projectId: number,
+    data: RouteMetadata
+): Promise<number> => {
+    const metadataId = await pushMetadata(MetadataType.Route, data);
+    await editMetadataInPlace<ProjectMetadata>(
+        MetadataType.Project,
+        projectId,
+        (x) => x.routeIds.push(metadataId)
+    );
+
+    console.log(`finished editing project metadata for ${projectId}`);
+
+    console.log(`Creating route idempotent for ${metadataId}`);
+    await createRouteAndUpdateIndex(projectId, metadataId);
+
+    return metadataId;
 };

@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
 import { getProjectData, getRandomInt, query } from '../db';
-import { setupAllBackendFiles } from '../factories/backendFactory';
+import {
+    registerSetupAndCopyInitialRouteAndControllers,
+    setupAllBackendFiles,
+} from '../factories/backendFactory';
 import { MetadataType, ProjectMetadata } from '../models';
 import { killOnPort, runCmd, writeToFileForced } from '../shellProxy';
 
@@ -98,6 +101,7 @@ console.log('Listening: http://localhost:' + port);
 
 export const setupWholeBackend = async (projectId: number) => {
     await setupAllBackendFiles(projectId);
+    await registerSetupAndCopyInitialRouteAndControllers(projectId);
 };
 
 export const startBackend = async (projectId: number) => {
@@ -110,4 +114,11 @@ export const startBackend = async (projectId: number) => {
 export const stopBackend = async (projectId: number) => {
     const project = await getProjectData(projectId);
     killOnPort(project.backendPort!);
+};
+
+export const bunFormatBackend = async (projectId: number) => {
+    const project = await getProjectData(projectId);
+    runCmd('bunx', ['prettier', '--write', `src/`, '**/*.{js,ts,tsx,json}'], {
+        cwd: project.backendWorkingDir,
+    });
 };

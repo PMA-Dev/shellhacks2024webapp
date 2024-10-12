@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import { editMetadataInPlace, pushMetadata } from '../db';
+import { editMetadataInPlace, pushMetadata, query } from '../db';
 
 import { createRouteAndUpdateIndex } from '../factories/backendRouteFactory';
 import { ControllerMetadata, MetadataType, RouteMetadata } from '../models';
@@ -28,22 +28,42 @@ export const postControllerMetadata = async (
             return;
         }
 
-        const metadataId = await pushMetadata(MetadataType.Controller, data);
-        await editMetadataInPlace<RouteMetadata>(
-            MetadataType.Route,
-            Number(req.query.routeId),
-            (x) => x.controllerIds.push(metadataId)
-        );
-        console.log(`finished editing route metadata for ${req.query.routeId}`);
-
-        console.log(`Creating page idempotent for ${metadataId}`);
-        // re-generate file for route
-        await createRouteAndUpdateIndex(
+        const metadataId = await postControllerMetadataInner(
             Number(req.query.projectId),
-            Number(req.query.routeId)
+            Number(req.query.routeId),
+            data
         );
         res.json({ id: metadataId });
     } catch (error) {
         next(error);
     }
+};
+
+export const postControllerMetadataInner = async (
+    projectId: number,
+    routeId: number,
+    data: ControllerMetadata
+): Promise<number> => {
+    const metadataId = await pushMetadata(MetadataType.Controller, data);
+    console.log(
+        `before route: ${JSON.stringify(await query(MetadataType.Route, routeId))}`
+    );
+    await editMetadataInPlace<RouteMetadata>(
+        MetadataType.Route,
+        routeId,
+        (x) =>
+            x.controllerIds
+                ? x.controllerIds.push(metadataId)
+                : (x.controllerIds = [metadataId])
+    );
+    console.log(`finished editing route metadata for ${routeId}`);
+    console.log(
+        `after route: ${JSON.stringify(await query(MetadataType.Route, routeId))}`
+    );
+
+    console.log(`Creating page idempotent for ${metadataId}`);
+    // re-generate file for route
+    await createRouteAndUpdateIndex(projectId, routeId);
+
+    return metadataId;
 };

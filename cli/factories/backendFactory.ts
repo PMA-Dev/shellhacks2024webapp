@@ -1,5 +1,8 @@
 import path from 'path';
 import { getProjectData } from '../db';
+import { ControllerMetadata, DbMiddleWare, RouteMetadata } from '../models';
+import { postControllerMetadataInner } from '../routes/postControllerMetadata';
+import { postRouteMetadataInner } from '../routes/postRouteMetadata';
 import { runCmd, writeToFileForced } from '../shellProxy';
 import { copyTemplateFileToProject } from './factory';
 
@@ -42,5 +45,38 @@ export const setupAllBackendFiles = async (projectId: number) => {
         const templateName = pathName.split('/').at(-1);
         runCmd('rm', ['-f', toPath]);
         await copyTemplateFileToProject(templateName!, projectId, toPath);
+    }
+};
+
+export const registerSetupAndCopyInitialRouteAndControllers = async (
+    projectId: number
+) => {
+    const route = {
+        routeName: 'MainRoute',
+        middleWares: [new DbMiddleWare()],
+        controllerIds: [],
+    } as RouteMetadata;
+    const routeId = await postRouteMetadataInner(projectId, route);
+
+    console.log(`---done with making the route`);
+
+    const controllers = [
+        {
+            method: 'POST',
+            pathName: '/post',
+            injectedCode: `const logData = req.body; if (!logData || !logData.logName || !logData.timestamp) { return res.status(400).json({ error: 'Missing required log data' }); } pushLog(logData) .then((newLogId) => { res.json({ success: true, id: newLogId }); }) .catch((err) => { res.status(500).json({ error: err.message }); });`,
+        },
+        {
+            method: 'GET',
+            pathName: '/data',
+            injectedCode: `const id = parseInt(req.query.id as string, 10); if (isNaN(id)) { return res .status(400) .json({ error: 'Invalid or missing id query parameter' }); } queryAll().then((data) => { res.json(data); });`,
+        },
+    ];
+    for (const controller of controllers) {
+        await postControllerMetadataInner(
+            projectId,
+            routeId,
+            controller as ControllerMetadata
+        );
     }
 };

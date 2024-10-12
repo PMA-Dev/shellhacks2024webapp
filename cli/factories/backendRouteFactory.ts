@@ -1,4 +1,5 @@
 import path from 'path';
+import { bunFormatBackend } from '../bootstrapper/backend';
 import { editMetadataInPlace, getProjectData, query } from '../db';
 import {
     ControllerMetadata,
@@ -19,12 +20,16 @@ export const writeConfigForBackendInFrontend = async (projectId: number) => {
     const importString = routes
         .map(
             (route) =>
-                `import {route as ${strippedRouteName(route?.routeName!)}Route} from './${strippedRouteName(route?.routeName!)}.rt';`
+                `import {route as ${strippedRouteName(
+                    route?.routeName!
+                )}Route} from './${strippedRouteName(route?.routeName!)}.rt';`
         )
         .join('\n');
+
     const routerUseString = routes
         .map((route) => `${strippedRouteName(route?.routeName!)}Route(router);`)
         .join('\n\t');
+
     const content = `
 // src/router/index.ts
 import express from 'express';
@@ -54,13 +59,15 @@ export const createRouteAndUpdateIndex = async (
 ) => {
     // first we need to create the code for the route and cp it
     const route = await query<RouteMetadata>(MetadataType.Route, routeId);
-    const controllers = route?.controllerIds
-        ? await Promise.all(
-              route.controllerIds.map((x) =>
-                  query<ControllerMetadata>(MetadataType.Controller, x)
-              )
-          )
-        : [];
+    const controllers = [];
+    for (const controllerId of route?.controllerIds ?? []) {
+        controllers.push(
+            await query<ControllerMetadata>(
+                MetadataType.Controller,
+                controllerId
+            )
+        );
+    }
     const project = await query<ProjectMetadata>(
         MetadataType.Project,
         projectId
@@ -75,19 +82,33 @@ export const createRouteAndUpdateIndex = async (
     const stripPathName = (pathName: string) =>
         pathName.startsWith('/') ? pathName : '/' + pathName;
 
+    const getDefaultInjectedCodeForController = (
+        controller: ControllerMetadata,
+        route: RouteMetadata
+    ) => {
+        return `res.status(200).json({'result': 'Returning 200 response from :${controller?.pathName} method of ${route?.routeName} route.'}).end();`;
+    };
+
     const controllerStrings = controllers
         .map(
             (data) => `
-router.${data?.method?.toString().toLowerCase()}('${stripPathName(data?.pathName!)}', async (req: express.Request, res: express.Response) => {
-    res.status(200).json({'result': 'Returning 200 response from :${data?.pathName} method of ${route?.routeName} route.'}).end();
+router.${data?.method?.toString().toLowerCase()}('${stripPathName(
+                data?.pathName!
+            )}', async (req: express.Request, res: express.Response) => {
+    ${data?.injectedCode ?? getDefaultInjectedCodeForController(data!, route!)}
 });
 `
         )
         .join('\n');
 
+    const middleWareImports = route?.middleWares
+        ?.map((middleWare) => middleWare.importString)
+        .join('\n');
+
     const content = `
 // src/router/${fileName}
 import express from 'express';
+${middleWareImports}
 
 export const route = (router: express.Router) => {
     ${controllerStrings}
@@ -107,4 +128,6 @@ export const route = (router: express.Router) => {
 
     // must also rewrite the index file
     await writeConfigForBackendInFrontend(projectId);
+
+    await bunFormatBackend(projectId);
 };
