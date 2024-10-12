@@ -18,7 +18,7 @@ export const useControllerTest = (project?: Project | null) => {
         try {
             const response = await api({
                 method: controller.method,
-                url: `http://127.0.0.1:${project.backendPort}${controller.pathName}`,
+                url: `http://127.0.0.1:${project.backendPort}/${controller.basePath}${controller.pathName}`,
                 data,
                 params,
             });

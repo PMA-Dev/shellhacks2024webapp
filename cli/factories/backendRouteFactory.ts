@@ -92,7 +92,9 @@ export const createRouteAndUpdateIndex = async (
     const controllerStrings = controllers
         .map(
             (data) => `
-router.${data?.method?.toString().toLowerCase()}('${stripPathName(
+router.${data?.method?.toString().toLowerCase()}('/${
+                data?.basePath
+            }${stripPathName(
                 data?.pathName!
             )}', async (req: express.Request, res: express.Response) => {
     ${data?.injectedCode ?? getDefaultInjectedCodeForController(data!, route!)}

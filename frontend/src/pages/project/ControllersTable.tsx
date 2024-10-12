@@ -125,6 +125,7 @@ const ControllerTable = (props: IProps) => {
         setIsTestLoading(false);
         setTestPostBodyData('');
         setTestResultData('');
+        setTestResultData('');
         setTestQueryParamsData('');
     }, []);
 
@@ -137,6 +138,7 @@ const ControllerTable = (props: IProps) => {
     const openTestDialog = (controller: BackendController) => {
         setTestController(controller);
         setIsTestDialogOpen(true);
+        setTestResultData('');
         setTestQueryParamsData(controller.sampleQueryParams ?? '');
         setTestPostBodyData(controller.samplePayload ?? '');
     };
@@ -210,7 +212,7 @@ const ControllerTable = (props: IProps) => {
                         <div>
                             <div>
                                 Testing at:{' '}
-                                {`http://127.0.0.1:${project?.backendPort}${testController?.pathName}`}
+                                {`http://127.0.0.1:${project?.backendPort}/${testController?.basePath}${testController?.pathName}`}
                             </div>
                         </div>
                         {testController?.method == HTTPMethod.POST ||

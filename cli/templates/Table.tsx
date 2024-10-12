@@ -18,9 +18,12 @@ export const Table = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await makeFetchRequest(`/sampleFetch?id=123`, {
-                    method: 'GET',
-                });
+                const result = await makeFetchRequest(
+                    `/MainRoute/sampleFetch?id=123`,
+                    {
+                        method: 'GET',
+                    }
+                );
                 setData(result);
             } catch (error) {
                 setError('Error fetching data');

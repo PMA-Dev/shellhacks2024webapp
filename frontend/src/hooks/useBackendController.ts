@@ -11,6 +11,7 @@ export interface BackendController {
     routeId?: string;
     samplePayload?: string;
     sampleQueryParams?: string;
+    basePath?: string;
 }
 
 export const useBackendControllers = (routeId?: string) => {

@@ -165,6 +165,10 @@ export class ControllerMetadata extends BaseDataRecord {
     @IsString()
     @IsOptional()
     sampleQueryParams?: string;
+
+    @IsString()
+    @IsOptional()
+    basePath?: string;
 }
 
 export class MiddleWareBase {
