@@ -24,7 +24,7 @@ function PagesPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState<Template>();
     const [templates, setTemplates] = useState<Template[]>([]);
-    const project = useProject();
+    const {project }= useProject();
     const { pages, addPage } = usePages(project?.id || '');
 
     useEffect(() => {

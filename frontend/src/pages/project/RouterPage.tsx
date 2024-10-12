@@ -21,7 +21,7 @@ const RouterPage = () => {
     const { projectId } = useParams();
     const { addRoute, updateRoute } = useBackendRoutes(projectId);
     const {fetchProjects} = useProjects();
-    const project = useProject();
+    const {project }= useProject();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingRoute, setEditingRoute] = useState<BackendRoute | null>(null);
     const [routeData, setRouteData] = useState<Partial<BackendRoute>>({
