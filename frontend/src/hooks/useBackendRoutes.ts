@@ -40,8 +40,12 @@ export const useBackendRoutes = (projectId?: string) => {
     }, [fetchRoutes]);
 
     const addRoute = async (route: BackendRoute) => {
-        await api.post(`/metadata/post/route?projectId=${projectId}`, route);
+        const response = await api.post(
+            `/metadata/post/route?projectId=${projectId}`,
+            route
+        );
         await fetchRoutes();
+        return response.data.id;
     };
 
     const updateRoute = (updatedRoute: BackendRoute) => {

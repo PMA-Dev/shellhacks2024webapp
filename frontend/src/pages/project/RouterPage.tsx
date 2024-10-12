@@ -9,7 +9,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useProject } from '@/context/ProjectContext';
 import { BackendRoute, useBackendRoutes } from '@/hooks/useBackendRoutes';
-import { useProjects } from '@/hooks/useProjects';
 import { Plus } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -18,9 +17,8 @@ import RoutersTable from './RoutersTable';
 
 const RouterPage = () => {
     const { projectId } = useParams();
-    const { addRoute, updateRoute } = useBackendRoutes(projectId);
-    const { getProjectById } = useProjects();
-    const { project, setProject } = useProject(); // Use setProject from context to update project
+    const { addRoute } = useBackendRoutes(projectId);
+    const { project } = useProject();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [editingRoute, setEditingRoute] = useState<BackendRoute | null>(null);
@@ -38,26 +36,18 @@ const RouterPage = () => {
     const handleAddOrUpdateRoute = async () => {
         setIsLoading(true);
         if (editingRoute) {
-            // Update existing route
-            const updatedRoute: BackendRoute = {
-                ...editingRoute,
-                ...routeData,
-                id: editingRoute.id,
-            };
-            await updateRoute(updatedRoute);
+            return;
         } else {
             // Add new route
             const newRoute: BackendRoute = {
                 routeName: routeData.routeName || '',
             };
-            await addRoute(newRoute);
+            const id = await addRoute(newRoute);
+            project?.routeIds?.push(id);
         }
         setIsDialogOpen(false);
         setEditingRoute(null);
         setRouteData({ routeName: '' });
-
-        const updatedProject = await getProjectById(projectId as string);
-        setProject(updatedProject);
 
         setIsLoading(false);
     };

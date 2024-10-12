@@ -37,11 +37,12 @@ export const useBackendControllers = (routeId?: string) => {
             if (!projectId) {
                 return;
             }
-            await api.post(
+            const response = await api.post(
                 `/metadata/post/controller?projectId=${projectId}&routeId=${routeId}`,
                 controller
             );
             fetchControllers();
+            return response.data.id;
         },
         [fetchControllers, routeId]
     );

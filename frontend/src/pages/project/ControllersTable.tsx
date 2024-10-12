@@ -23,13 +23,12 @@ import { ClipLoader } from 'react-spinners';
 
 export interface IProps {
     projectId?: string;
-    routeId?: string;
     route?: BackendRoute;
 }
 
 const ControllerTable = (props: IProps) => {
     const { project } = useProject();
-    const { controllers } = useBackendControllers(props.routeId);
+    const { controllers } = useBackendControllers(props.route?.id);
     useEffect(() => {
         console.log(`controllers: ${JSON.stringify(controllers)}`);
     }, [controllers]);

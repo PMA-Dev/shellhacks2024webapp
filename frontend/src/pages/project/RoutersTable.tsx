@@ -9,16 +9,16 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useProject } from '@/context/ProjectContext';
+import api from '@/hooks/api';
 import {
     BackendController,
     useBackendControllers,
 } from '@/hooks/useBackendController';
 import { BackendRoute, useBackendRoutes } from '@/hooks/useBackendRoutes';
-import { useProjects } from '@/hooks/useProjects';
 import HTTPMethod from 'http-method-enum';
 import { Plus } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { ClipLoader } from 'react-spinners';
 import ControllersTable from './ControllersTable';
 
 export interface IProps {
@@ -28,25 +28,29 @@ export interface IProps {
 
 const RoutersTable = (props: IProps) => {
     const [route, setRoute] = useState<BackendRoute>();
-    const { getProjectById } = useProjects();
-    const { setProject } = useProject();
     const { addController } = useBackendControllers(props.routeId);
     const { fetchRoute } = useBackendRoutes(props.projectId);
+    const [isLoading, setIsLoading] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [controllerBeingAdded, setControllerBeingAdded] =
         useState<BackendController>({});
 
-    useEffect(() => {
-        const fetchRouteAndSet = async () => {
-            const data = await fetchRoute(props.routeId);
-            setRoute(data);
-        };
-        fetchRouteAndSet();
+    const fetchRouteAndSet = useCallback(async () => {
+        const data = await fetchRoute(props.routeId);
+        setRoute(data);
     }, [fetchRoute, props.routeId]);
+
+    useEffect(() => {
+        fetchRouteAndSet();
+    }, [fetchRoute, fetchRouteAndSet, props.routeId]);
 
     const handleAddController = useCallback(async () => {
         if (controllerBeingAdded.pathName && controllerBeingAdded.method) {
-            await addController(controllerBeingAdded, props.projectId);
+            setIsLoading(true);
+            const id = await addController(
+                controllerBeingAdded,
+                props.projectId
+            );
             setIsDialogOpen(false);
             setControllerBeingAdded({
                 pathName: '',
@@ -56,18 +60,16 @@ const RoutersTable = (props: IProps) => {
                 sampleQueryParams: '',
             });
 
-            const updatedProject = await getProjectById(
-                props.projectId as string
-            );
-            setProject(updatedProject);
+            setRoute({
+                ...route,
+                controllerIds: [...(route?.controllerIds ?? []), id],
+            });
+            await api.get(`/commands/stopVite?projectId=${props.projectId}`);
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            await api.get(`/commands/startVite?projectId=${props.projectId}`);
+            setIsLoading(false);
         }
-    }, [
-        controllerBeingAdded,
-        addController,
-        props.projectId,
-        getProjectById,
-        setProject,
-    ]);
+    }, [controllerBeingAdded, addController, props.projectId, route]);
 
     return (
         route && (
@@ -84,11 +86,7 @@ const RoutersTable = (props: IProps) => {
                 </div>
 
                 {/* Controllers Table */}
-                <ControllersTable
-                    projectId={props.projectId}
-                    routeId={props.routeId}
-                    route={route}
-                />
+                <ControllersTable projectId={props.projectId} route={route} />
 
                 {/* Add/Edit Route Dialog */}
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -206,9 +204,15 @@ const RoutersTable = (props: IProps) => {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button onClick={handleAddController}>
-                                Add Controller
-                            </Button>
+                            <div>
+                                {isLoading ? (
+                                    <ClipLoader size={20} color="#AAA" />
+                                ) : (
+                                    <Button onClick={handleAddController}>
+                                        Add Controller
+                                    </Button>
+                                )}
+                            </div>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

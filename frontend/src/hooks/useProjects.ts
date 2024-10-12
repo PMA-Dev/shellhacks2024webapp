@@ -44,10 +44,15 @@ export const useProjects = () => {
         );
     };
 
-    const getProjectById = useCallback(async (projectId: string) => {
-        const response = await api.get(`/metadata/get/project?id=${projectId}`);
-        return response.data;
-    }, []);
+    const getProjectById = useCallback(
+        async (projectId: string): Promise<Project> => {
+            const response = await api.get(
+                `/metadata/get/project?id=${projectId}`
+            );
+            return response.data;
+        },
+        []
+    );
 
     return {
         projects,
