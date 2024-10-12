@@ -31,6 +31,7 @@ function GeneralProjectPage() {
                 setIsServing(true);
             } else {
                 resetIframes();
+                setIsServing(false);
             }
         };
         pingServer();

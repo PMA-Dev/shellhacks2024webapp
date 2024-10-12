@@ -157,6 +157,14 @@ export class ControllerMetadata extends BaseDataRecord {
     @IsNumber()
     @IsOptional()
     routeId?: number;
+
+    @IsString()
+    @IsOptional()
+    samplePayload?: string;
+
+    @IsString()
+    @IsOptional()
+    sampleQueryParams?: string;
 }
 
 export class MiddleWareBase {

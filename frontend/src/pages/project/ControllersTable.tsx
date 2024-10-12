@@ -9,14 +9,17 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useProject } from '@/context/ProjectContext';
 import {
     BackendController,
     useBackendControllers,
 } from '@/hooks/useBackendController';
 import { BackendRoute } from '@/hooks/useBackendRoutes';
+import { useControllerTest } from '@/hooks/useControllerTest';
 import HTTPMethod from 'http-method-enum';
 import { Edit, Trash } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { ClipLoader } from 'react-spinners';
 
 export interface IProps {
     projectId?: string;
@@ -25,13 +28,21 @@ export interface IProps {
 }
 
 const ControllerTable = (props: IProps) => {
+    const { project } = useProject();
     const { controllers } = useBackendControllers(props.routeId);
     useEffect(() => {
         console.log(`controllers: ${JSON.stringify(controllers)}`);
     }, [controllers]);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
+    const [isTestLoading, setIsTestLoading] = useState(false);
+    const [testPostBodyData, setTestPostBodyData] = useState<string>('');
+    const [testQueryParamsData, setTestQueryParamsData] = useState<string>('');
+    const [testResultData, setTestResultData] = useState<string>('');
     const [editingController, setEditingController] =
+        useState<BackendController | null>(null);
+    const [testController, setTestController] =
         useState<BackendController | null>(null);
 
     const [controllerData, setControllerData] = useState<
@@ -40,6 +51,81 @@ const ControllerTable = (props: IProps) => {
         pathName: '',
         method: HTTPMethod.GET,
     });
+
+    const [isServing, setIsServing] = useState(false);
+    useEffect(() => {
+        // ping the server to see if it's running
+        console.log('pinging server...');
+        const pingServer = async () => {
+            const response = await fetch(`${project?.sitePath}/ping`);
+            if (response.status === 200) {
+                setIsServing(true);
+            } else {
+                setIsServing(false);
+            }
+        };
+        pingServer();
+    }, [project]);
+
+    const { hitEndpointAndReturnData } = useControllerTest(project);
+
+    const handleRunTestSubmit = useCallback(async () => {
+        setIsTestLoading(true);
+        let jsonData = null;
+        try {
+            jsonData =
+                testController?.method == HTTPMethod.GET
+                    ? null
+                    : JSON.parse(testPostBodyData!);
+        } catch (e) {
+            setTestResultData(`Invalid json: ${JSON.stringify(e)}`);
+            setIsTestLoading(false);
+            return;
+        }
+
+        let jsonDataParams = null;
+        try {
+            jsonDataParams =
+                testController?.method != HTTPMethod.GET
+                    ? null
+                    : JSON.parse(testQueryParamsData);
+        } catch (e) {
+            setTestResultData(`Invalid json: ${JSON.stringify(e)}`);
+            setIsTestLoading(false);
+            return;
+        }
+
+        const { response, error } = await hitEndpointAndReturnData(
+            testController,
+            jsonData,
+            jsonDataParams
+        );
+        if (
+            error ||
+            !response?.status ||
+            response?.status >= 300 ||
+            response?.status < 200
+        ) {
+            setTestResultData(JSON.stringify(error?.message));
+            setIsTestLoading(false);
+            return;
+        }
+        setTestResultData(JSON.stringify(response?.data));
+        setIsTestLoading(false);
+    }, [
+        hitEndpointAndReturnData,
+        testController,
+        testPostBodyData,
+        testQueryParamsData,
+    ]);
+
+    const resetTestDialog = useCallback(() => {
+        setIsTestDialogOpen(false);
+        setIsTestLoading(false);
+        setTestPostBodyData('');
+        setTestResultData('');
+        setTestQueryParamsData('');
+    }, []);
 
     // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     //     setControllerData({ ...controllerData, [e.target.name]: e.target.value });
@@ -85,6 +171,13 @@ const ControllerTable = (props: IProps) => {
         setIsDialogOpen(true);
     };
 
+    const openTestDialog = (controller: BackendController) => {
+        setTestController(controller);
+        setIsTestDialogOpen(true);
+        setTestQueryParamsData(controller.sampleQueryParams ?? '');
+        setTestPostBodyData(controller.samplePayload ?? '');
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const openAddDialog = () => {
         setEditingController(null);
@@ -110,8 +203,28 @@ const ControllerTable = (props: IProps) => {
                             <td className="px-4 py-2">
                                 <div className="flex space-x-2">
                                     <Button
+                                        onClick={() =>
+                                            openTestDialog(controller)
+                                        }
+                                        disabled={!isServing}
+                                        className={`${
+                                            !isServing
+                                                ? 'opacity-80 cursor-not-allowed'
+                                                : ''
+                                        }`}
+                                    >
+                                        Test API{' '}
+                                        {isServing
+                                            ? ''
+                                            : '- ensure server is running'}
+                                    </Button>
+                                </div>
+                            </td>
+                            <td className="px-4 py-2">
+                                <div className="flex space-x-2">
+                                    <Button
                                         variant="ghost"
-                                        size="icon"
+                                        size="lg"
                                         onClick={() =>
                                             openEditDialog(controller)
                                         }
@@ -131,6 +244,89 @@ const ControllerTable = (props: IProps) => {
                     ))}
                 </tbody>
             </table>
+
+            <Dialog open={isTestDialogOpen} onOpenChange={setIsTestDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Test API</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div>
+                            <div>
+                                Testing at:{' '}
+                                {`http://127.0.0.1:${project?.backendPort}${testController?.pathName}`}
+                            </div>
+                        </div>
+                        {testController?.method == HTTPMethod.POST ||
+                        testController?.method == HTTPMethod.PATCH ? (
+                            <div>
+                                <label
+                                    htmlFor="postData"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    JSON body data
+                                </label>
+                                <Input
+                                    id="postData"
+                                    name="postData"
+                                    value={testPostBodyData}
+                                    onChange={(event) =>
+                                        setTestPostBodyData(event.target.value)
+                                    }
+                                    placeholder={
+                                        testController.samplePayload ??
+                                        '{"test" : "data"}'
+                                    }
+                                />
+                            </div>
+                        ) : (
+                            <div>
+                                <label
+                                    htmlFor="queryParams"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Query Params
+                                </label>
+                                <Input
+                                    id="queryParams"
+                                    name="queryParams"
+                                    value={testQueryParamsData}
+                                    onChange={(event) =>
+                                        setTestQueryParamsData(
+                                            event.target.value
+                                        )
+                                    }
+                                    placeholder={
+                                        testController?.sampleQueryParams ??
+                                        '{"id": 12, "format": "csv"}'
+                                    }
+                                />
+                            </div>
+                        )}
+                        <div>
+                            {isTestLoading ? (
+                                <div>
+                                    <div>Fetching.. </div>
+                                </div>
+                            ) : (
+                                <div>Data: {testResultData} </div>
+                            )}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <div>
+                            {isTestLoading ? (
+                                <ClipLoader size={20} color="#AAA" />
+                            ) : (
+                                <Button onClick={handleRunTestSubmit}>
+                                    Run Test
+                                </Button>
+                            )}
+                        </div>
+                        <Button onClick={resetTestDialog}>Close</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Add/Edit Controller Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

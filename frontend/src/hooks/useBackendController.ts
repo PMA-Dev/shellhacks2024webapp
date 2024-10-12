@@ -9,6 +9,8 @@ export interface BackendController {
     dataSourceId?: number;
     id?: string;
     routeId?: string;
+    samplePayload?: string;
+    sampleQueryParams?: string;
 }
 
 export const useBackendControllers = (routeId?: string) => {
@@ -35,14 +37,13 @@ export const useBackendControllers = (routeId?: string) => {
             if (!projectId) {
                 return;
             }
-            // TODO: Integrate with backend to add a new controller
             await api.post(
                 `/metadata/post/controller?projectId=${projectId}&routeId=${routeId}`,
                 controller
             );
-            setControllers([...controllers, controller]);
+            fetchControllers();
         },
-        [controllers, routeId]
+        [fetchControllers, routeId]
     );
 
     const updateController = (updatedController: BackendController) => {

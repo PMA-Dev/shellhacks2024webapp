@@ -2,6 +2,7 @@
 
 export interface Project {
     id?: string;
+    backendPort?: string;
     projectName: string;
     routeIds?: string[];
     pageIds: string[];
