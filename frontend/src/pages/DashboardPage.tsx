@@ -164,6 +164,11 @@ const DashboardPage = () => {
                         />
                     </div>
                     <div className="flex items-center space-x-4">
+                        <Button onClick={() => navigate('/git')}>
+                            Configure Git
+                        </Button>
+                    </div>
+                    <div className="flex items-center space-x-4">
                         <Button onClick={() => setIsDialogOpen(true)}>
                             Create New Project
                         </Button>
