@@ -5,23 +5,18 @@ meta {
 }
 
 patch {
-  url: {{url}}/metadata/patch/galactic?id="test"
-  body: none
+  url: {{url}}/metadata/patch/galactic?id=21008699
+  body: json
   auth: none
+}
+
+query {
+  id: 21008699
 }
 
 body:json {
   {
-    "githubPat": "your-github-pat",
-    "workingDir": "/path/to/working/dir",
-    "projectIds": [
-      1,
-      2,
-      3
-    ]
+    "githubPat": "test3",
+    "workingDir": "test3"
   }
-}
-
-query {
-  id: "test"
 }

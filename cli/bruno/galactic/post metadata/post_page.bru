@@ -5,20 +5,20 @@ meta {
 }
 
 post {
-  url: {{url}}/metadata/post/page
-  body: none
+  url: {{url}}/metadata/post/page?projectId=11638012
+  body: json
   auth: none
+}
+
+query {
+  projectId: 11638012
 }
 
 body:json {
   {
-    "pageName": "Your Page Name",
-    "routerPath": "/your/router/path",
-    "templateIds": [
-      1,
-      2,
-      3
-    ],
-    "physicalPath": "/optional/physical/path"
+    "pageName": "TestBlog",
+    "routerPath": "/blog",
+    "templateId": 44277364,
+    "templateType": "Blog"
   }
 }

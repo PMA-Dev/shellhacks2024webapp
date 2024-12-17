@@ -6,17 +6,13 @@ meta {
 
 post {
   url: {{url}}/metadata/post/template
-  body: none
+  body: json
   auth: none
 }
 
 body:json {
   {
-    "templateName": "Your Template Name",
-    "componentIds": [
-      1,
-      2,
-      3
-    ]
+    "templateName": "Blog",
+    "templateType": "Blog"
   }
 }

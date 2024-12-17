@@ -5,22 +5,17 @@ meta {
 }
 
 post {
-  url: {{url}}/metadata/post/project?galacticId=123
-  body: none
+  url: {{url}}/metadata/post/project
+  body: json
   auth: none
 }
 
 query {
-  galacticId: 123
+  ~galacticId: 12143794
 }
 
 body:json {
   {
-    "projectName": "Your Project Name",
-    "pageIds": [
-      1,
-      2,
-      3
-    ]
+    "projectName": "testproject"
   }
 }
