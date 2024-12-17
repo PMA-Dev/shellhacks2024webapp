@@ -42,26 +42,27 @@ This project is licensed under the MIT License. See the LICENSE file for details
 - Run CLI and Frontend in development mode:
 
   ```bash
-  bun run start
-  bun run dev
+  cd cli && bun run start
+  cd frontend && bun run dev
 
 - Build the Frontend project:
 
   ```bash
+  cd frontend
   bun run build
 
 - Run linting and formatting:
 
   ```bash
+  cd cli
   bun run format
   bun run lint
-  bun run format
 
 - Run tests for CLI:
   ```bash
-  bun run test
+  cd cli && bun run test
 
 - Preview the Frontend production build:
 
   ```bash
-  bun run preview
+  cd frontend && bun run preview
