@@ -34,12 +34,12 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ### CLI and Frontend Setup
 
-1. **Install dependencies**:
+- Install dependencies:
    ```bash
    cd cli && bun install
    cd ../frontend && bun install
 
-2. Run CLI and Frontend in development mode:
+- Run CLI and Frontend in development mode:
 
 ```bash
 bun run start --cwd cli
