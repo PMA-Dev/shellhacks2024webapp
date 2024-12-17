@@ -44,13 +44,11 @@ This project is licensed under the MIT License. See the LICENSE file for details
   ```bash
   bun run start --cwd cli
   bun run dev --cwd frontend
-  ```
 
 - Build the Frontend project:
 
   ```bash
   bun run build --cwd frontend
-  ```
 
 - Run linting and formatting:
 
@@ -58,15 +56,12 @@ This project is licensed under the MIT License. See the LICENSE file for details
   bun run format --cwd cli
   bun run lint --cwd frontend
   bun run format --cwd frontend
-  ```
 
 - Run tests for CLI:
   ```bash
   bun run test --cwd cli
-  ```
 
 - Preview the Frontend production build:
 
   ```bash
   bun run preview --cwd frontend
-  ```
