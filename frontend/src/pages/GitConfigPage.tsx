@@ -6,11 +6,14 @@ import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners';
+import { toast } from 'sonner';
 import { GalacticMetadata } from '../../../cli/models';
 
 export const GitConfigPage = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const [isLoading, setIsLoading] = useState(false);
     const galaxyId = searchParams.get('galaxyId');
     // get galaxy from hook
     const { getGalacticMetadataById, updateGalaticMetadata } =
@@ -25,39 +28,51 @@ export const GitConfigPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [galaxyId]);
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors },
-    } = useForm<{ ghToken: string; ghOrg: string }>();
-
-    const {
-        ghOrgs,
-        fetchOrgs,
-        data: ghPat,
-        fetch: fetchGhPat,
-    } = useFetchGhPat(galaxyId!);
     const [selectedOrg, setSelectedOrg] = useState<string>(
         galaxy?.githubOrg ?? ''
     );
+
+    const { ghOrgs, fetchOrgs, data: ghPat } = useFetchGhPat(galaxyId!);
     console.log(`galaxy is: ${JSON.stringify(galaxy)}`);
 
     useEffect(() => {
         fetchOrgs();
     }, [fetchOrgs, galaxyId]);
 
+    useEffect(() => {
+        if (!ghOrgs.length) {
+            setIsLoading(true);
+            fetchOrgs();
+            return;
+        }
+        setIsLoading(false);
+    }, [fetchOrgs, ghOrgs, isLoading]);
+
     const onSubmit = async (data: { ghToken: string; ghOrg: string }) => {
+        setIsLoading(true);
         try {
             await updateGalaticMetadata({
                 ...galaxy,
                 githubOrg: selectedOrg,
             });
             console.log('Configuration updated successfully:', data);
+            toast.error('Saved git config');
         } catch (error) {
             console.error('Failed to update configuration:', error);
+            toast.error('Failed to save git config');
+        } finally {
+            setIsLoading(false);
         }
     };
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<{ ghToken: string; ghOrg: string }>({
+        defaultValues: { ghToken: ghPat, ghOrg: selectedOrg },
+    });
 
     useEffect(() => {
         if (ghPat) setValue('ghToken', ghPat);
@@ -88,15 +103,6 @@ export const GitConfigPage = () => {
                         className="space-y-6"
                     >
                         <div className="space-y-2">
-                            <div>
-                                <Button
-                                    type="button"
-                                    className="w-full"
-                                    onClick={() => fetchGhPat()}
-                                >
-                                    Attempt to fetch token via gh CLI
-                                </Button>
-                            </div>
                             <Label htmlFor="ghToken">GitHub Token</Label>
                             <Input
                                 id="ghToken"
@@ -117,9 +123,7 @@ export const GitConfigPage = () => {
                             <select
                                 id="ghOrg"
                                 className="w-full px-3 py-2 border border-gray-300 rounded"
-                                {...register('ghOrg', {
-                                    required: 'GitHub organization is required',
-                                })}
+                                {...register('ghOrg')}
                                 value={selectedOrg}
                                 onChange={(e) => setSelectedOrg(e.target.value)}
                             >
@@ -137,8 +141,18 @@ export const GitConfigPage = () => {
                             )}
                         </div>
 
-                        <Button type="submit" className="w-full">
-                            Save Configuration
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <div id="save-config-spinner">
+                                    <ClipLoader size={20} color="#fff" />
+                                </div>
+                            ) : (
+                                'Save Configuration'
+                            )}
                         </Button>
                     </form>
                 </div>
