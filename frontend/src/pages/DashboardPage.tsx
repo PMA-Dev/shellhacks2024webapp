@@ -13,6 +13,7 @@ import {
 import { Dropdown } from '@/components/ui/dropdown';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useGalaxy } from '@/context/GalacticContext';
 import { useProject } from '@/context/ProjectContext';
 import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
 import { useProjects } from '@/hooks/useProjects';
@@ -31,6 +32,7 @@ const getLabelFromDir = (dir: string) => {
 
 const DashboardPage = () => {
     const { setProject } = useProject();
+    const { setGalaxy } = useGalaxy();
     useEffect(() => {
         setProject(null);
     }, [setProject]);
@@ -90,6 +92,17 @@ const DashboardPage = () => {
 
     useEffect(() => {
         fetchAndSetProjects();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [galaxyId]);
+
+    const { getGalacticMetadataById } = useGalaticMetadata();
+    useEffect(() => {
+        async function fetchGalaxy() {
+            const galaxy = await getGalacticMetadataById(Number(galaxyId));
+            console.log(JSON.stringify(galaxy));
+            setGalaxy(galaxy);
+        }
+        fetchGalaxy();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [galaxyId]);
 
@@ -160,11 +173,16 @@ const DashboardPage = () => {
                             onChange={(data) => {
                                 const galaxyId = data.target.value;
                                 setGalaxyId(Number(galaxyId));
+                                setGalaxy(
+                                    allGalaxyData?.find(
+                                        (data) => data.id === Number(galaxyId)
+                                    ) ?? null
+                                );
                             }}
                         />
                     </div>
                     <div className="flex items-center space-x-4">
-                        <Button onClick={() => navigate('/git')}>
+                        <Button onClick={() => navigate(`/git?galaxyId=${galaxyId}`)}>
                             Configure Git
                         </Button>
                     </div>

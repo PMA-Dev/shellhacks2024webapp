@@ -18,6 +18,10 @@ export class GalacticMetadata extends BaseDataRecord {
     githubPat!: string;
 
     @IsString()
+    @IsOptional()
+    ghOrg?: string;
+
+    @IsString()
     workingDir!: string;
 
     @IsArray()

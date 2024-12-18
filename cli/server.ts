@@ -11,6 +11,7 @@ import {
     startViteApp,
     stopViteApp,
 } from './bootstrapper/frontend';
+import { attemptGetGhToken, getListOfOrgs } from './bootstrapper/git';
 import { Config } from './config';
 import {
     getComponentMetadata,
@@ -131,6 +132,8 @@ const initializeRoutes = async (app: Express) => {
     app.get('/commands/startVite/', startViteApp);
     app.get('/commands/stopBackend/', stopBackendApp);
     app.get('/commands/startBackend/', startBackendApp);
+    app.get('/commands/getGhPat/', attemptGetGhToken);
+    app.get('/commands/getGhOrgs/', getListOfOrgs);
 };
 
 export const listen = async () => {
