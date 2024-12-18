@@ -51,10 +51,10 @@ export const runCmdAsync = async (
             return output;
         }
 
-        const child = Bun.spawn({
+        const child = Bun.spawnSync({
             cmd: [command, ...args],
             cwd: cwd || __dirname,
-            env: options?.env ?? undefined,
+            // env: options?.env ?? undefined,
             stdout: 'ignore', // Ignore standard output (do not log to current shell)
             stderr: 'ignore', // Ignore standard error (do not log to current shell)
             stdin: 'ignore', // Ignore standard input
@@ -62,9 +62,9 @@ export const runCmdAsync = async (
         });
 
         // Ensure the child process runs independently of the parent process
-        child.unref();
+        // child.unref();
 
-        console.log(`Spawned process with PID: ${child.pid}`);
+        // console.log(`Spawned process with PID: ${child.pid}`);
     } catch (err) {
         console.error('Error in runCmd:', err);
     }

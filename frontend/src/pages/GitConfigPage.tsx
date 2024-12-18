@@ -1,28 +1,67 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useGalaxy } from '@/context/GalacticContext';
 import { useFetchGhPat } from '@/hooks/useFetchGhPat';
+import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { GalacticMetadata } from '../../../cli/models';
 
 export const GitConfigPage = () => {
     const navigate = useNavigate();
-    const { galaxy } = useGalaxy();
     const [searchParams] = useSearchParams();
-    const galaxyId = searchParams.get('galaxyId') ?? galaxy?.id?.toString();
+    const galaxyId = searchParams.get('galaxyId');
+    // get galaxy from hook
+    const { getGalacticMetadataById, updateGalaticMetadata } =
+        useGalaticMetadata();
+    const [galaxy, setGalaxy] = useState<GalacticMetadata>();
+
+    useEffect(() => {
+        getGalacticMetadataById(parseInt(galaxyId!)).then((data) => {
+            setGalaxy(data as GalacticMetadata);
+            setSelectedOrg(data.githubOrg ?? '');
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [galaxyId]);
 
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
-    } = useForm();
+    } = useForm<{ ghToken: string; ghOrg: string }>();
 
-    const onSubmit = (data: unknown) => {
-        console.log(data);
+    const {
+        ghOrgs,
+        fetchOrgs,
+        data: ghPat,
+        fetch: fetchGhPat,
+    } = useFetchGhPat(galaxyId!);
+    const [selectedOrg, setSelectedOrg] = useState<string>(
+        galaxy?.githubOrg ?? ''
+    );
+    console.log(`galaxy is: ${JSON.stringify(galaxy)}`);
+
+    useEffect(() => {
+        fetchOrgs();
+    }, [fetchOrgs, galaxyId]);
+
+    const onSubmit = async (data: { ghToken: string; ghOrg: string }) => {
+        try {
+            await updateGalaticMetadata({
+                ...galaxy,
+                githubOrg: selectedOrg,
+            });
+            console.log('Configuration updated successfully:', data);
+        } catch (error) {
+            console.error('Failed to update configuration:', error);
+        }
     };
 
-    const { data: ghPat, fetch: fetchGhPat } = useFetchGhPat(galaxyId);
+    useEffect(() => {
+        if (ghPat) setValue('ghToken', ghPat);
+    }, [ghPat, setValue]);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -52,21 +91,18 @@ export const GitConfigPage = () => {
                             <div>
                                 <Button
                                     type="button"
-                                    className="w-half"
-                                    onClick={() => {
-                                        fetchGhPat();
-                                    }}
+                                    className="w-full"
+                                    onClick={() => fetchGhPat()}
                                 >
                                     Attempt to fetch token via gh CLI
                                 </Button>
                             </div>
-                            <Label htmlFor="name">Github Token</Label>
+                            <Label htmlFor="ghToken">GitHub Token</Label>
                             <Input
                                 id="ghToken"
                                 placeholder="gho_..."
-                                value={ghPat ?? undefined}
                                 {...register('ghToken', {
-                                    required: 'Github token is required',
+                                    required: 'GitHub token is required',
                                 })}
                             />
                             {errors.ghToken && (
@@ -77,22 +113,26 @@ export const GitConfigPage = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="you@example.com"
-                                {...register('email', {
-                                    required: 'Email is required',
-                                    pattern: {
-                                        value: /^\S+@\S+$/i,
-                                        message: 'Invalid email format',
-                                    },
+                            <Label htmlFor="ghOrg">GitHub Organization</Label>
+                            <select
+                                id="ghOrg"
+                                className="w-full px-3 py-2 border border-gray-300 rounded"
+                                {...register('ghOrg', {
+                                    required: 'GitHub organization is required',
                                 })}
-                            />
-                            {errors.email && (
+                                value={selectedOrg}
+                                onChange={(e) => setSelectedOrg(e.target.value)}
+                            >
+                                <option value="">Select an organization</option>
+                                {ghOrgs.map((org) => (
+                                    <option key={org} value={org}>
+                                        {org}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.ghOrg && (
                                 <p className="text-red-600 text-sm">
-                                    {errors.email.message as string}
+                                    {errors.ghOrg.message as string}
                                 </p>
                             )}
                         </div>

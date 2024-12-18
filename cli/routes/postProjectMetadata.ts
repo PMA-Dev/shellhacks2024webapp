@@ -11,6 +11,7 @@ import {
 import path from 'path';
 import { runBackendStart, setupWholeBackend } from '../bootstrapper/backend';
 import { runFrontendStart, setupWholeFrontend } from '../bootstrapper/frontend';
+import { setupMeta } from '../bootstrapper/meta';
 import { createAppTsxFileForProject } from '../factories/createAppTsx';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 
@@ -87,6 +88,7 @@ export const postProjectMetadata = async (
 
         await setupWholeFrontend(metadataId);
         await setupWholeBackend(metadataId);
+        await setupMeta(metadataId);
 
         console.log(
             `Created page idempotent for ${metadataId} and now creating app.tsx for project with id ${metadataId}`

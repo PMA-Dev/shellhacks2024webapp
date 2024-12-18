@@ -27,8 +27,9 @@ export interface Template {
 
 export interface GalacticMetadata {
     id?: number;
-    githubPat: string;
-    workingDir: string;
+    githubOrg?: string;
+    githubPat?: string;
+    workingDir?: string;
     projectIds?: number[];
     lastUpdated?: Date;
 }

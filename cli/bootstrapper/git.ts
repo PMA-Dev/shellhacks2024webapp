@@ -73,7 +73,7 @@ export const getListOfOrgs = async (
     }
 };
 
-const createGitRepoAsync = async (project: ProjectMetadata) => {
+export const createGitRepoAsync = async (project: ProjectMetadata) => {
     const galaxy = await query<GalacticMetadata>(
         MetadataType.Galactic,
         project.galaxyId!
@@ -83,10 +83,11 @@ const createGitRepoAsync = async (project: ProjectMetadata) => {
         [
             'repo',
             'create',
-            project.projectName,
+            galaxy?.githubOrg
+                ? `${galaxy?.githubOrg}/${project.projectName}`
+                : project.projectName,
             '--public',
             '--source=.',
-            galaxy?.ghOrg ?? '',
         ],
         {
             cwd: project.workingDir,
