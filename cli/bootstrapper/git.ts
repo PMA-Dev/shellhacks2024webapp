@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
-import { query, tryGetGithubPat } from '../db';
+import { editMetadataInPlace, query, tryGetGithubPat } from '../db';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import { runCmdAsync } from '../shellProxy';
 
@@ -67,8 +67,22 @@ export const getListOfOrgs = async (
             res.status(404).json({ error: 'metadata not found' });
             return;
         }
-        const pat = await getListOfOrgsAsync(galaxy.githubPat);
-        res.json(pat);
+
+        if (galaxy.githubOrgs?.length > 0) {
+            res.json(galaxy.githubOrgs);
+            return;
+        }
+
+        const orgs = await getListOfOrgsAsync(galaxy.githubPat);
+        await editMetadataInPlace<GalacticMetadata>(
+            MetadataType.Galactic,
+            galaxy.id!,
+            (x) => {
+                x.githubOrgs = orgs ?? [];
+            }
+        );
+
+        res.json(orgs);
     } catch (error) {
         next(error);
     }
