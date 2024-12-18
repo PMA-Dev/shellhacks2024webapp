@@ -18,6 +18,7 @@ export const usePages = (projectId: string) => {
 
     useEffect(() => {
         fetchPages();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const addPage = async (page: Page) => {

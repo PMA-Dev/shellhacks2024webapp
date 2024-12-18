@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import * as fs from 'fs';
 import { query, tryGetGithubPat } from '../db';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import { runCmdAsync } from '../shellProxy';
@@ -78,23 +79,74 @@ export const createGitRepoAsync = async (project: ProjectMetadata) => {
         MetadataType.Galactic,
         project.galaxyId!
     );
-    await runCmdAsync(
-        'gh',
-        [
-            'repo',
-            'create',
-            galaxy?.githubOrg
-                ? `${galaxy?.githubOrg}/${project.projectName}`
-                : project.projectName,
-            '--public',
-            '--source=.',
-        ],
-        {
-            cwd: project.workingDir,
+
+    if (!galaxy?.githubPat) throw new Error('Missing GitHub PAT');
+    if (!project.projectName) throw new Error('Missing project name');
+
+    const workingDir = project.workingDir;
+    if (!fs.existsSync(String(workingDir)))
+        throw new Error(`Working directory not found: ${workingDir}`);
+
+    try {
+        await runCmdAsync('git', ['-C', 'init'], {
+            cwd: workingDir,
             join: true,
-            env: { GH_TOKEN: galaxy?.githubPat! },
-        }
-    );
+        });
+    } catch (error) {
+        console.error(`Failed to initialize git: ${error}`);
+    }
+
+    try {
+        await runCmdAsync('git', ['commit', '-am', 'added first changes'], {
+            cwd: workingDir,
+            join: true,
+        });
+    } catch (error) {
+        console.error(`Failed to git commit: ${error}`);
+    }
+
+    const repoName = galaxy.githubOrg
+        ? `${galaxy.githubOrg}/${project.projectName}`
+        : project.projectName;
+
+    try {
+        await runCmdAsync('gh', ['repo', 'create', repoName, '--private'], {
+            cwd: workingDir,
+            join: true,
+            env: { GH_TOKEN: galaxy.githubPat },
+        });
+    } catch (error) {
+        console.error(`Failed to create GitHub repo: ${error}`);
+    }
+
+    try {
+        await runCmdAsync(
+            'git',
+            [
+                'remote',
+                'add',
+                'origin',
+                `https://github.com/${galaxy.githubOrg}/${project.projectName}.git`,
+            ],
+            {
+                cwd: workingDir,
+                join: true,
+                env: { GH_TOKEN: galaxy.githubPat },
+            }
+        );
+    } catch (error) {
+        console.error(`Failed to create GitHub repo: ${error}`);
+    }
+
+    try {
+        await runCmdAsync('git', ['push', '-u', 'origin', `master`], {
+            cwd: workingDir,
+            join: true,
+            env: { GH_TOKEN: galaxy.githubPat, GIT_TOKEN: galaxy.githubPat },
+        });
+    } catch (error) {
+        console.error(`Failed to create GitHub repo: ${error}`);
+    }
 };
 
 const getListOfOrgsAsync = async (ghPat: string) => {
@@ -102,5 +154,18 @@ const getListOfOrgsAsync = async (ghPat: string) => {
         join: true,
         env: { GH_TOKEN: ghPat },
     });
-    return orgs?.split('\n').filter((x) => x);
+    const orgList = orgs?.split('\n').filter((x) => x);
+    const userName = await getUserName(ghPat);
+    if (userName) orgList?.push(userName);
+    return orgList;
+};
+
+const getUserName = async (ghPat: string) => {
+    const data = await runCmdAsync('gh', ['api', 'user'], {
+        join: true,
+        env: { GH_TOKEN: ghPat },
+    });
+
+    const userData = JSON.parse(data?.trim() || '{}');
+    return userData.login ?? '';
 };

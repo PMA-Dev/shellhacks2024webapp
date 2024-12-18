@@ -182,7 +182,11 @@ const DashboardPage = () => {
                         />
                     </div>
                     <div className="flex items-center space-x-4">
-                        <Button onClick={() => navigate(`/git?galaxyId=${galaxyId}`)}>
+                        <Button
+                            onClick={() =>
+                                navigate(`/git?galaxyId=${galaxyId}`)
+                            }
+                        >
                             Configure Git
                         </Button>
                     </div>

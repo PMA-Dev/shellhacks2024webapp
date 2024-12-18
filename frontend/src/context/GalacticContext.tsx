@@ -8,6 +8,7 @@ interface GalaxyContextType {
 
 const GalaxyContext = createContext<GalaxyContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useGalaxy = () => {
     const context = useContext(GalaxyContext);
     if (!context) {
