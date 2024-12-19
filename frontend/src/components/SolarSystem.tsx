@@ -1,3 +1,5 @@
+// src/components/SolarSystem.tsx
+
 import { useFrame } from '@react-three/fiber';
 import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
@@ -46,6 +48,9 @@ const SolarSystem: React.FC<SolarSystemProps> = ({ seed }) => {
 
     return (
         <>
+            {/* Starfield Background */}
+            <Starfield seed={seed} />
+
             {/* Sun */}
             <mesh>
                 <sphereGeometry args={[2, 32, 32]} />
@@ -67,7 +72,11 @@ const SolarSystem: React.FC<SolarSystemProps> = ({ seed }) => {
             {/* Ambient Light */}
             <ambientLight intensity={0.5} />
             {/* Point Light at the sun's position */}
-            <pointLight position={[0, 0, 0]} intensity={10} color={sunColor} />
+            <pointLight
+                position={[0, 0, 0]}
+                intensity={100}
+                color={sunColor}
+            />
         </>
     );
 };
@@ -87,7 +96,11 @@ function generateSolarSystem(seed: number) {
     for (let i = 0; i < numPlanets; i++) {
         const distance = (i + 1) * 2 + random(); // Distance from the sun
         const size = random() * 0.5 + 0.2; // Planet size between 0.2 and 0.7
-        const color = new THREE.Color(random(), random(), random()).getStyle(); // Random color
+        const color = new THREE.Color(
+            random(),
+            random(),
+            random()
+        ).getStyle(); // Random color
         const speed = random() * 0.3 + 0.1; // Orbital speed between 0.1 and 0.4
 
         // Add a random initial angle between 0 and 2π
