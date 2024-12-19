@@ -9,7 +9,7 @@ export const TestVideoRender = () => {
                     type: 'video',
                     sources: [
                         {
-                            src: 'https://example.com/video.mp4',
+                            src: 'https://pmacmshost.blob.core.windows.net/publicvideo/5healthpotdravenbaitkaisarafanice.mov',
                             type: 'video/mp4',
                         },
                     ],
