@@ -6,14 +6,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
 import { Canvas } from '@react-three/fiber';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 function OnboardingPage() {
     const navigate = useNavigate();
     const [workingDir, setDir] = useState('');
-    const { createGalaticMetadata } = useGalaticMetadata();
+    const { createGalaticMetadata, galaticMetadata} = useGalaticMetadata();
+
+    useEffect(() => {
+        console.log(galaticMetadata);
+        if (galaticMetadata) {
+            // navigate to dashboard
+            navigate('/dashboard/');
+        }
+    }, []);
 
     const handleSubmit = async () => {
         try {
