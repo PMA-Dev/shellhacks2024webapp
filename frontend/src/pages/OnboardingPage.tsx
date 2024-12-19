@@ -2,7 +2,7 @@ import Galaxy from '@/components/Galaxy';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
+import { useGalacticMetadata } from '../hooks/useGalacticMetadata';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useState, useRef } from 'react';
 import { FolderOpen } from 'lucide-react';
@@ -12,16 +12,19 @@ import { toast } from 'sonner';
 function OnboardingPage() {
     const navigate = useNavigate();
     const [workingDir, setDir] = useState('');
-    const { createGalacticMetadata, galacticMetadata} = useGalacticMetadata();
     const fileBrowserRef = useRef<HTMLInputElement>(null);
+    const {
+        galacticMetadata,
+        createGalacticMetadata,
+    } = useGalacticMetadata();
 
     useEffect(() => {
-        console.log(galacticMetadata);
+        console.log(galacticMetadata, 'galacticMetadata');
         if (galacticMetadata) {
             // navigate to dashboard
             navigate('/dashboard/');
         }
-    }, []);
+    }, [galacticMetadata]);
 
 
     const handleDirectorySelect = (e: React.ChangeEvent<HTMLInputElement>) => {
