@@ -14,6 +14,11 @@ import {
 import { attemptGetGhToken, getListOfOrgs } from './bootstrapper/git';
 import { Config } from './config';
 import {
+    getAllFilesFromDb,
+    getFileByIdFromDb,
+    uploadFileHandler,
+} from './routes/cmsHelper';
+import {
     getComponentMetadata,
     getComponentMetadataById,
     getControllerMetadata,
@@ -134,6 +139,11 @@ const initializeRoutes = async (app: Express) => {
     app.get('/commands/startBackend/', startBackendApp);
     app.get('/commands/getGhPat/', attemptGetGhToken);
     app.get('/commands/getGhOrgs/', getListOfOrgs);
+
+    // Content routes
+    app.post('/content/upload', uploadFileHandler);
+    app.get('/content/getAll', getAllFilesFromDb);
+    app.get('/content/getById', getFileByIdFromDb);
 };
 
 export const listen = async () => {

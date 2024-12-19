@@ -31,6 +31,7 @@ const getDefaultData = (): DbData => {
             [MetadataType.Route]: { metadata: [] },
             [MetadataType.Controller]: { metadata: [] },
             [MetadataType.DataSource]: { metadata: [] },
+            [MetadataType.Content]: { metadata: [] },
         },
     };
 };

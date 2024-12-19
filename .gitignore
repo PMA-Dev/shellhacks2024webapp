@@ -7,3 +7,4 @@ tmp/*
 *test-results*
 cli/node_modules
 cli/node_modules/*
+**set_secrets.sh
