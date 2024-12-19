@@ -214,6 +214,7 @@ const DashboardPage = () => {
                                 {/* Solar System Animation */}
                                 <div className="absolute inset-0">
                                     <Canvas
+                                        style={{ background: ' #230922 ' }}
                                         camera={{
                                             position: [10, 10, 10],
                                             fov: 75,
@@ -228,7 +229,7 @@ const DashboardPage = () => {
                                 <div className="absolute inset-0 bg-black opacity-30"></div>
                                 {/* Project Title */}
                                 <div className="relative z-10">
-                                    <h2 className="mb-2 text-xl font-semibold text-white">
+                                    <h2 className="mb-2 text-xl font-semibold text-white [text-shadow:_0_1px_0_var(--tw-shadow-color)]">
                                         {project.projectName}
                                     </h2>
                                 </div>
