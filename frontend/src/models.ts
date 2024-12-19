@@ -7,6 +7,7 @@ export interface Project {
     routeIds?: string[];
     pageIds: string[];
     sitePath?: string;
+    galaxyId?: string;
 }
 
 export interface Page {
