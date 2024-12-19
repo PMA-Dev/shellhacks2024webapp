@@ -2,6 +2,18 @@
 
 # Run CLI and Frontend simultaneously, ensuring both die if one is killed.
 
+# run secrets setter
+if [ -f set_secrets.sh ]; then
+    set -a
+    source ./set_secrets.sh
+    set +a
+
+    echo "Secrets set successfully"
+else
+    echo "Error: set_secrets.sh not found"
+    exit 1
+fi
+
 # Start CLI
 cd ../cli
 bun start listen &

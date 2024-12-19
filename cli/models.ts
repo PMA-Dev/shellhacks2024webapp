@@ -212,6 +212,15 @@ export enum MetadataType {
     Route = 'route',
     DataSource = 'dataSource',
     Controller = 'controller',
+    Content = 'content',
+}
+
+export class ContentMetadata extends BaseDataRecord {
+    @IsString()
+    url!: string;
+
+    @IsOptional()
+    metadata?: Record<string, string> = {};
 }
 
 // MetadatasOuter with validation decorators
@@ -239,6 +248,9 @@ export class MetadatasOuter {
 
     @IsOptional()
     dataSource?: MetadataTable<DataSourceMetadata>;
+
+    @IsOptional()
+    content?: MetadataTable<ContentMetadata>;
 }
 
 // DbData interface with MetadatasOuter
@@ -255,4 +267,5 @@ export type GenericMetadata =
     | ComponentMetadata
     | RouteMetadata
     | ControllerMetadata
-    | DataSourceMetadata;
+    | DataSourceMetadata
+    | ContentMetadata;

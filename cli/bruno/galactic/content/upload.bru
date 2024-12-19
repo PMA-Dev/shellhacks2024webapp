@@ -1,0 +1,15 @@
+meta {
+  name: upload
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/content/upload
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(/Users/felipearce/Desktop/Screen Recording 2024-10-13 at 8.06.57 PM.mov)
+}
