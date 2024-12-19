@@ -15,7 +15,10 @@ export const useGalaticMetadata = () => {
     }, []);
 
     const updateGalaticMetadata = async (metadata: GalacticMetadata) => {
-        const response = await api.patch('/metadata/patch/galactic', metadata);
+        const response = await api.patch(
+            `/metadata/patch/galactic?id=${metadata.id}`,
+            metadata
+        );
         setGalaticMetadata(response.data);
     };
 

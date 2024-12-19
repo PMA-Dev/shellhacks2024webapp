@@ -15,7 +15,12 @@ export class BaseDataRecord {
 // Galactic Metadata with validation decorators
 export class GalacticMetadata extends BaseDataRecord {
     @IsString()
+    @IsOptional()
     githubPat!: string;
+
+    @IsString()
+    @IsOptional()
+    githubOrg?: string;
 
     @IsString()
     workingDir!: string;
@@ -23,6 +28,9 @@ export class GalacticMetadata extends BaseDataRecord {
     @IsArray()
     @IsNumber({}, { each: true })
     projectIds: number[] = [];
+
+    @IsArray()
+    githubOrgs: string[] = [];
 }
 
 // Project Metadata with validation decorators

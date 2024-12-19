@@ -9,6 +9,7 @@ import {
     ProjectMetadata,
     type DbData,
 } from './models';
+import { runCmdAsync } from './shellProxy';
 
 let GLOBAL_DB: Low<DbData> | null = null;
 
@@ -205,4 +206,38 @@ export const getProjectData = async (
     if (!project)
         throw new Error('No project metadata found for id: ' + projectId);
     return project;
+};
+
+export const tryGetGithubPat = async (
+    galacticId: number
+): Promise<string | undefined | null> => {
+    console.log(`Going to query pat for galactic id: ${galacticId}...`);
+    const galaxy = await query<GalacticMetadata>(
+        MetadataType.Galactic,
+        galacticId
+    );
+    let ghPat = galaxy?.githubPat;
+    if (!galaxy?.githubPat) {
+        const pat = await runCmdAsync('gh', ['auth', 'token'], {
+            cwd: galaxy?.workingDir,
+            join: true,
+        });
+        console.log('Got pat:', pat);
+
+        if (!pat) {
+            console.log('No pat found...');
+            return null;
+        }
+
+        editMetadataInPlace<GalacticMetadata>(
+            MetadataType.Galactic,
+            galacticId,
+            (x) => {
+                x.githubPat = pat;
+            }
+        );
+        ghPat = pat;
+    }
+    console.log('Returning data for query id:', galacticId);
+    return ghPat;
 };

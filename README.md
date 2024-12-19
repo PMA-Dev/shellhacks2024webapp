@@ -29,3 +29,40 @@
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
+
+## Project Setup and Run Instructions
+
+### CLI and Frontend Setup
+
+- Install dependencies:
+   ```bash
+   cd cli && bun install
+   cd ../frontend && bun install
+
+- Run CLI and Frontend in development mode:
+
+  ```bash
+  cd cli && bun run start
+  cd frontend && bun run dev
+
+- Build the Frontend project:
+
+  ```bash
+  cd frontend
+  bun run build
+
+- Run linting and formatting:
+
+  ```bash
+  cd cli
+  bun run format
+  bun run lint
+
+- Run tests for CLI:
+  ```bash
+  cd cli && bun run test
+
+- Preview the Frontend production build:
+
+  ```bash
+  cd frontend && bun run preview

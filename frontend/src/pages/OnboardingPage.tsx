@@ -12,14 +12,13 @@ import { toast } from 'sonner';
 
 function OnboardingPage() {
     const navigate = useNavigate();
-    const [githubPat, setPat] = useState('testpat');
     const [workingDir, setDir] = useState('');
     const { createGalaticMetadata } = useGalaticMetadata();
 
     const handleSubmit = async () => {
         try {
-            if (githubPat && workingDir) {
-                await createGalaticMetadata({ githubPat, workingDir });
+            if (workingDir) {
+                await createGalaticMetadata({ workingDir });
             }
             navigate('/dashboard/');
             toast.success('Successfully saved your Galactic metadata!');
@@ -46,16 +45,6 @@ function OnboardingPage() {
                     <h2 className="text-2xl font-bold text-center">
                         Welcome to GALACTIC 🌌
                     </h2>
-                    <div>
-                        <Label htmlFor="githubPat">Github PAT</Label>
-                        <Input
-                            id="githubPat"
-                            placeholder="Your GitHub Personal Access Token"
-                            value={githubPat}
-                            defaultValue={'testpat'}
-                            onChange={(e) => setPat(e.target.value)}
-                        />
-                    </div>
                     <div>
                         <Label htmlFor="workingDir">Working Directory</Label>
                         <Input
