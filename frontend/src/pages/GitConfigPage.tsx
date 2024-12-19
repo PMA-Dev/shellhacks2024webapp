@@ -83,7 +83,7 @@ export const GitConfigPage = () => {
             <header className="bg-white shadow">
                 <div className="container flex items-center justify-between px-6 py-4 mx-auto">
                     <div className="flex space-x-4">
-                        <Button onClick={() => navigate(-1)}>
+                        <Button onClick={() => navigate('/dashboard')}>
                             Back to Dashboard
                         </Button>
                     </div>
