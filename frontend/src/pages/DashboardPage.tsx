@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useGalaxy } from '@/context/GalacticContext';
 import { useProject } from '@/context/ProjectContext';
-import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
+import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
 import { useProjects } from '@/hooks/useProjects';
 import { GalacticMetadata, Project } from '@/models';
 import { Canvas } from '@react-three/fiber';
@@ -95,7 +95,7 @@ const DashboardPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [galaxyId]);
 
-    const { getGalacticMetadataById } = useGalaticMetadata();
+    const { getGalacticMetadataById } = useGalacticMetadata();
     useEffect(() => {
         async function fetchGalaxy() {
             const galaxy = await getGalacticMetadataById(Number(galaxyId));

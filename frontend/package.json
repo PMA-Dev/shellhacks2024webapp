@@ -22,11 +22,8 @@
         "axios": "^1.7.7",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.0.0",
-<<<<<<< HEAD
         "http-method-enum": "^1.0.0",
-=======
         "heroicons": "^2.1.5",
->>>>>>> collin/old-shit
         "lucide-react": "^0.446.0",
         "next-themes": "^0.3.0",
         "plyr-react": "^5.3.0",

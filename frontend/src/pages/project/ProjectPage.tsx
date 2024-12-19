@@ -4,7 +4,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { GithubLogo } from '@/components/ui/ghLogo';
 import { useGalaxy } from '@/context/GalacticContext';
 import { useProject } from '@/context/ProjectContext';
-import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
+import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
 import { useProjects } from '@/hooks/useProjects';
 import { useEffect } from 'react';
 import { Route, Routes, useParams } from 'react-router-dom';
@@ -22,7 +22,7 @@ function ProjectPage() {
     const { galaxy, setGalaxy } = useGalaxy();
     const { project, setProject } = useProject();
     const { getProjectById } = useProjects();
-    const { getGalacticMetadataById } = useGalaticMetadata();
+    const { getGalacticMetadataById } = useGalacticMetadata();
 
     useEffect(() => {
         const fetchAndSetProject = async () => {
