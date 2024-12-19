@@ -40,11 +40,16 @@ const DashboardPage = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const { getProjectsForGalaxy, addProject } = useProjects();
     const { getAllGalacticMetadata } = useGalacticMetadata();
-    const [galaxyId, setGalaxyId] = useState<number | undefined>(undefined);
+
     const [allGalaxyData, setAllGalaxyData] = useState<GalacticMetadata[]>();
     const navigate = useNavigate();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [galaxyId, setGalaxyId] = useState<number | undefined>(Number(localStorage.getItem('galaxyId')));
+
+    const cacheGalaxyId = (galaxyId: number) => {
+        localStorage.setItem('galaxyId', String(galaxyId));
+    };
 
     const handleCreateProject = useCallback(async () => {
         try {
@@ -178,6 +183,7 @@ const DashboardPage = () => {
                                         (data) => data.id === Number(galaxyId)
                                     ) ?? null
                                 );
+                                cacheGalaxyId(galaxyId);
                             }}
                         />
                     </div>
