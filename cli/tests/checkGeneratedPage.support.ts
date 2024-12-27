@@ -17,9 +17,7 @@ export const startServerAndOpenPage = async (
                 .locator('text=test-project')
                 .isVisible({ timeout: 10000 })
         ).toBe(true);
-        expect(await page.locator('text=Your Live Site').isVisible()).toBe(
-            true
-        );
+        expect(await page.locator('text=Site Preview').isVisible()).toBe(true);
 
         await page.click('#start-server');
         await page.waitForTimeout(3500);

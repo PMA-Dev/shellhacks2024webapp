@@ -75,11 +75,11 @@ function GeneralProjectPage() {
     }
 
     return (
-        <div className="pt-12 flex flex-row items-start justify-between">
+        <div className="flex flex-row items-start justify-between">
             {/* Left Pane: Live Site */}
             <div className=" w-1/2 h-full ">
                 <div className="flex flex-col">
-                    <h1 className="text-2xl font-bold pb-5">Your Live Site</h1>
+                    <h1 className="text-2xl font-bold pb-5">Site Preview</h1>
                     <div className="min-h-[60vh] h-full w-full border-2 border-gray-100 pt-2 rounded-xl shadow-lg relative">
                         <iframe
                             id="main-iframe"
