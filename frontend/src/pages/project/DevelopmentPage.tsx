@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import Draggable from 'react-draggable';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, Layout, ChevronUp, ChevronDown } from 'lucide-react';
-import api from '@/hooks/api';
 import { useProject } from '@/context/ProjectContext';
+import api from '@/hooks/api';
+import { ChevronDown, ChevronUp, Layout, Pause, Play } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Draggable from 'react-draggable';
 
 type DevelopmentModePageProps = {
     onToggleSidebar: () => void;
@@ -37,6 +37,7 @@ export default function DevelopmentModePage({
         if (project?.sitePath) {
             checkServerStatus();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [project?.sitePath]);
 
     const checkServerStatus = async () => {
@@ -52,6 +53,7 @@ export default function DevelopmentModePage({
     const resetIframes = () => {
         const iframes = document.querySelectorAll('iframe');
         iframes.forEach((iframe) => {
+            // eslint-disable-next-line no-self-assign
             iframe.src = iframe.src;
         });
     };
@@ -65,8 +67,10 @@ export default function DevelopmentModePage({
     };
 
     useEffect(() => {
-        const projectRouterWrapper = document.getElementById('project-router-wrapper');
-        if(!isDocked) {
+        const projectRouterWrapper = document.getElementById(
+            'project-router-wrapper'
+        );
+        if (!isDocked) {
             projectRouterWrapper?.classList.add('!p-0');
         } else {
             projectRouterWrapper?.classList.remove('!p-0');
@@ -92,7 +96,10 @@ export default function DevelopmentModePage({
     };
 
     const handleToggleSidebar = () => {
-        localStorage.setItem('sidebarVisible', JSON.stringify(!isSidebarVisible));
+        localStorage.setItem(
+            'sidebarVisible',
+            JSON.stringify(!isSidebarVisible)
+        );
         onToggleSidebar();
     };
 
@@ -159,7 +166,9 @@ export default function DevelopmentModePage({
                 <Draggable handle=".dev-tray-handle">
                     <div className="absolute top-8 right-8 z-50 bg-white shadow-lg rounded-md w-56 p-2 flex flex-col space-y-2 dev-tray-handle">
                         <div className="flex items-center justify-between bg-gray-100 p-2 rounded-md">
-                            <span className="text-sm font-semibold">Dev Tray</span>
+                            <span className="text-sm font-semibold">
+                                Dev Tray
+                            </span>
                             <Button
                                 variant="ghost"
                                 size="icon"

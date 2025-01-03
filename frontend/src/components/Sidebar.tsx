@@ -1,37 +1,34 @@
 // src/components/Sidebar.tsx
 
-import { useState, useEffect } from 'react';
-import { NavLink, useParams, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import {
-    ChevronLeft,
-    ChevronRight,
-    FileText,
-    LayoutTemplate,
-    Box,
-    Server,
-    Image,
-    Database,
-    Undo2Icon,
-    Settings,
-    LogOut,
-    Sun,
-    ServerCog,
-    Fish,
-    Github,
-    HammerIcon,
-    LayoutDashboardIcon,
-    Play,
-    Pause,
-    Code,
-} from 'lucide-react';
+import { useGalaxy } from '@/context/GalacticContext';
+import { useProject } from '@/context/ProjectContext';
 import useDarkMode from '@/hooks/useDarkMode';
 import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
 import { useProjects } from '@/hooks/useProjects';
-import { useProject } from '@/context/ProjectContext';
-import { useGalaxy } from '@/context/GalacticContext';
-import api from '@/hooks/api'; // Adjust import path as needed
+import { cn } from '@/lib/utils';
+import {
+    Box,
+    ChevronLeft,
+    ChevronRight,
+    Code,
+    Database,
+    FileText,
+    Fish,
+    Github,
+    HammerIcon,
+    Image,
+    LayoutDashboardIcon,
+    LayoutTemplate,
+    LogOut,
+    Server,
+    ServerCog,
+    Settings,
+    Sun,
+    Undo2Icon,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { NavLink, useParams } from 'react-router-dom';
 
 function Sidebar() {
     const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -57,7 +54,9 @@ function Sidebar() {
     useEffect(() => {
         const fetchAndSetGalaxy = async () => {
             if (!project?.galaxyId) return;
-            const data = await getGalacticMetadataById(Number(project.galaxyId));
+            const data = await getGalacticMetadataById(
+                Number(project.galaxyId)
+            );
             setGalaxy(data);
             console.log('Galaxy data:', data);
         };
@@ -72,7 +71,6 @@ function Sidebar() {
             return newVal;
         });
     }
-
 
     const sections = [
         {
@@ -199,19 +197,30 @@ function Sidebar() {
                             <div key={item.to} className="relative group">
                                 <NavLink
                                     to={item.to}
-                                    target={item.to.startsWith('https') || item.to.startsWith('vscode') ? '_blank' : undefined}
+                                    target={
+                                        item.to.startsWith('https') ||
+                                        item.to.startsWith('vscode')
+                                            ? '_blank'
+                                            : undefined
+                                    }
                                     className={({ isActive }) =>
                                         cn(
                                             'flex items-center transition-all duration-200 rounded-sm',
-                                            isCollapsed ? 'justify-center px-0 py-2' : 'px-4 py-2',
+                                            isCollapsed
+                                                ? 'justify-center px-0 py-2'
+                                                : 'px-4 py-2',
                                             'mx-auto text-gray-500 hover:text-gray-700 hover:bg-gray-200 hover:scale-105',
-                                            isActive ? 'bg-gray-300 font-semibold' : ''
+                                            isActive
+                                                ? 'bg-gray-300 font-semibold'
+                                                : ''
                                         )
                                     }
                                 >
                                     <div className="flex items-center space-x-2">
                                         {item.icon}
-                                        {!isCollapsed && <span>{item.label}</span>}
+                                        {!isCollapsed && (
+                                            <span>{item.label}</span>
+                                        )}
                                     </div>
                                 </NavLink>
 

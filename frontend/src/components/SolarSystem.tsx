@@ -72,11 +72,7 @@ const SolarSystem: React.FC<SolarSystemProps> = ({ seed }) => {
             {/* Ambient Light */}
             <ambientLight intensity={0.5} />
             {/* Point Light at the sun's position */}
-            <pointLight
-                position={[0, 0, 0]}
-                intensity={100}
-                color={sunColor}
-            />
+            <pointLight position={[0, 0, 0]} intensity={100} color={sunColor} />
         </>
     );
 };
@@ -85,7 +81,6 @@ function generateSolarSystem(seed: number) {
     const random = mulberry32(seed);
 
     // Randomly select sun color from predefined constants
-    
 
     const sunColor = sunColors[Math.floor(random() * sunColors.length)];
 
@@ -96,11 +91,7 @@ function generateSolarSystem(seed: number) {
     for (let i = 0; i < numPlanets; i++) {
         const distance = (i + 1) * 2 + random(); // Distance from the sun
         const size = random() * 0.5 + 0.2; // Planet size between 0.2 and 0.7
-        const color = new THREE.Color(
-            random(),
-            random(),
-            random()
-        ).getStyle(); // Random color
+        const color = new THREE.Color(random(), random(), random()).getStyle(); // Random color
         const speed = random() * 0.3 + 0.1; // Orbital speed between 0.1 and 0.4
 
         // Add a random initial angle between 0 and 2π
@@ -147,7 +138,10 @@ const Starfield: React.FC<{ seed: number }> = ({ seed }) => {
             let color: THREE.Color;
             if (random() < 0.05) {
                 // Use a sun color
-                color = sunColorsThree[Math.floor(random() * sunColorsThree.length)];
+                color =
+                    sunColorsThree[
+                        Math.floor(random() * sunColorsThree.length)
+                    ];
             } else {
                 // use white
                 color = new THREE.Color(1, 1, 1);

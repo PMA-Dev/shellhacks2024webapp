@@ -45,7 +45,9 @@ const DashboardPage = () => {
     const navigate = useNavigate();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [galaxyId, setGalaxyId] = useState<number | undefined>(Number(localStorage.getItem('galaxyId')));
+    const [galaxyId, setGalaxyId] = useState<number | undefined>(
+        Number(localStorage.getItem('galaxyId'))
+    );
 
     const cacheGalaxyId = (galaxyId: number) => {
         localStorage.setItem('galaxyId', String(galaxyId));
@@ -226,10 +228,10 @@ const DashboardPage = () => {
                                             fov: 75,
                                         }}
                                     >
-                                        <SolarSystem seed={+(project.id || 0)} />
+                                        <SolarSystem
+                                            seed={+(project.id || 0)}
+                                        />
                                     </Canvas>
-
-
                                 </div>
                                 {/* Overlay for readability */}
                                 <div className="absolute inset-0 bg-black opacity-30"></div>

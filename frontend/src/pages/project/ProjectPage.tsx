@@ -1,5 +1,5 @@
 // src/pages/ProjectPage.tsx
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Route, Routes, useParams } from 'react-router-dom';
 
 import { Sidebar } from '@/components/Sidebar';
@@ -7,19 +7,19 @@ import { useGalaxy } from '@/context/GalacticContext';
 import { useProject } from '@/context/ProjectContext';
 import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
 import { useProjects } from '@/hooks/useProjects';
+import AssetsPage from './AssetsPage';
+import ComponentsPage from './ComponentsPage';
+import DBSchemaPage from './DBSchemaPage';
+import DevelopmentModePage from './DevelopmentPage';
 import GeneralProjectPage from './GeneralProjectPage';
 import PagesPage from './PagesPage';
-import TemplatesPage from './TemplatesPage';
-import ComponentsPage from './ComponentsPage';
 import RouterPage from './RouterPage';
-import AssetsPage from './AssetsPage';
-import DBSchemaPage from './DBSchemaPage';
+import TemplatesPage from './TemplatesPage';
 import { TestVideoRender } from './TestVideoRender';
-import DevelopmentModePage from './DevelopmentPage';
 
 function ProjectPage() {
     const { projectId } = useParams();
-    const { galaxy, setGalaxy } = useGalaxy();
+    const { setGalaxy } = useGalaxy();
     const { project, setProject } = useProject();
     const { getProjectById } = useProjects();
     const { getGalacticMetadataById } = useGalacticMetadata();
@@ -37,7 +37,9 @@ function ProjectPage() {
     useEffect(() => {
         const fetchAndSetGalaxy = async () => {
             if (!project?.galaxyId) return;
-            const data = await getGalacticMetadataById(Number(project.galaxyId));
+            const data = await getGalacticMetadataById(
+                Number(project.galaxyId)
+            );
             setGalaxy(data);
         };
         fetchAndSetGalaxy();
@@ -51,9 +53,12 @@ function ProjectPage() {
         project && (
             <div className="flex h-screen">
                 {isSidebarVisible && <Sidebar />}
-                <div className="flex-1 p-8" id='project-router-wrapper'>
+                <div className="flex-1 p-8" id="project-router-wrapper">
                     <Routes>
-                        <Route path="general" element={<GeneralProjectPage />} />
+                        <Route
+                            path="general"
+                            element={<GeneralProjectPage />}
+                        />
                         <Route path="pages" element={<PagesPage />} />
                         <Route path="templates" element={<TemplatesPage />} />
                         <Route path="components" element={<ComponentsPage />} />
@@ -65,7 +70,9 @@ function ProjectPage() {
                             path="development"
                             element={
                                 <DevelopmentModePage
-                                    onToggleSidebar={() => setIsSidebarVisible((prev) => !prev)}
+                                    onToggleSidebar={() =>
+                                        setIsSidebarVisible((prev) => !prev)
+                                    }
                                     isSidebarVisible={isSidebarVisible}
                                 />
                             }

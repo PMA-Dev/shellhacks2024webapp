@@ -2,21 +2,18 @@ import Galaxy from '@/components/Galaxy';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useGalacticMetadata } from '../hooks/useGalacticMetadata';
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useState, useRef } from 'react';
 import { FolderOpen } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useGalacticMetadata } from '../hooks/useGalacticMetadata';
 
 function OnboardingPage() {
     const navigate = useNavigate();
     const [workingDir, setDir] = useState('');
     const fileBrowserRef = useRef<HTMLInputElement>(null);
-    const {
-        galacticMetadata,
-        createGalacticMetadata,
-    } = useGalacticMetadata();
+    const { galacticMetadata, createGalacticMetadata } = useGalacticMetadata();
 
     useEffect(() => {
         console.log(galacticMetadata, 'galacticMetadata');
@@ -24,8 +21,8 @@ function OnboardingPage() {
             // navigate to dashboard
             navigate('/dashboard/');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [galacticMetadata]);
-
 
     const handleDirectorySelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         // TODO: When we have electron, we can use the electron.remote.dialog.showOpenDialog() method to open the file browser and actuall pick a directory with an absolute path

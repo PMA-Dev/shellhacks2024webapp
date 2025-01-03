@@ -27,12 +27,14 @@ export default function useDarkMode() {
                 'change',
                 handleDarkModeChange
             );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (!isClient) return;
         document.documentElement.classList.toggle('dark', darkMode);
         localStorage.setItem('darkMode', JSON.stringify(darkMode));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [darkMode]);
 
     return { darkMode, setDarkMode };
