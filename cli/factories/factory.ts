@@ -39,7 +39,7 @@ export const copyTemplateFileToProject = async (
         );
 
     console.log(`Copying template from ${pathToCopy} to ${toPath}`);
-    runCmd('cp', [pathToCopy, toPath!]);
+    runCmd('cp', ['-p', pathToCopy, toPath!]);
 };
 
 export const createPagesPath = async (projectId: number) => {

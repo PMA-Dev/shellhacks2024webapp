@@ -1,4 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import path from 'path';
+import { query } from '../db';
+import { MetadataType, ProjectMetadata } from '../models';
 import { runCmdAsync } from '../shellProxy';
 
 export const refreshAzureCredentials = async (
@@ -97,6 +100,20 @@ export const terraformApply = async (
     next: NextFunction
 ) => {
     try {
+        const projectId = Number(req.query.projectId || '');
+        if (!projectId) {
+            res.status(400).json({ error: 'projectId is required' });
+            return;
+        }
+
+        const project = await query<ProjectMetadata>(
+            MetadataType.Project,
+            projectId
+        );
+        if (!project) {
+            throw new Error('Project not found');
+        }
+
         const subIdOutput = await runCmdAsync(
             'az',
             ['account', 'show', '--query', 'id', '-o', 'tsv'],
@@ -105,16 +122,13 @@ export const terraformApply = async (
             }
         );
         const subId = subIdOutput?.trim();
-        const prefix = (req.query.prefix as string) || 'myproj';
+        const prefix = project.projectName;
+
         const adminPassword =
             (req.query.admin_password as string) || 'Secret123';
-        await runCmdAsync('terraform', ['-chdir=./infra', 'init'], {
-            join: true,
-        });
         const applyOutput = await runCmdAsync(
             'terraform',
             [
-                '-chdir=./infra',
                 'apply',
                 '-auto-approve',
                 '-var',
@@ -124,7 +138,7 @@ export const terraformApply = async (
                 '-var',
                 `admin_password=${adminPassword}`,
             ],
-            { join: true }
+            { join: true, cwd: path.join(project.workingDir!, 'terraform') }
         );
         res.json({ output: applyOutput });
     } catch (error) {
@@ -138,6 +152,20 @@ export const terraformDestroy = async (
     next: NextFunction
 ) => {
     try {
+        const projectId = Number(req.query.projectId || '');
+        if (!projectId) {
+            res.status(400).json({ error: 'projectId is required' });
+            return;
+        }
+
+        const project = await query<ProjectMetadata>(
+            MetadataType.Project,
+            projectId
+        );
+        if (!project) {
+            throw new Error('Project not found');
+        }
+
         const subIdOutput = await runCmdAsync(
             'az',
             ['account', 'show', '--query', 'id', '-o', 'tsv'],
@@ -146,16 +174,12 @@ export const terraformDestroy = async (
             }
         );
         const subId = subIdOutput?.trim();
-        const prefix = (req.query.prefix as string) || 'myproj';
+        const prefix = project.projectName;
         const adminPassword =
             (req.query.admin_password as string) || 'Secret123';
-        await runCmdAsync('terraform', ['-chdir=./infra', 'init'], {
-            join: true,
-        });
         const destroyOutput = await runCmdAsync(
             'terraform',
             [
-                '-chdir=./infra',
                 'destroy',
                 '-auto-approve',
                 '-var',
@@ -165,7 +189,7 @@ export const terraformDestroy = async (
                 '-var',
                 `admin_password=${adminPassword}`,
             ],
-            { join: true }
+            { join: true, cwd: path.join(project.workingDir!, 'terraform') }
         );
         res.json({ output: destroyOutput });
     } catch (error) {
