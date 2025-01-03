@@ -1,0 +1,15 @@
+meta {
+  name: deploy resource to azure
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{url}}/azure/create?prefix=test
+  body: none
+  auth: none
+}
+
+query {
+  prefix: test
+}

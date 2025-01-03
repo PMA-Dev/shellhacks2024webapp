@@ -26,10 +26,12 @@ export const getResourceGroups = async (
         const output = await runCmdAsync(
             'az',
             ['group', 'list', '-o', 'json'],
-            { join: true, fail: true }
+            {
+                join: true,
+                fail: true,
+            }
         );
         if (output?.includes('ERROR')) {
-            console.log('Error in getResourceGroups:', output);
             throw new Error(output);
         }
         const parsed = JSON.parse((output || '').trim() || '[]');
@@ -40,13 +42,11 @@ export const getResourceGroups = async (
         }));
         res.json(mapped);
     } catch (error) {
-        console.log('Error in getResourceGroups:', error);
         if (
             (error as Error).message.includes(
                 'The refresh token has expired due to inactivity'
             )
         ) {
-            // return 400 and prompt the user to do interactive login
             res.status(400).json({
                 error: 'Azure credentials expired. Please login again using this command: `az login --scope https://management.core.windows.net//.default` in your terminal.',
             });
@@ -74,7 +74,9 @@ export const getResourcesInGroup = async (
         const output = await runCmdAsync(
             'az',
             ['resource', 'list', '--resource-group', rgName, '-o', 'json'],
-            { join: true }
+            {
+                join: true,
+            }
         );
         const parsed = JSON.parse((output || '').trim() || '[]');
         const mapped = parsed.map((r: any) => ({
@@ -84,6 +86,88 @@ export const getResourcesInGroup = async (
             location: r.location,
         }));
         res.status(200).json(mapped);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const terraformApply = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const subIdOutput = await runCmdAsync(
+            'az',
+            ['account', 'show', '--query', 'id', '-o', 'tsv'],
+            {
+                join: true,
+            }
+        );
+        const subId = subIdOutput?.trim();
+        const prefix = (req.query.prefix as string) || 'myproj';
+        const adminPassword =
+            (req.query.admin_password as string) || 'Secret123';
+        await runCmdAsync('terraform', ['-chdir=./infra', 'init'], {
+            join: true,
+        });
+        const applyOutput = await runCmdAsync(
+            'terraform',
+            [
+                '-chdir=./infra',
+                'apply',
+                '-auto-approve',
+                '-var',
+                `subscription_id=${subId}`,
+                '-var',
+                `prefix=${prefix}`,
+                '-var',
+                `admin_password=${adminPassword}`,
+            ],
+            { join: true }
+        );
+        res.json({ output: applyOutput });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const terraformDestroy = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const subIdOutput = await runCmdAsync(
+            'az',
+            ['account', 'show', '--query', 'id', '-o', 'tsv'],
+            {
+                join: true,
+            }
+        );
+        const subId = subIdOutput?.trim();
+        const prefix = (req.query.prefix as string) || 'myproj';
+        const adminPassword =
+            (req.query.admin_password as string) || 'Secret123';
+        await runCmdAsync('terraform', ['-chdir=./infra', 'init'], {
+            join: true,
+        });
+        const destroyOutput = await runCmdAsync(
+            'terraform',
+            [
+                '-chdir=./infra',
+                'destroy',
+                '-auto-approve',
+                '-var',
+                `subscription_id=${subId}`,
+                '-var',
+                `prefix=${prefix}`,
+                '-var',
+                `admin_password=${adminPassword}`,
+            ],
+            { join: true }
+        );
+        res.json({ output: destroyOutput });
     } catch (error) {
         next(error);
     }

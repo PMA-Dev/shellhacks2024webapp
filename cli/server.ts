@@ -17,6 +17,8 @@ import {
     getResourceGroups,
     getResourcesInGroup,
     refreshAzureCredentials,
+    terraformApply,
+    terraformDestroy,
 } from './routes/azureOps';
 import {
     getAllFilesFromDb,
@@ -154,6 +156,8 @@ const initializeRoutes = async (app: Express) => {
     app.get('/azure/refresh', refreshAzureCredentials);
     app.get('/azure/getResourceGroups', getResourceGroups);
     app.get('/azure/getResourcesInGroup', getResourcesInGroup);
+    app.get('/azure/destroy', terraformDestroy);
+    app.get('/azure/create', terraformApply);
 };
 
 export const listen = async () => {

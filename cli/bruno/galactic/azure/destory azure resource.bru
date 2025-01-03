@@ -1,0 +1,15 @@
+meta {
+  name: destory azure resource
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{url}}/azure/getResourcesInGroup?prefix=test
+  body: none
+  auth: none
+}
+
+query {
+  prefix: test
+}
