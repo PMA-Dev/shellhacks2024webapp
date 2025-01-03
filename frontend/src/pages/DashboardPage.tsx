@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useGalaxy } from '@/context/GalacticContext';
 import { useProject } from '@/context/ProjectContext';
-import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
+import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
 import { useProjects } from '@/hooks/useProjects';
 import { GalacticMetadata, Project } from '@/models';
 import { Canvas } from '@react-three/fiber';
@@ -39,12 +39,17 @@ const DashboardPage = () => {
     const [projectName, setProjectName] = useState('');
     const [projects, setProjects] = useState<Project[]>([]);
     const { getProjectsForGalaxy, addProject } = useProjects();
-    const { getAllGalacticMetadata } = useGalaticMetadata();
-    const [galaxyId, setGalaxyId] = useState<number | undefined>(undefined);
+    const { getAllGalacticMetadata } = useGalacticMetadata();
+
     const [allGalaxyData, setAllGalaxyData] = useState<GalacticMetadata[]>();
     const navigate = useNavigate();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [galaxyId, setGalaxyId] = useState<number | undefined>(Number(localStorage.getItem('galaxyId')));
+
+    const cacheGalaxyId = (galaxyId: number) => {
+        localStorage.setItem('galaxyId', String(galaxyId));
+    };
 
     const handleCreateProject = useCallback(async () => {
         try {
@@ -95,7 +100,7 @@ const DashboardPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [galaxyId]);
 
-    const { getGalacticMetadataById } = useGalaticMetadata();
+    const { getGalacticMetadataById } = useGalacticMetadata();
     useEffect(() => {
         async function fetchGalaxy() {
             const galaxy = await getGalacticMetadataById(Number(galaxyId));
@@ -178,6 +183,7 @@ const DashboardPage = () => {
                                         (data) => data.id === Number(galaxyId)
                                     ) ?? null
                                 );
+                                cacheGalaxyId(galaxyId);
                             }}
                         />
                     </div>
@@ -206,7 +212,7 @@ const DashboardPage = () => {
                         {projects.map((project) => (
                             <div
                                 key={project.id}
-                                className="relative px-4 py-32 bg-black rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer overflow-hidden"
+                                className="relative px-4 py-32 rounded-lg shadow hover:shadow-lg transition-all hover:scale-105 cursor-pointer overflow-hidden"
                                 onClick={() =>
                                     navigate(`/projects/${project.id}/general`)
                                 }
@@ -214,21 +220,22 @@ const DashboardPage = () => {
                                 {/* Solar System Animation */}
                                 <div className="absolute inset-0">
                                     <Canvas
+                                        style={{ background: ' #230922 ' }}
                                         camera={{
                                             position: [10, 10, 10],
                                             fov: 75,
                                         }}
                                     >
-                                        <SolarSystem
-                                            seed={+(project.id || 0)}
-                                        />
+                                        <SolarSystem seed={+(project.id || 0)} />
                                     </Canvas>
+
+
                                 </div>
                                 {/* Overlay for readability */}
                                 <div className="absolute inset-0 bg-black opacity-30"></div>
                                 {/* Project Title */}
                                 <div className="relative z-10">
-                                    <h2 className="mb-2 text-xl font-semibold text-white">
+                                    <h2 className="mb-2 text-xl font-semibold text-white [text-shadow:_0_1px_0_var(--tw-shadow-color)]">
                                         {project.projectName}
                                     </h2>
                                 </div>

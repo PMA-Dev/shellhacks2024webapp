@@ -68,7 +68,7 @@ ${pageImports}
 const App = () => {
     return (
         <Router>
-            <nav class="absolute top-0 left-0 w-full backdrop-blur-sm p-4 bg-white bg-opacity-80 border-b border-gray-300">
+            <nav className="absolute top-0 left-0 w-full backdrop-blur-sm p-4 bg-white bg-opacity-80 border-b border-gray-300">
                 ${navLinks}
             </nav>
             <Routes>

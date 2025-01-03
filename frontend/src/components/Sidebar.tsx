@@ -1,7 +1,7 @@
 // src/components/Sidebar.tsx
 
-import { useState } from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, useParams, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -13,14 +13,66 @@ import {
     Server,
     Image,
     Database,
-    UploadCloud,
-    HomeIcon,
     Undo2Icon,
+    Settings,
+    LogOut,
+    Sun,
+    ServerCog,
+    Fish,
+    Github,
+    HammerIcon,
+    LayoutDashboardIcon,
+    Play,
+    Pause,
+    Code,
 } from 'lucide-react';
+import useDarkMode from '@/hooks/useDarkMode';
+import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
+import { useProjects } from '@/hooks/useProjects';
+import { useProject } from '@/context/ProjectContext';
+import { useGalaxy } from '@/context/GalacticContext';
+import api from '@/hooks/api'; // Adjust import path as needed
 
 function Sidebar() {
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+        return localStorage.getItem('sidebar_collapsed') === 'true';
+    });
+    const { darkMode, setDarkMode } = useDarkMode();
     const { projectId } = useParams();
+    const { galaxy, setGalaxy } = useGalaxy();
+    const { project, setProject } = useProject();
+    const { getProjectById } = useProjects();
+    const { getGalacticMetadataById } = useGalacticMetadata();
+
+    useEffect(() => {
+        const fetchAndSetProject = async () => {
+            if (!projectId) return;
+            const data = await getProjectById(projectId);
+            setProject(data);
+            console.log('Project data:', data);
+        };
+        fetchAndSetProject();
+    }, [getProjectById, projectId, setProject]);
+
+    useEffect(() => {
+        const fetchAndSetGalaxy = async () => {
+            if (!project?.galaxyId) return;
+            const data = await getGalacticMetadataById(Number(project.galaxyId));
+            setGalaxy(data);
+            console.log('Galaxy data:', data);
+        };
+        fetchAndSetGalaxy();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [project?.galaxyId]);
+
+    function toggleCollapsed() {
+        setIsCollapsed((prev) => {
+            const newVal = !prev;
+            localStorage.setItem('sidebar_collapsed', String(newVal));
+            return newVal;
+        });
+    }
+
 
     const sections = [
         {
@@ -28,8 +80,8 @@ function Sidebar() {
             items: [
                 {
                     to: `/projects/${projectId}/general`,
-                    label: 'General',
-                    icon: <HomeIcon size={24} />,
+                    label: 'Dashboard',
+                    icon: <LayoutDashboardIcon size={24} />,
                 },
             ],
         },
@@ -77,9 +129,34 @@ function Sidebar() {
             title: 'Deployment',
             items: [
                 {
-                    to: `/projects/${projectId}/deployment`,
-                    label: 'Deployment',
-                    icon: <UploadCloud size={24} />,
+                    to: `/projects/${projectId}/azure`,
+                    label: 'Azure',
+                    icon: <ServerCog size={24} />,
+                },
+                {
+                    to: `/projects/${projectId}/octopus`,
+                    label: 'Octopus',
+                    icon: <Fish size={24} />,
+                },
+            ],
+        },
+        {
+            title: 'Tools',
+            items: [
+                {
+                    to: `https://github.com/${galaxy?.githubOrg}/${project?.projectName}`,
+                    label: 'Repo',
+                    icon: <Github size={24} />,
+                },
+                {
+                    to: `/projects/${projectId}/development`,
+                    label: 'Development Mode',
+                    icon: <HammerIcon size={24} />,
+                },
+                {
+                    to: `vscode://file/${project?.workingDir}`,
+                    label: 'VS Code',
+                    icon: <Code size={24} />,
                 },
             ],
         },
@@ -88,61 +165,154 @@ function Sidebar() {
     return (
         <div
             className={cn(
-                'h-full bg-white text-black border-r border-gray-300 transition-all duration-300',
+                'h-full bg-secondary text-black border-r border-gray-300 transition-all duration-300 relative',
                 isCollapsed ? 'w-16' : 'w-64'
             )}
         >
-            <div className="flex items-center justify-between p-4 border-b border-gray-300">
+            {/* Top bar */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-300 text-gray-800">
                 {!isCollapsed && (
-                    <span className="text-xl font-bold">Menu</span>
+                    <span className="text-xl font-bold text-gray-700">
+                        {project?.projectName}
+                    </span>
                 )}
                 <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="transition-transform duration-300"
+                    onClick={toggleCollapsed}
+                    className="transition-all duration-200 hover:scale-105"
                 >
                     {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
                 </Button>
             </div>
-            <nav className="mt-4 relative h-full">
+
+            {/* Main nav */}
+            <nav className="p-2">
                 {sections.map((section) => (
                     <div key={section.title} className="mb-4">
                         {!isCollapsed && (
-                            <div className="px-4 py-2 text-sm font-semibold uppercase text-gray-600 transition-colors duration-200">
+                            <div className="px-4 py-2 text-sm font-semibold uppercase transition-all duration-200 text-gray-900">
                                 {section.title}
                             </div>
                         )}
                         {section.items.map((item) => (
-                            <NavLink
-                                key={item.to}
-                                to={item.to}
-                                className={({ isActive }) =>
-                                    cn(
-                                        'flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200',
-                                        isActive
-                                            ? 'bg-gray-300 font-semibold'
-                                            : ''
-                                    )
-                                }
-                            >
-                                <div className="flex items-center space-x-2">
-                                    {item.icon}
-                                    {!isCollapsed && <span>{item.label}</span>}
-                                </div>
-                            </NavLink>
+                            <div key={item.to} className="relative group">
+                                <NavLink
+                                    to={item.to}
+                                    target={item.to.startsWith('https') || item.to.startsWith('vscode') ? '_blank' : undefined}
+                                    className={({ isActive }) =>
+                                        cn(
+                                            'flex items-center transition-all duration-200 rounded-sm',
+                                            isCollapsed ? 'justify-center px-0 py-2' : 'px-4 py-2',
+                                            'mx-auto text-gray-500 hover:text-gray-700 hover:bg-gray-200 hover:scale-105',
+                                            isActive ? 'bg-gray-300 font-semibold' : ''
+                                        )
+                                    }
+                                >
+                                    <div className="flex items-center space-x-2">
+                                        {item.icon}
+                                        {!isCollapsed && <span>{item.label}</span>}
+                                    </div>
+                                </NavLink>
+
+                                {/* Tooltip: only show in collapsed mode, on hover */}
+                                {isCollapsed && (
+                                    <div
+                                        className={
+                                            'absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-black text-white text-sm rounded-md opacity-0 group-hover:opacity-100 pointer-events-none z-10'
+                                        }
+                                    >
+                                        {item.label}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </div>
                 ))}
-                {/* back to dashboard */}
-                <NavLink
-                    to={`/dashboard`}
-                    className="flex items-center mx-auto px-4 py-2 hover:bg-gray-200 transition-colors duration-200 space-x-2 relative !bottom-0"
-                >
-                    <Undo2Icon className="" />
-                    {!isCollapsed && <span>All Projects</span>}
-                </NavLink>
             </nav>
+
+            {/* Bottom nav */}
+            <div className="absolute bottom-0 w-full border-t border-gray-300 bg-secondary">
+                <div
+                    className={cn(
+                        'flex items-center py-2 transition-all duration-200',
+                        isCollapsed ? 'flex-col space-y-2' : 'justify-around'
+                    )}
+                >
+                    {/* Back to Dashboard */}
+                    <NavLink
+                        to="/dashboard"
+                        className="p-2 hover:bg-gray-200 rounded-md transition-all duration-200 hover:scale-105 text-gray-500 hover:text-gray-700 flex items-center justify-center"
+                    >
+                        <Undo2Icon size={24} />
+                        {/* tooltip in collapsed? */}
+                        {isCollapsed && (
+                            <div
+                                className={
+                                    'absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-black text-white text-sm rounded-md opacity-0 group-hover:opacity-100 pointer-events-none z-10'
+                                }
+                            >
+                                Back to Dashboard
+                            </div>
+                        )}
+                    </NavLink>
+
+                    {/* Settings */}
+                    <NavLink
+                        to={`/projects/${projectId}/settings`}
+                        className="p-2 hover:bg-gray-200 rounded-md transition-all duration-200 hover:scale-105 text-gray-500 hover:text-gray-700 flex items-center justify-center relative group"
+                    >
+                        <Settings size={24} />
+                        {isCollapsed && (
+                            <div
+                                className={
+                                    'absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-black text-white text-sm rounded-md opacity-0 group-hover:opacity-100 pointer-events-none z-10'
+                                }
+                            >
+                                Settings
+                            </div>
+                        )}
+                    </NavLink>
+
+                    {/* Dark mode toggle */}
+                    <div className="relative group">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="p-2 hover:bg-gray-200 rounded-md transition-all duration-200 hover:scale-105 text-gray-500 hover:text-gray-700 flex items-center justify-center"
+                            onClick={() => setDarkMode(!darkMode)}
+                        >
+                            <Sun size={24} />
+                        </Button>
+                        {isCollapsed && (
+                            <div
+                                className={
+                                    'absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-black text-white text-sm rounded-md opacity-0 group-hover:opacity-100 pointer-events-none z-10'
+                                }
+                            >
+                                Toggle Dark Mode
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Logout */}
+                    <NavLink
+                        to="/logout"
+                        className="p-2 hover:bg-gray-200 rounded-md transition-all duration-200 hover:scale-105 text-gray-500 hover:text-gray-700 flex items-center justify-center relative group"
+                    >
+                        <LogOut size={24} color="#ff4f4b" />
+                        {isCollapsed && (
+                            <div
+                                className={
+                                    'absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-black text-white text-sm rounded-md opacity-0 group-hover:opacity-100 pointer-events-none z-10'
+                                }
+                            >
+                                Logout
+                            </div>
+                        )}
+                    </NavLink>
+                </div>
+            </div>
         </div>
     );
 }

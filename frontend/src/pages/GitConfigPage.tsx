@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useFetchGhPat } from '@/hooks/useFetchGhPat';
-import { useGalaticMetadata } from '@/hooks/useGalaticMetadata';
+import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -16,8 +16,8 @@ export const GitConfigPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const galaxyId = searchParams.get('galaxyId');
     // get galaxy from hook
-    const { getGalacticMetadataById, updateGalaticMetadata } =
-        useGalaticMetadata();
+    const { getGalacticMetadataById, updateGalacticMetadata } =
+        useGalacticMetadata();
     const [galaxy, setGalaxy] = useState<GalacticMetadata>();
 
     useEffect(() => {
@@ -51,7 +51,7 @@ export const GitConfigPage = () => {
     const onSubmit = async (data: { ghToken: string; ghOrg: string }) => {
         setIsLoading(true);
         try {
-            await updateGalaticMetadata({
+            await updateGalacticMetadata({
                 ...galaxy,
                 githubOrg: selectedOrg,
             });

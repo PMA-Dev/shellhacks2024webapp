@@ -13,9 +13,7 @@ export const createPageForProject = async (
                 .locator('text=test-project')
                 .isVisible({ timeout: 10000 })
         ).toBe(true);
-        expect(await page.locator('text=Your Live Site').isVisible()).toBe(
-            true
-        );
+        expect(await page.locator('text=Site Preview').isVisible()).toBe(true);
 
         const pagesNav = page.getByRole('link', { name: 'Pages' });
         expect(await pagesNav.isVisible()).toBe(true);

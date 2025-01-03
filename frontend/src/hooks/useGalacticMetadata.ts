@@ -2,29 +2,27 @@ import { GalacticMetadata } from '@/models';
 import { useEffect, useState } from 'react';
 import api from './api';
 
-export const useGalaticMetadata = () => {
-    const [galaticMetadata, setGalaticMetadata] = useState<GalacticMetadata>();
+export const useGalacticMetadata = () => {
+    const [galacticMetadata, setGalacticMetadata] =
+        useState<GalacticMetadata>();
 
     useEffect(() => {
-        const fetchGalaticMetadata = async () => {
-            const response = await api.get('/metadata/get/galactic');
-            setGalaticMetadata(response.data);
+        const fetchGalacticMetadata = async () => {
+            const response = await api.get('/metadata/all/galactic');
+            setGalacticMetadata(response.data);
         };
 
-        fetchGalaticMetadata();
+        fetchGalacticMetadata();
     }, []);
 
-    const updateGalaticMetadata = async (metadata: GalacticMetadata) => {
-        const response = await api.patch(
-            `/metadata/patch/galactic?id=${metadata.id}`,
-            metadata
-        );
-        setGalaticMetadata(response.data);
+    const updateGalacticMetadata = async (metadata: GalacticMetadata) => {
+        const response = await api.patch('/metadata/patch/galactic', metadata);
+        setGalacticMetadata(response.data);
     };
 
-    const createGalaticMetadata = async (metadata: GalacticMetadata) => {
+    const createGalacticMetadata = async (metadata: GalacticMetadata) => {
         const response = await api.post('/metadata/post/galactic', metadata);
-        setGalaticMetadata(response.data);
+        setGalacticMetadata(response.data);
     };
 
     const getAllGalacticMetadata = async (): Promise<GalacticMetadata[]> => {
@@ -45,9 +43,9 @@ export const useGalaticMetadata = () => {
     };
 
     return {
-        galaticMetadata,
-        updateGalaticMetadata,
-        createGalaticMetadata,
+        galacticMetadata,
+        updateGalacticMetadata,
+        createGalacticMetadata,
         getAllGalacticMetadata,
         getGalacticMetadataById,
     };

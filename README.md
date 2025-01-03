@@ -23,7 +23,7 @@
 
 ## Getting Started
 
-1. Down the GALATIC package from our download page
+1. Download the GALACTIC package from our download page
 2. After installing, open the package
 
 ## License
@@ -34,6 +34,14 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ### CLI and Frontend Setup
 
+- Prerequisites:
+  Ensure your bun and gh cli are installed and updated.
+  ```bash
+  bun upgrade
+  gh upgrade
+  ```
+  Add the run_secrets.sh script to your scripts folder
+  
 - Install dependencies:
    ```bash
    cd cli && bun install
