@@ -14,6 +14,11 @@ import {
 import { attemptGetGhToken, getListOfOrgs } from './bootstrapper/git';
 import { Config } from './config';
 import {
+    getResourceGroups,
+    getResourcesInGroup,
+    refreshAzureCredentials,
+} from './routes/azureOps';
+import {
     getAllFilesFromDb,
     getFileByIdFromDb,
     uploadFileHandler,
@@ -144,6 +149,11 @@ const initializeRoutes = async (app: Express) => {
     app.post('/content/upload', uploadFileHandler);
     app.get('/content/getAll', getAllFilesFromDb);
     app.get('/content/getById', getFileByIdFromDb);
+
+    // Azure op routes
+    app.get('/azure/refresh', refreshAzureCredentials);
+    app.get('/azure/getResourceGroups', getResourceGroups);
+    app.get('/azure/getResourcesInGroup', getResourcesInGroup);
 };
 
 export const listen = async () => {

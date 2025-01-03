@@ -8,6 +8,7 @@ export const runCmdAsync = async (
         dry?: boolean;
         join?: boolean;
         env?: Record<string, string>;
+        fail?: boolean;
     }
 ) => {
     try {
@@ -36,12 +37,22 @@ export const runCmdAsync = async (
                 stdout: 'pipe', // Capture standard output
                 stderr: 'pipe', // Capture standard error
             });
+            let errorMessage = '';
             if (child.stderr.toString().length > 0) {
-                console.error(
+                errorMessage = [
                     'Error in runCmd:',
                     JSON.stringify(child.stderr.toString()),
-                    JSON.stringify(child.stdout.toString())
+                    JSON.stringify(child.stdout.toString()),
+                ].join(' ');
+                console.error(errorMessage);
+            }
+
+            if (options?.fail && errorMessage) {
+                console.log(
+                    '------Failed running in sync mode..., returning: ',
+                    errorMessage
                 );
+                return errorMessage;
             }
             const output = child.stdout.toString().trim();
             console.log(
