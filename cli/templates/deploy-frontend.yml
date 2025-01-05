@@ -1,0 +1,41 @@
+name: Deploy Frontend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          bun install
+
+      - name: Build frontend
+        run: |
+          bun run build
+
+      - name: Copy dist to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: azureuser
+          password: ${{ secrets.MACHINE_SECRET }}
+          source: "dist/"
+          target: "/var/www/frontend"
+          recursive: true
+
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: azureuser
+          password: ${{ secrets.MACHINE_SECRET }}
+          script: |
+            sudo systemctl restart nginx

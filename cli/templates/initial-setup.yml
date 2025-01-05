@@ -1,0 +1,109 @@
+name: Setup Frontend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-serve-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: azureuser
+          password: ${{ secrets.MACHINE_SECRET }}
+          script: |
+            # Exit immediately if a command exits with a non-zero status
+            set -e
+
+            # Variables
+            WEB_DIR="/var/www/frontend/dist"
+            NGINX_CONF="/etc/nginx/sites-available/frontend"
+
+            # Log function for cleaner output
+            log() {
+                echo -e "\e[32m[INFO]\e[0m $1"
+            }
+
+            # Error function for cleaner output
+            error() {
+                echo -e "\e[31m[ERROR]\e[0m $1"
+                exit 1
+            }
+
+            # Update package list and upgrade existing packages
+            log "Updating package list..."
+            sudo apt-get update -y
+
+            log "Upgrading existing packages..."
+            sudo apt-get upgrade -y
+
+            # Install Nginx if not already installed
+            if ! command -v nginx &> /dev/null
+            then
+                log "Installing Nginx..."
+                sudo apt-get install nginx -y
+            else
+                log "Nginx is already installed."
+            fi
+
+            # Remove the default Nginx configuration and default web pages
+            log "Removing default Nginx configurations and web pages..."
+
+            # Disable the default site if it's enabled
+            if [ -f /etc/nginx/sites-enabled/default ]; then
+                sudo rm /etc/nginx/sites-enabled/default
+                log "Removed /etc/nginx/sites-enabled/default"
+            fi
+
+            # Remove default web content
+            if [ -d /var/www/html ]; then
+                sudo rm -rf /var/www/html/*
+                log "Cleared /var/www/html directory"
+            fi
+
+            # Create the web directory
+            log "Creating web directory at ${WEB_DIR}..."
+            sudo mkdir -p "${WEB_DIR}"
+            sudo chown -R $USER:$USER "${WEB_DIR}"
+            log "Web directory created and ownership set."
+
+            # Define the site configuration
+            log "Creating Nginx configuration for 'frontend'..."
+
+            sudo bash -c "cat > ${NGINX_CONF}" <<EOF
+            server {
+                listen 80;
+
+                root ${WEB_DIR};
+                index index.html;
+
+                location / {
+                    try_files \$uri /index.html;
+                }
+            }
+            EOF
+
+            log "Nginx configuration for 'frontend' created at ${NGINX_CONF}"
+
+            # Enable the new site by creating a symbolic link to sites-enabled
+            log "Enabling 'frontend' site..."
+            sudo ln -sfn "${NGINX_CONF}" /etc/nginx/sites-enabled/frontend
+
+            # Test Nginx configuration
+            log "Testing Nginx configuration..."
+            sudo nginx -t
+
+            # Restart Nginx to apply changes
+            log "Restarting Nginx service..."
+            sudo systemctl restart nginx
+
+            log "Nginx has been successfully configured and restarted."
+
+            # Enable Nginx to start on boot
+            log "Enabling Nginx to start on boot..."
+            sudo systemctl enable nginx
+
+            log "Setup completed successfully!"

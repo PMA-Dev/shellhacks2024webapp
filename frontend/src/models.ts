@@ -8,6 +8,7 @@ export interface Project {
     pageIds: string[];
     sitePath?: string;
     galaxyId?: string;
+    azureVmIp?: string;
 }
 
 export interface Page {

@@ -8,6 +8,7 @@ import { useProject } from '@/context/ProjectContext';
 import { useGalacticMetadata } from '@/hooks/useGalacticMetadata';
 import { useProjects } from '@/hooks/useProjects';
 import AssetsPage from './AssetsPage';
+import { AzurePage } from './AzurePage';
 import ComponentsPage from './ComponentsPage';
 import DBSchemaPage from './DBSchemaPage';
 import DevelopmentModePage from './DevelopmentPage';
@@ -66,6 +67,8 @@ function ProjectPage() {
                         <Route path="assets" element={<AssetsPage />} />
                         <Route path="dbschema" element={<DBSchemaPage />} />
                         <Route path="videotest" element={<TestVideoRender />} />
+                        <Route path="azure" element={<AzurePage />} />
+                        <Route path="octopus" element={<TestVideoRender />} />
                         <Route
                             path="development"
                             element={

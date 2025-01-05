@@ -1,0 +1,15 @@
+meta {
+  name: deploy resource to azure
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{url}}/azure/create?projectId=820033068
+  body: none
+  auth: none
+}
+
+query {
+  projectId: 820033068
+}
