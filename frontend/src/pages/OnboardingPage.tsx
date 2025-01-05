@@ -17,7 +17,7 @@ function OnboardingPage() {
 
     useEffect(() => {
         console.log(galacticMetadata, 'galacticMetadata');
-        if (galacticMetadata) {
+        if (galacticMetadata && galacticMetadata.workingDir) {
             // navigate to dashboard
             navigate('/dashboard/');
         }

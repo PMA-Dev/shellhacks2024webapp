@@ -124,6 +124,11 @@ export const createAndSetupGithubActions = async (projectId: number) => {
     const toPathSetup = path.join(ghActionsPath, templateNameSetup);
     await copyTemplateFileToProject(templateNameSetup!, projectId, toPathSetup);
 
+
+    const templateNameSSL = 'setup-ssl.yml';
+    const toPathSSL = path.join(ghActionsPath, templateNameSSL);
+    await copyTemplateFileToProject(templateNameSSL!, projectId, toPathSSL);
+
     return;
 };
 
