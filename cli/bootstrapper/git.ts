@@ -183,3 +183,35 @@ const getUserName = async (ghPat: string) => {
     const userData = JSON.parse(data?.trim() || '{}');
     return userData.login ?? '';
 };
+
+export const gitAddAndCommitAndPush = async (projectId: number) => {
+    const project = await query<ProjectMetadata>(
+        MetadataType.Project,
+        projectId
+    );
+    if (!project) {
+        throw new Error('Project not found');
+    }
+
+    const galaxy = await query<GalacticMetadata>(
+        MetadataType.Galactic,
+        project.galaxyId!
+    );
+
+    if (!galaxy?.githubPat) throw new Error('Missing GitHub PAT');
+
+    await runCmdAsync('git', ['add', '.'], {
+        cwd: project.workingDir,
+        join: true,
+    });
+    await runCmdAsync('git', ['commit', '-am', 'commit'], {
+        cwd: project.workingDir,
+        join: true,
+    });
+
+    await runCmdAsync('git', ['push'], {
+        cwd: project.workingDir,
+        join: true,
+        env: { GH_TOKEN: galaxy.githubPat, GIT_TOKEN: galaxy.githubPat },
+    });
+};

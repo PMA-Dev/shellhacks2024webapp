@@ -14,11 +14,13 @@ import {
 import { attemptGetGhToken, getListOfOrgs } from './bootstrapper/git';
 import { Config } from './config';
 import {
+    deployToVmUsingGhActionsRoute,
     getResourceGroups,
     getResourcesInGroup,
     refreshAzureCredentials,
     terraformApply,
     terraformDestroy,
+    updateGithubActionsSecretsRoute,
 } from './routes/azureOps';
 import {
     getAllFilesFromDb,
@@ -158,6 +160,11 @@ const initializeRoutes = async (app: Express) => {
     app.get('/azure/getResourcesInGroup', getResourcesInGroup);
     app.get('/azure/destroy', terraformDestroy);
     app.get('/azure/create', terraformApply);
+    app.get('/azure/setupActions', updateGithubActionsSecretsRoute);
+    app.get('/azure/deployUsingAction', deployToVmUsingGhActionsRoute);
+
+    // Test
+    // app.get('/test', testRoute);
 };
 
 export const listen = async () => {

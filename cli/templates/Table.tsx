@@ -1,9 +1,8 @@
 // src/pages/Table.tsx
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { makeFetchRequest } from '../fetchConfig';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Spinner } from '@/components/ui/spinner';
 
 interface LogData {
     logName: string;

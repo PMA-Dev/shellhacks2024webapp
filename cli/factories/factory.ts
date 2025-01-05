@@ -9,7 +9,7 @@ import {
     TemplateTypes,
 } from '../models';
 import { innerPostTemplateMetadata } from '../routes/postTemplateMetadata';
-import { runCmd } from '../shellProxy';
+import { runCmd, runCmdAsync } from '../shellProxy';
 
 export const copyTemplateFileToProject = async (
     templateFileName: string,
@@ -39,12 +39,12 @@ export const copyTemplateFileToProject = async (
         );
 
     console.log(`Copying template from ${pathToCopy} to ${toPath}`);
-    runCmd('cp', ['-p', pathToCopy, toPath!]);
+    await runCmdAsync('cp', [pathToCopy, toPath!], { join: true });
 };
 
 export const createPagesPath = async (projectId: number) => {
     const pagesPath = await getPagesPath(projectId);
-    runCmd('mkdir', [pagesPath]);
+    await runCmdAsync('mkdir', [pagesPath], { join: true });
 };
 
 export const createPageIdempotent = async (

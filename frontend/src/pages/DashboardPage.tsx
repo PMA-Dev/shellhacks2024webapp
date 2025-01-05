@@ -185,7 +185,7 @@ const DashboardPage = () => {
                                         (data) => data.id === Number(galaxyId)
                                     ) ?? null
                                 );
-                                cacheGalaxyId(galaxyId);
+                                cacheGalaxyId(Number(galaxyId));
                             }}
                         />
                     </div>

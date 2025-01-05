@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
+import { gitAddAndCommitAndPush } from '../bootstrapper/git';
+import { runGhActionByName } from '../bootstrapper/meta';
 import { query } from '../db';
-import { MetadataType, ProjectMetadata } from '../models';
+import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import { runCmdAsync } from '../shellProxy';
 
 export const refreshAzureCredentials = async (
@@ -140,6 +142,19 @@ export const terraformApply = async (
             ],
             { join: true, cwd: path.join(project.workingDir!, 'terraform') }
         );
+
+        await updateGithubActionsSecrets(projectId);
+
+        // wait 1s using promise
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+
+        // add and push
+        await gitAddAndCommitAndPush(projectId);
+
+        // run init gh action
+        await runGhActionByName(projectId, 'initial-setup.yml');
+
         res.json({ output: applyOutput });
     } catch (error) {
         next(error);
@@ -195,4 +210,131 @@ export const terraformDestroy = async (
     } catch (error) {
         next(error);
     }
+};
+
+export const updateGithubActionsSecretsRoute = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const projectId = Number(req.query.projectId || '');
+        if (!projectId) {
+            res.status(400).json({ error: 'projectId is required' });
+            return;
+        }
+
+        await updateGithubActionsSecrets(projectId);
+        res.json({ success: true });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateGithubActionsSecrets = async (projectId: number) => {
+    // get the ip of the vm created and update the github actions secrets
+    // also update the password
+    const project = await query<ProjectMetadata>(
+        MetadataType.Project,
+        projectId
+    );
+    if (!project) {
+        throw new Error('Project not found');
+    }
+
+    const galaxy = await query<GalacticMetadata>(
+        MetadataType.Galactic,
+        project.galaxyId!
+    );
+    if (!galaxy) {
+        throw new Error('Galaxy not found');
+    }
+
+    // get the ip of the vm created
+
+    const ip = await runCmdAsync(
+        'az',
+        [
+            'vm',
+            'list-ip-addresses',
+            '--resource-group',
+            `${project.projectName}-rg`,
+            '--query',
+            '[0].virtualMachine.network.publicIpAddresses[0].ipAddress',
+            '-o',
+            'tsv',
+        ],
+        {
+            join: true,
+            cwd: project.workingDir,
+        }
+    );
+
+    const password = 'Secret123';
+    if (!ip) {
+        throw new Error('IP not found');
+    }
+    if (!password) {
+        throw new Error('Password not found');
+    }
+
+    // update the github actions secrets using the gh cli
+
+    await runCmdAsync('gh', ['secret', 'set', 'MACHINE_IP', '--body', ip], {
+        join: true,
+        env: { ...process.env, GH_TOKEN: galaxy.githubPat },
+        cwd: project.workingDir,
+    });
+
+    // update secret
+    await runCmdAsync(
+        'gh',
+        ['secret', 'set', 'MACHINE_SECRET', '--body', password],
+        {
+            join: true,
+            cwd: project.workingDir,
+            env: { ...process.env, GH_TOKEN: galaxy.githubPat },
+        }
+    );
+};
+
+export const deployToVmUsingGhActionsRoute = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const projectId = Number(req.query.projectId || '');
+        if (!projectId) {
+            res.status(400).json({ error: 'projectId is required' });
+            return;
+        }
+
+        await deployToVmUsingGhActions(projectId);
+        res.json({ success: true });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deployToVmUsingGhActions = async (projectId: number) => {
+    const project = await query<ProjectMetadata>(
+        MetadataType.Project,
+        projectId
+    );
+    if (!project) {
+        throw new Error('Project not found');
+    }
+
+    const galaxy = await query<GalacticMetadata>(
+        MetadataType.Galactic,
+        project.galaxyId!
+    );
+    if (!galaxy) {
+        throw new Error('Galaxy not found');
+    }
+
+    await gitAddAndCommitAndPush(projectId);
+
+    await runGhActionByName(projectId, 'deploy-frontend.yml');
 };

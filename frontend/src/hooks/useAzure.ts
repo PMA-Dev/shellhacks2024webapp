@@ -101,3 +101,74 @@ export function useAzureResources(rgName?: string) {
         fetchResources,
     };
 }
+
+export function useAzureTerraform(projectId: number) {
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const createAndDeploy = useCallback(
+        async (adminPassword?: string) => {
+            setIsProcessing(true);
+            setError(null);
+            try {
+                await api.get('/azure/create', {
+                    params: { projectId, admin_password: adminPassword },
+                });
+            } catch (err) {
+                setError('Failed to create resources');
+            } finally {
+                setIsProcessing(false);
+            }
+        },
+        [projectId]
+    );
+
+    const destroyResources = useCallback(
+        async (adminPassword?: string) => {
+            setIsProcessing(true);
+            setError(null);
+            try {
+                await api.get('/azure/destroy', {
+                    params: { projectId, admin_password: adminPassword },
+                });
+            } catch (err) {
+                setError('Failed to destroy resources');
+            } finally {
+                setIsProcessing(false);
+            }
+        },
+        [projectId]
+    );
+
+    return {
+        createAndDeploy,
+        destroyResources,
+        isProcessing,
+        error,
+    };
+}
+
+export function useDeployToVm(projectId: number) {
+    const [isDeploying, setIsDeploying] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const deployToVm = useCallback(async () => {
+        setIsDeploying(true);
+        setError(null);
+        try {
+            await api.get('/azure/deployUsingAction', {
+                params: { projectId },
+            });
+        } catch (err) {
+            setError('Failed to deploy to VM');
+        } finally {
+            setIsDeploying(false);
+        }
+    }, [projectId]);
+
+    return {
+        deployToVm,
+        isDeploying,
+        error,
+    };
+}
