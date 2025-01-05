@@ -69,6 +69,10 @@ export class ProjectMetadata extends BaseDataRecord {
     @IsArray()
     @IsNumber({}, { each: true })
     routeIds: number[] = [];
+
+    @IsOptional()
+    @IsString()
+    azureVmIp?: string;
 }
 
 // Page Metadata with validation decorators

@@ -105,15 +105,21 @@ export function useAzureResources(rgName?: string) {
 export function useAzureTerraform(projectId: number) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [ghActionLink, setGhActionLink] = useState<string | null>(null);
 
     const createAndDeploy = useCallback(
         async (adminPassword?: string) => {
             setIsProcessing(true);
             setError(null);
+            setGhActionLink(null);
             try {
-                await api.get('/azure/create', {
+                const response = await api.get('/azure/create', {
                     params: { projectId, admin_password: adminPassword },
                 });
+
+                if (response.data?.ghActionLink) {
+                    setGhActionLink(response.data.ghActionLink);
+                }
             } catch (err) {
                 setError('Failed to create resources');
             } finally {
@@ -145,20 +151,24 @@ export function useAzureTerraform(projectId: number) {
         destroyResources,
         isProcessing,
         error,
+        ghActionLink,
     };
 }
 
 export function useDeployToVm(projectId: number) {
     const [isDeploying, setIsDeploying] = useState(false);
+    const [actionUrl, setActionUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const deployToVm = useCallback(async () => {
         setIsDeploying(true);
         setError(null);
+        setActionUrl(null);
         try {
-            await api.get('/azure/deployUsingAction', {
+            const response = await api.get('/azure/deployUsingAction', {
                 params: { projectId },
             });
+            setActionUrl(response.data.actionUrl);
         } catch (err) {
             setError('Failed to deploy to VM');
         } finally {
@@ -169,6 +179,7 @@ export function useDeployToVm(projectId: number) {
     return {
         deployToVm,
         isDeploying,
+        actionUrl,
         error,
     };
 }

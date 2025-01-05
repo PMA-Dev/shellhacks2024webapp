@@ -18,7 +18,7 @@ import * as React from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 export const AzurePage = () => {
-    const { project } = useProject();
+    const { refetchProject, project } = useProject();
     const projectName = project?.projectName;
     const rgName = `${projectName}-rg`;
     const projectId = project?.id;
@@ -30,9 +30,12 @@ export const AzurePage = () => {
         fetchResources,
         isLoading: isLoadingResources,
     } = useAzureResources(rgName);
-    const { createAndDeploy, destroyResources, isProcessing } =
+    const { destroyResources, createAndDeploy, ghActionLink, isProcessing } =
         useAzureTerraform(Number(projectId!));
-    const { deployToVm, isDeploying } = useDeployToVm(Number(projectId!));
+
+    const { deployToVm, isDeploying, actionUrl } = useDeployToVm(
+        Number(projectId!)
+    );
 
     const existingRG = resourceGroups.find((rg) => rg.name === rgName);
 
@@ -41,10 +44,11 @@ export const AzurePage = () => {
             await createAndDeploy('Secret123');
             await fetchResourceGroups();
             await fetchResources();
+            await refetchProject();
         } catch (err) {
             console.error('Error creating resources:', err);
         }
-    }, [createAndDeploy, fetchResourceGroups, fetchResources]);
+    }, [createAndDeploy, fetchResourceGroups, fetchResources, refetchProject]);
 
     const handleDelete = React.useCallback(async () => {
         try {
@@ -69,23 +73,24 @@ export const AzurePage = () => {
                         Connect or Refresh Azure Credentials
                     </button>
                     {!existingRG && (
-                        <button
-                            onClick={handleCreateDeploy}
-                            className="px-4 py-2 bg-green-600 text-white rounded-md"
-                            disabled={isProcessing}
-                        >
-                            {isProcessing ? (
-                                <div className="flex items-center justify-center">
-                                    <ClipLoader size={20} color="#fff" />
-                                </div>
-                            ) : (
-                                'Create and Deploy'
-                            )}
-                        </button>
+                        <div>
+                            <button
+                                onClick={handleCreateDeploy}
+                                className="px-4 py-2 bg-green-600 text-white rounded-md"
+                                disabled={isProcessing}
+                            >
+                                {isProcessing ? (
+                                    <div className="flex items-center justify-center">
+                                        <ClipLoader size={20} color="#fff" />
+                                    </div>
+                                ) : (
+                                    'Create and Deploy'
+                                )}
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>
-
             {existingRG && (
                 <div className="bg-white rounded-xl shadow p-6 space-y-6">
                     <div className="flex items-center justify-between">
@@ -106,6 +111,23 @@ export const AzurePage = () => {
                             )}
                         </button>
                     </div>
+
+                    {ghActionLink && (
+                        <div className="bg-blue-100 p-4 rounded-lg shadow mt-4">
+                            <p className="text-sm text-blue-800">
+                                Deployment started. Track progress on{' '}
+                                <a
+                                    href={ghActionLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-medium underline text-blue-600"
+                                >
+                                    GitHub Actions
+                                </a>
+                                .
+                            </p>
+                        </div>
+                    )}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {resources?.map((resource) => (
                             <Card key={resource.id}>
@@ -130,21 +152,56 @@ export const AzurePage = () => {
                         ))}
                     </div>
                     {resources?.length > 0 && (
-                        <div className="flex justify-end">
-                            <button
-                                onClick={deployToVm}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-md"
-                                disabled={isDeploying}
-                            >
-                                {isDeploying ? (
-                                    <div className="flex items-center justify-center">
-                                        <ClipLoader size={20} color="#fff" />
-                                    </div>
-                                ) : (
-                                    'Deploy to VM'
-                                )}
-                            </button>
+                        <div>
+                            <div className="flex justify-end">
+                                <button
+                                    onClick={deployToVm}
+                                    className="px-4 py-2 bg-indigo-600 text-white rounded-md"
+                                    disabled={isDeploying}
+                                >
+                                    {isDeploying ? (
+                                        <div className="flex items-center justify-center">
+                                            <ClipLoader
+                                                size={20}
+                                                color="#fff"
+                                            />
+                                        </div>
+                                    ) : (
+                                        'Deploy to VM'
+                                    )}
+                                </button>
+                            </div>
+
+                            {actionUrl && (
+                                <div className="bg-blue-100 p-4 rounded-lg shadow">
+                                    <p className="text-sm text-blue-800">
+                                        Deployment started. Track progress on{' '}
+                                        <a
+                                            href={actionUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="font-medium underline text-blue-600"
+                                        >
+                                            GitHub Actions
+                                        </a>
+                                        .
+                                    </p>
+                                </div>
+                            )}
                         </div>
+                    )}
+                    {project?.azureVmIp && (
+                        <p className="text-sm text-gray-800">
+                            Azure VM IP:{' '}
+                            <a
+                                href={`http://${project.azureVmIp}:80`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="underline text-blue-600"
+                            >
+                                {project.azureVmIp}
+                            </a>
+                        </p>
                     )}
                     <div className="flex justify-end mt-4">
                         <button

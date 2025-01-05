@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import path from 'path';
 import { gitAddAndCommitAndPush } from '../bootstrapper/git';
 import { runGhActionByName } from '../bootstrapper/meta';
-import { query } from '../db';
+import { editMetadataInPlace, query } from '../db';
 import { GalacticMetadata, MetadataType, ProjectMetadata } from '../models';
 import { runCmdAsync } from '../shellProxy';
 
@@ -116,6 +116,14 @@ export const terraformApply = async (
             throw new Error('Project not found');
         }
 
+        const galaxy = await query<GalacticMetadata>(
+            MetadataType.Galactic,
+            project.galaxyId!
+        );
+        if (!galaxy) {
+            throw new Error('Galaxy not found');
+        }
+
         const subIdOutput = await runCmdAsync(
             'az',
             ['account', 'show', '--query', 'id', '-o', 'tsv'],
@@ -148,14 +156,26 @@ export const terraformApply = async (
         // wait 1s using promise
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-
         // add and push
         await gitAddAndCommitAndPush(projectId);
 
         // run init gh action
         await runGhActionByName(projectId, 'initial-setup.yml');
 
-        res.json({ output: applyOutput });
+        // wait 4s using promise
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+
+        const urlOutput = await runCmdAsync(
+            'gh',
+            ['run', 'list', '--json', 'url', '--jq', '.[0].url'],
+            {
+                join: true,
+                cwd: project.workingDir,
+                env: { ...process.env, GH_TOKEN: galaxy.githubPat },
+            }
+        );
+
+        res.json({ output: applyOutput, ghActionLink: urlOutput });
     } catch (error) {
         next(error);
     }
@@ -278,6 +298,13 @@ export const updateGithubActionsSecrets = async (projectId: number) => {
         throw new Error('Password not found');
     }
 
+    // set ip of the vm in the project metadata in place
+    await editMetadataInPlace<ProjectMetadata>(
+        MetadataType.Project,
+        projectId,
+        (x) => (x.azureVmIp = ip)
+    );
+
     // update the github actions secrets using the gh cli
 
     await runCmdAsync('gh', ['secret', 'set', 'MACHINE_IP', '--body', ip], {
@@ -310,8 +337,8 @@ export const deployToVmUsingGhActionsRoute = async (
             return;
         }
 
-        await deployToVmUsingGhActions(projectId);
-        res.json({ success: true });
+        const actionUrl = await deployToVmUsingGhActions(projectId);
+        res.json({ success: true, actionUrl });
     } catch (error) {
         next(error);
     }
@@ -336,5 +363,33 @@ export const deployToVmUsingGhActions = async (projectId: number) => {
 
     await gitAddAndCommitAndPush(projectId);
 
-    await runGhActionByName(projectId, 'deploy-frontend.yml');
+    const output = await runCmdAsync(
+        'gh',
+        ['workflow', 'run', 'deploy-frontend.yml'],
+        {
+            join: true,
+            cwd: project.workingDir,
+            env: { ...process.env, GH_TOKEN: galaxy.githubPat },
+        }
+    );
+
+    // wait 5s with promise
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    const urlOutput = await runCmdAsync(
+        'gh',
+        ['run', 'list', '--json', 'url', '--jq', '.[0].url'],
+        {
+            join: true,
+            cwd: project.workingDir,
+            env: { ...process.env, GH_TOKEN: galaxy.githubPat },
+        }
+    );
+
+    const actionUrl = urlOutput!.trim();
+    if (!actionUrl) {
+        throw new Error('Failed to retrieve GitHub Actions link');
+    }
+
+    return actionUrl;
 };
