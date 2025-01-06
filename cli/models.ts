@@ -273,3 +273,6 @@ export type GenericMetadata =
     | ControllerMetadata
     | DataSourceMetadata
     | ContentMetadata;
+
+
+export type LogType = 'frontend' | 'backend';

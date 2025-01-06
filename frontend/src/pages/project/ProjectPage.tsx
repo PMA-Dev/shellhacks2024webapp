@@ -13,6 +13,7 @@ import ComponentsPage from './ComponentsPage';
 import DBSchemaPage from './DBSchemaPage';
 import DevelopmentModePage from './DevelopmentPage';
 import GeneralProjectPage from './GeneralProjectPage';
+import { LogsPage } from './LogsPage';
 import PagesPage from './PagesPage';
 import RouterPage from './RouterPage';
 import TemplatesPage from './TemplatesPage';
@@ -68,7 +69,7 @@ function ProjectPage() {
                         <Route path="dbschema" element={<DBSchemaPage />} />
                         <Route path="videotest" element={<TestVideoRender />} />
                         <Route path="azure" element={<AzurePage />} />
-                        <Route path="octopus" element={<TestVideoRender />} />
+                        <Route path="logs" element={<LogsPage />} />
                         <Route
                             path="development"
                             element={

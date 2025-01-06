@@ -132,8 +132,8 @@ function Sidebar() {
                     icon: <ServerCog size={24} />,
                 },
                 {
-                    to: `/projects/${projectId}/octopus`,
-                    label: 'Octopus',
+                    to: `/projects/${projectId}/logs`,
+                    label: 'Logs',
                     icon: <Fish size={24} />,
                 },
             ],

@@ -43,6 +43,7 @@ import {
     getTemplateMetadata,
     getTemplateMetadataById,
 } from './routes/getMetadata';
+import { getVmLogOutput } from './routes/logs';
 import {
     patchComponentMetadata,
     patchGalacticMetadata,
@@ -162,6 +163,9 @@ const initializeRoutes = async (app: Express) => {
     app.get('/azure/create', terraformApply);
     app.get('/azure/setupActions', updateGithubActionsSecretsRoute);
     app.get('/azure/deployUsingAction', deployToVmUsingGhActionsRoute);
+
+    // Log/ssh routes
+    app.get('/ssh/getLogs', getVmLogOutput);
 
     // Test
     // app.get('/test', testRoute);

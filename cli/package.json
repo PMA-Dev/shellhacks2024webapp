@@ -28,6 +28,7 @@
         "@types/lowdb": "^1.0.15",
         "@types/multer": "^1.4.12",
         "@types/react-router-dom": "^5.3.3",
+        "@types/ssh2": "^1.15.3",
         "axios": "^1.7.7",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.1",
@@ -38,6 +39,7 @@
         "lowdb": "^7.0.1",
         "multer": "^1.4.5-lts.1",
         "react-router-dom": "^7.0.2",
-        "reflect-metadata": "^0.2.2"
+        "reflect-metadata": "^0.2.2",
+        "ssh2": "^1.16.0"
     }
 }

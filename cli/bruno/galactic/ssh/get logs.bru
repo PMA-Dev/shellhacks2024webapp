@@ -1,0 +1,16 @@
+meta {
+  name: get logs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}/ssh/getLogs?projectId=816064055&logType=frontend
+  body: none
+  auth: none
+}
+
+query {
+  projectId: 816064055
+  logType: frontend
+}
