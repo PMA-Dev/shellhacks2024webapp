@@ -175,6 +175,9 @@ export const terraformApply = async (
             }
         );
 
+        new Promise((resolve) => setTimeout(resolve, 120000)).then(async () => {
+            await runGhActionByName(projectId, 'setup-backend.yml');
+        });
         res.json({ output: applyOutput, ghActionLink: urlOutput });
     } catch (error) {
         next(error);
@@ -390,6 +393,14 @@ export const deployToVmUsingGhActions = async (projectId: number) => {
     if (!actionUrl) {
         throw new Error('Failed to retrieve GitHub Actions link');
     }
+
+    new Promise((resolve) => setTimeout(resolve, 20000)).then(async () => {
+        await runCmdAsync('gh', ['workflow', 'run', 'deploy-backend.yml'], {
+            join: true,
+            cwd: project.workingDir,
+            env: { ...process.env, GH_TOKEN: galaxy.githubPat },
+        });
+    });
 
     return actionUrl;
 };
