@@ -1,0 +1,124 @@
+name: Setup Backend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-serve-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Dependencies and Setup Backend
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: azureuser
+          password: ${{ secrets.MACHINE_SECRET }}
+          script: |
+            # Exit immediately if a command exits with a non-zero status
+            set -e
+
+            # Log function for cleaner output
+            log() {
+                echo -e "\e[32m[INFO]\e[0m $1"
+            }
+
+            # Install required dependencies
+            log "Installing dependencies: curl, Volta, Node.js, and Bun..."
+
+            # Update and upgrade packages
+            sudo apt-get update -y
+            sudo apt-get upgrade -y
+
+            # Install curl if not already installed
+            if ! command -v curl &> /dev/null
+            then
+                log "Installing curl..."
+                sudo apt-get install curl -y
+            fi
+
+            # Install Volta (manages Node.js and npm versions)
+            if ! command -v volta &> /dev/null
+            then
+                log "Installing Volta..."
+                curl https://get.volta.sh | bash
+                export VOLTA_HOME="$HOME/.volta"
+                export PATH="$VOLTA_HOME/bin:$PATH"
+            else
+                log "Volta is already installed."
+            fi
+
+            # Install Node.js and npm using Volta
+            log "Installing Node.js and npm via Volta..."
+            volta install node@20.14.0
+            volta install npm@10.8.1
+
+            # Install Bun
+            log "Installing Bun..."
+
+            # Install unzip (required for Bun installation)
+            if ! command -v unzip &> /dev/null
+            then
+                log "Installing unzip (required for Bun)..."
+                sudo apt-get install unzip -y
+            fi
+
+            # Use curl to install Bun
+            log "Installing Bun using curl..."
+            curl -fsSL https://bun.sh/install | bash
+
+            # Add Bun to PATH
+            export BUN_INSTALL="$HOME/.bun"
+            export PATH="$BUN_INSTALL/bin:$PATH"
+
+            # Verify Bun installation
+            if ! command -v bun &> /dev/null
+            then
+                error "Bun installation failed. Please check your setup."
+            else
+                log "Bun successfully installed."
+            fi
+
+            # Verify installations
+            log "Verifying installations..."
+            node -v
+            npm -v
+            bun --version
+
+            # Create backend directory and set permissions
+            BACKEND_DIR="$HOME/backend"
+            log "Creating backend directory at ${BACKEND_DIR}..."
+            sudo mkdir -p "${BACKEND_DIR}"
+            sudo chown -R $USER:$USER "${BACKEND_DIR}"
+            log "Backend directory created and ownership set."
+
+            # Create a systemd service for the backend
+            log "Setting up systemd service for the backend..."
+
+            SYSTEMD_SERVICE="/etc/systemd/system/backend.service"
+
+            sudo bash -c "cat > ${SYSTEMD_SERVICE}" <<EOF
+            [Unit]
+            Description=Backend Service
+            After=network.target
+
+            [Service]
+            ExecStart=/usr/local/bin/bun run dev
+            WorkingDirectory=${BACKEND_DIR}
+            Restart=always
+            User=$USER
+            Environment=NODE_ENV=production
+
+            [Install]
+            WantedBy=multi-user.target
+            EOF
+
+            log "Systemd service for backend created at ${SYSTEMD_SERVICE}"
+
+            # Reload systemd, enable, and start the backend service
+            log "Enabling and starting the backend service..."
+            sudo systemctl daemon-reload
+            sudo systemctl enable backend.service
+            sudo systemctl start backend.service
+
+            log "Backend service setup completed successfully!"

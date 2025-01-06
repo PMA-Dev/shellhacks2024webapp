@@ -1,0 +1,78 @@
+name: Deploy Backend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Delete existing folder
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: azureuser
+          password: ${{ secrets.MACHINE_SECRET }}
+          script: |
+            # Exit immediately if a command exits with a non-zero status
+            set -e
+            BACKEND_DIR="/home/azureuser/backend"
+            sudo rm -r "${BACKEND_DIR}"
+
+      - name: Copy backend folder to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: azureuser
+          password: ${{ secrets.MACHINE_SECRET }}
+          source: "backend/"
+          target: "/home/azureuser"
+          recursive: true
+
+      - name: Setup backend and restart service
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.MACHINE_IP }}
+          username: azureuser
+          password: ${{ secrets.MACHINE_SECRET }}
+          script: |
+            # Exit immediately if a command exits with a non-zero status
+            set -e
+
+            # Log function for cleaner output
+            log() {
+                echo -e "\e[32m[INFO]\e[0m $1"
+            }
+
+            # Install bun if not already installed
+            if ! command -v bun &> /dev/null
+            then
+                log "Installing bun..."
+                sudo snap install bun-js
+            else
+                log "bun is already installed."
+            fi
+
+            BACKEND_DIR="/home/azureuser/backend"
+
+            # Navigate to backend directory
+            log "Navigating to backend directory..."
+            cd "${BACKEND_DIR}"
+
+            # Install dependencies with Bun
+            log "Installing dependencies with Bun..."
+            bun install
+
+            # Restart the backend systemd service
+            log "Restarting backend service..."
+            sudo systemctl restart backend.service
+
+            # Check service status
+            log "Checking backend service status..."
+            sudo systemctl status backend.service

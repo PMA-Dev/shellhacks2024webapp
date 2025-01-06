@@ -129,6 +129,14 @@ export const createAndSetupGithubActions = async (projectId: number) => {
     const toPathSSL = path.join(ghActionsPath, templateNameSSL);
     await copyTemplateFileToProject(templateNameSSL!, projectId, toPathSSL);
 
+    const templateNameBackendSetup = 'setup-backend.yml';
+    const toPathBackendSetup = path.join(ghActionsPath, templateNameBackendSetup);
+    await copyTemplateFileToProject(templateNameBackendSetup!, projectId, toPathBackendSetup);
+
+    const templateNameBackendDeploy = 'deploy-backend.yml';
+    const toPathBackendDeploy = path.join(ghActionsPath, templateNameBackendDeploy);
+    await copyTemplateFileToProject(templateNameBackendDeploy!, projectId, toPathBackendDeploy);
+
     return;
 };
 
