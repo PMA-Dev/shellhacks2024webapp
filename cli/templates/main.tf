@@ -5,13 +5,21 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">= 3.0.0"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">= 1.0.0"
+    }
   }
 }
 
 provider "azurerm" {
-  subscription_id = var.subscription_id
+  subscription_id = var.subscription_id   
   features {}
 }
+
+provider "azuread" {}
+
+data "azurerm_client_config" "current" {}
 
 variable "subscription_id" {
   type    = string
@@ -48,54 +56,6 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
-resource "azurerm_network_security_group" "nsg" {
-  name                = "${var.prefix}-nsg"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
-}
-
-resource "azurerm_network_security_rule" "ssh_rule" {
-  name                        = "ssh-allow"
-  priority                    = 1001
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "22"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-}
-
-resource "azurerm_network_security_rule" "tcp_rule" {
-  name                        = "tcp-rule"
-  priority                    = 1002
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "80"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-}
-
-resource "azurerm_network_security_rule" "ssl_rule" {
-  name                        = "ssl-rule"
-  priority                    = 1003
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "443"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-}
-
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.prefix}-vnet"
   address_space       = ["10.0.0.0/16"]
@@ -108,11 +68,6 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
-}
-
-resource "azurerm_subnet_network_security_group_association" "subnet_nsg" {
-  subnet_id                 = azurerm_subnet.subnet.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
 resource "azurerm_public_ip" "pip" {
@@ -145,7 +100,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
   admin_password        = var.admin_password
   network_interface_ids = [azurerm_network_interface.nic.id]
   disable_password_authentication = false
-  computer_name         = "${var.prefix}-vm"
 
   os_disk {
     caching              = "ReadWrite"
@@ -155,9 +109,51 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   source_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "22.04-LTS"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
     version   = "latest"
   }
+}
+
+resource "azuread_application" "aad_app" {
+  display_name = "${var.prefix}-app"
+}
+
+resource "azuread_service_principal" "aad_sp" {
+  client_id = azuread_application.aad_app.client_id
+}
+
+resource "azuread_application_password" "aad_app_password" {
+  application_id = azuread_application.aad_app.id
+}
+
+resource "azurerm_key_vault" "key_vault" {
+  name                     = "${var.prefix}-kv"
+  location                 = var.location
+  resource_group_name      = azurerm_resource_group.rg.name
+  tenant_id                = data.azurerm_client_config.current.tenant_id
+  sku_name                 = "standard"
+  purge_protection_enabled = true
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = azuread_service_principal.aad_sp.object_id
+    secret_permissions      = ["Get", "List", "Set", "Delete", "Recover", "Backup"]
+    certificate_permissions = ["Get", "List", "Create", "Delete", "Recover", "Backup"]
+    key_permissions         = ["Get", "List", "Create", "Delete", "Decrypt", "Encrypt", "Sign", "UnwrapKey", "WrapKey", "Verify", "Recover", "Backup"]
+  }
+}
+
+output "application_id" {
+  value = azuread_application.aad_app.id
+}
+
+output "service_principal_id" {
+  value = azuread_service_principal.aad_sp.id
+}
+
+output "service_principal_password" {
+  value     = azuread_application_password.aad_app_password.value
+  sensitive = true
 }
 
