@@ -115,18 +115,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 }
 
-resource "azuread_application" "aad_app" {
-  display_name = "${var.prefix}-app"
-}
-
-resource "azuread_service_principal" "aad_sp" {
-  client_id = azuread_application.aad_app.client_id
-}
-
-resource "azuread_application_password" "aad_app_password" {
-  application_id = azuread_application.aad_app.id
-}
-
 resource "azurerm_key_vault" "key_vault" {
   name                     = "${var.prefix}-kv"
   location                 = var.location
@@ -134,26 +122,4 @@ resource "azurerm_key_vault" "key_vault" {
   tenant_id                = data.azurerm_client_config.current.tenant_id
   sku_name                 = "standard"
   purge_protection_enabled = true
-
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = azuread_service_principal.aad_sp.object_id
-    secret_permissions      = ["Get", "List", "Set", "Delete", "Recover", "Backup"]
-    certificate_permissions = ["Get", "List", "Create", "Delete", "Recover", "Backup"]
-    key_permissions         = ["Get", "List", "Create", "Delete", "Decrypt", "Encrypt", "Sign", "UnwrapKey", "WrapKey", "Verify", "Recover", "Backup"]
-  }
 }
-
-output "application_id" {
-  value = azuread_application.aad_app.id
-}
-
-output "service_principal_id" {
-  value = azuread_service_principal.aad_sp.id
-}
-
-output "service_principal_password" {
-  value     = azuread_application_password.aad_app_password.value
-  sensitive = true
-}
-
