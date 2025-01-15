@@ -119,7 +119,14 @@ export const GitConfigPage = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="ghOrg">GitHub Organization</Label>
+                            <div className="flex space-x-4">
+                                <Label htmlFor="ghOrg">
+                                    GitHub Organization
+                                </Label>
+                                <Button onClick={() => fetchOrgs(true)}>
+                                    Refresh Orgs
+                                </Button>
+                            </div>
                             <select
                                 id="ghOrg"
                                 className="w-full px-3 py-2 border border-gray-300 rounded"

@@ -22,14 +22,14 @@ export const useFetchGhPat = (galacticId?: string) => {
         }
     }, [galacticId]);
 
-    const fetchOrgs = useCallback(async () => {
+    const fetchOrgs = useCallback(async (refresh?: boolean) => {
         console.log(`Fetching GitHub orgs, galacticId is: ${galacticId}`);
         if (!galacticId) {
             return;
         }
         try {
             const response = await api.get(`/commands/getGhOrgs`, {
-                params: { id: galacticId },
+                params: { id: galacticId, refresh: refresh ?? false },
             });
             console.log(`Fetched GitHub orgs: ${response.data}`);
             setGhOrgs(response.data);

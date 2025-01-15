@@ -68,7 +68,9 @@ export const getListOfOrgs = async (
             return;
         }
 
-        if (galaxy.githubOrgs?.length > 0) {
+        const shouldRefresh = req.query.refresh === 'true';
+
+        if (galaxy.githubOrgs?.length > 0 && !shouldRefresh) {
             res.json(galaxy.githubOrgs);
             return;
         }
