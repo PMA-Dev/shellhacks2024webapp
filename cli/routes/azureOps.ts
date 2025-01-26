@@ -377,7 +377,7 @@ export const deployToVmUsingGhActions = async (projectId: number) => {
     );
 
     // wait 5s with promise
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const urlOutput = await runCmdAsync(
         'gh',
@@ -393,14 +393,5 @@ export const deployToVmUsingGhActions = async (projectId: number) => {
     if (!actionUrl) {
         throw new Error('Failed to retrieve GitHub Actions link');
     }
-
-    new Promise((resolve) => setTimeout(resolve, 20000)).then(async () => {
-        await runCmdAsync('gh', ['workflow', 'run', 'deploy-backend.yml'], {
-            join: true,
-            cwd: project.workingDir,
-            env: { ...process.env, GH_TOKEN: galaxy.githubPat },
-        });
-    });
-
     return actionUrl;
 };
