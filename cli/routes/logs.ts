@@ -43,10 +43,15 @@ export const getVmLogOutputAsyncFromSSH = async (
     const sshUsername = 'azureuser';
     const sshPassword = 'Secret123';
 
-    const command =
-        logType === 'frontend'
-            ? 'journalctl -u nginx -n 70 --no-pager'
-            : 'journalctl -u backend.service -n 70 --no-pager';
+    let command: string;
+    if (logType === 'frontend') {
+        command = 'journalctl -u nginx -n 70 --no-pager';
+    } else if (logType === 'backend') {
+        command = 'journalctl -u backend.service -n 70 --no-pager';
+    } else if (logType === 'worker') {
+        command = 'journalctl -u worker.service -n 70 --no-pager';
+    }
+
 
     return new Promise<string>((resolve, reject) => {
         const conn = new Client();

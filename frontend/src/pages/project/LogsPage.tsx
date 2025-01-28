@@ -9,35 +9,38 @@ export const LogsPage = () => {
         logData,
         isFetchingFrontend,
         isFetchingBackend,
+        isFetchingWorker,
         error,
         getFrontendLogs,
         getBackendLogs,
+        getWorkerLogs,
     } = useLogs(Number(project?.id));
 
-    const [lastUpdatedFrontend, setLastUpdatedFrontend] = useState<Date | null>(
-        null
+    const [activeTab, setActiveTab] = useState<
+        'frontend' | 'backend' | 'worker'
+    >('frontend');
+    const [lastUpdated, setLastUpdated] = useState<Record<string, Date | null>>(
+        {
+            frontend: null,
+            backend: null,
+            worker: null,
+        }
     );
-    const [lastUpdatedBackend, setLastUpdatedBackend] = useState<Date | null>(
-        null
-    );
 
-    const frontendLogsRef = useRef<HTMLDivElement>(null);
-    const backendLogsRef = useRef<HTMLDivElement>(null);
+    const logsRef = useRef<HTMLDivElement>(null);
 
-    const handleFrontendRefresh = async () => {
-        await getFrontendLogs();
-        setLastUpdatedFrontend(new Date());
-        frontendLogsRef.current?.scrollTo({
-            top: frontendLogsRef.current.scrollHeight,
-            behavior: 'smooth',
-        });
-    };
+    const handleRefresh = async (type: 'frontend' | 'backend' | 'worker') => {
+        if (type === 'frontend') await getFrontendLogs();
+        if (type === 'backend') await getBackendLogs();
+        if (type === 'worker') await getWorkerLogs();
 
-    const handleBackendRefresh = async () => {
-        await getBackendLogs();
-        setLastUpdatedBackend(new Date());
-        backendLogsRef.current?.scrollTo({
-            top: backendLogsRef.current.scrollHeight,
+        setLastUpdated((prev) => ({
+            ...prev,
+            [type]: new Date(),
+        }));
+
+        logsRef.current?.scrollTo({
+            top: logsRef.current.scrollHeight,
             behavior: 'smooth',
         });
     };
@@ -52,63 +55,69 @@ export const LogsPage = () => {
             : 'N/A';
 
     return (
-        <div className="flex flex-row space-x-4 mx-auto max-w-1xl h-full">
-            {/* Frontend Logs */}
-            <div className="flex-1 flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold">Frontend Logs</h3>
-                    <div className="flex items-center space-x-2">
-                        <Button
-                            onClick={handleFrontendRefresh}
-                            disabled={isFetchingFrontend}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                        >
-                            {isFetchingFrontend
-                                ? 'Refreshing...'
-                                : 'Refresh Frontend'}
-                        </Button>
-                        <span className="text-gray-500 text-sm">
-                            Last Updated: {formatDate(lastUpdatedFrontend)}
-                        </span>
-                    </div>
-                </div>
-                <div
-                    ref={frontendLogsRef}
-                    className="h-[80vh] border rounded-md p-4 overflow-y-auto bg-gray-50 shadow-md whitespace-pre-wrap break-words"
-                >
-                    {logData.frontend ? (
-                        <pre>{logData.frontend}</pre>
-                    ) : (
-                        <p>No logs available</p>
-                    )}
-                </div>
+        <div className="flex flex-col items-center w-full h-full">
+            {/* Toggle Buttons */}
+            <div className="flex space-x-4 mb-4">
+                {['frontend', 'backend', 'worker'].map((type) => (
+                    <Button
+                        key={type}
+                        onClick={() =>
+                            setActiveTab(
+                                type as 'frontend' | 'backend' | 'worker'
+                            )
+                        }
+                        className={`px-4 py-2 rounded-md ${
+                            activeTab === type
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 text-gray-700'
+                        }`}
+                    >
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </Button>
+                ))}
             </div>
 
-            {/* Backend Logs */}
-            <div className="flex-1 flex flex-col">
+            {/* Logs Display */}
+            <div className="flex flex-col w-full max-w-7xl">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold">Backend Logs</h3>
+                    <h3 className="text-xl font-bold">
+                        {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}{' '}
+                        Logs
+                    </h3>
                     <div className="flex items-center space-x-2">
                         <Button
-                            onClick={handleBackendRefresh}
-                            disabled={isFetchingBackend}
+                            onClick={() => handleRefresh(activeTab)}
+                            disabled={
+                                (activeTab === 'frontend' &&
+                                    isFetchingFrontend) ||
+                                (activeTab === 'backend' &&
+                                    isFetchingBackend) ||
+                                (activeTab === 'worker' && isFetchingWorker)
+                            }
                             className="px-4 py-2 bg-blue-500 text-white rounded-md"
                         >
-                            {isFetchingBackend
+                            {activeTab === 'frontend' && isFetchingFrontend
                                 ? 'Refreshing...'
-                                : 'Refresh Backend'}
+                                : activeTab === 'backend' && isFetchingBackend
+                                ? 'Refreshing...'
+                                : activeTab === 'worker' && isFetchingWorker
+                                ? 'Refreshing...'
+                                : `Refresh ${
+                                      activeTab.charAt(0).toUpperCase() +
+                                      activeTab.slice(1)
+                                  }`}
                         </Button>
                         <span className="text-gray-500 text-sm">
-                            Last Updated: {formatDate(lastUpdatedBackend)}
+                            Last Updated: {formatDate(lastUpdated[activeTab])}
                         </span>
                     </div>
                 </div>
                 <div
-                    ref={backendLogsRef}
-                    className="h-[80vh] border rounded-md p-4 overflow-y-auto bg-gray-50 shadow-md whitespace-pre-wrap break-words"
+                    ref={logsRef}
+                    className="h-[80vh] border rounded-md p-4 overflow-y-auto bg-gray-50 shadow-md whitespace-pre-wrap text-wrap"
                 >
-                    {logData.backend ? (
-                        <pre>{logData.backend}</pre>
+                    {logData[activeTab] ? (
+                        <pre style={{whiteSpace: "pre-wrap"}}>{logData[activeTab]}</pre>
                     ) : (
                         <p>No logs available</p>
                     )}
