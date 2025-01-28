@@ -12,7 +12,7 @@ export const getVmLogOutput = async (
         const projectId = Number(req.query.projectId || '');
         const logType = req.query.logType as LogType;
 
-        if (!projectId || !['frontend', 'backend'].includes(logType)) {
+        if (!projectId || !['frontend', 'backend', 'worker'].includes(logType)) {
             res.status(400).json({ error: 'Invalid parameters' });
             return;
         }
@@ -51,7 +51,6 @@ export const getVmLogOutputAsyncFromSSH = async (
     } else if (logType === 'worker') {
         command = 'journalctl -u worker.service -n 70 --no-pager';
     }
-
 
     return new Promise<string>((resolve, reject) => {
         const conn = new Client();

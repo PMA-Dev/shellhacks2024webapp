@@ -275,4 +275,4 @@ export type GenericMetadata =
     | ContentMetadata;
 
 
-export type LogType = 'frontend' | 'backend';
+export type LogType = 'frontend' | 'backend' | 'worker';
