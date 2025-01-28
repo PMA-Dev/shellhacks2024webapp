@@ -136,6 +136,11 @@ function Sidebar() {
                     label: 'Logs',
                     icon: <Fish size={24} />,
                 },
+                {
+                    to: `/projects/${projectId}/deployment`,
+                    label: 'Deployments',
+                    icon: <Server size={24} />,
+                },
             ],
         },
         {

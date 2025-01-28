@@ -11,6 +11,7 @@ import AssetsPage from './AssetsPage';
 import { AzurePage } from './AzurePage';
 import ComponentsPage from './ComponentsPage';
 import DBSchemaPage from './DBSchemaPage';
+import { DeploymentsPage } from './Deployments';
 import DevelopmentModePage from './DevelopmentPage';
 import GeneralProjectPage from './GeneralProjectPage';
 import { LogsPage } from './LogsPage';
@@ -69,6 +70,7 @@ function ProjectPage() {
                         <Route path="dbschema" element={<DBSchemaPage />} />
                         <Route path="videotest" element={<TestVideoRender />} />
                         <Route path="azure" element={<AzurePage />} />
+                        <Route path="deployment" element={<DeploymentsPage />} />
                         <Route path="logs" element={<LogsPage />} />
                         <Route
                             path="development"
