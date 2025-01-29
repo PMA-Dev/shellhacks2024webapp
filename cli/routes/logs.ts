@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
+import { readFileSync } from 'fs';
+import path from 'path';
 import { Client } from 'ssh2';
 import { query } from '../db';
 import { LogType, MetadataType, ProjectMetadata } from '../models';
+import { runCmdAsync } from '../shellProxy';
 
 export const getVmLogOutput = async (
     req: Request,
@@ -12,15 +15,15 @@ export const getVmLogOutput = async (
         const projectId = Number(req.query.projectId || '');
         const logType = req.query.logType as LogType;
 
-        if (!projectId || !['frontend', 'backend', 'worker'].includes(logType)) {
+        if (
+            !projectId ||
+            !['frontend', 'backend', 'worker'].includes(logType)
+        ) {
             res.status(400).json({ error: 'Invalid parameters' });
             return;
         }
 
-        const output = await getVmLogOutputAsyncFromSSH(
-            projectId,
-            logType
-        );
+        const output = await getVmLogOutputAsyncFromSSH(projectId, logType);
         res.json({ log: output });
     } catch (error) {
         next(error);
@@ -41,7 +44,7 @@ export const getVmLogOutputAsyncFromSSH = async (
 
     const vmIp = project.azureVmIp;
     const sshUsername = 'azureuser';
-    const sshPassword = 'Secret123';
+    const sshPrivateKey = await getPrivateKeyString(project);
 
     let command: string;
     if (logType === 'frontend') {
@@ -84,7 +87,33 @@ export const getVmLogOutputAsyncFromSSH = async (
                 host: vmIp,
                 port: 22,
                 username: sshUsername,
-                password: sshPassword,
+                privateKey: sshPrivateKey,
             });
     });
+};
+
+export const getPrivateKeyString = async (
+    project: ProjectMetadata
+): Promise<string> => {
+    const privateKeyDirPath = project.workingDir;
+
+    const pemPath = await runCmdAsync(
+        'find',
+        ['.', '-name', '*.pem', '-maxdepth', '1'],
+        {
+            join: true,
+            cwd: privateKeyDirPath,
+        }
+    );
+
+    if (!pemPath) {
+        throw new Error('Private key not found');
+    }
+
+    const privateKey = readFileSync(
+        path.join(privateKeyDirPath!, pemPath),
+        'utf8'
+    );
+
+    return privateKey;
 };
