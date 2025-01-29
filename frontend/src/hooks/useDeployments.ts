@@ -2,31 +2,44 @@ import { useCallback, useState } from 'react';
 import api from './api';
 
 export const useDeployments = (projectId: string) => {
-    type DeploymentStatusData = {url: string, status: string};
-    const [status, setStatus] = useState<Record<string, DeploymentStatusData>>({});
+    type DeploymentStatusData = { url: string; status: string };
+    const [status, setStatus] = useState<Record<string, DeploymentStatusData>>(
+        {}
+    );
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const deploy = useCallback(async (services: Record<string, boolean>) => {
-        const selected = Object.keys(services).filter((key) => services[key]);
-        if (selected.length === 0) return;
-
-        setIsLoading(true);
-        setError(null);
-        try {
-            await Promise.all(
-                selected.map((service) =>
-                    api.get('/deployment/deployByName', {
-                        params: { projectId, service },
-                    })
-                )
+    const deploy = useCallback(
+        async (services: Record<string, boolean>, all: boolean = false) => {
+            const selected = Object.keys(services).filter(
+                (key) => services[key]
             );
-        } catch (err) {
-            setError('Failed to trigger deployment');
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+            if (selected.length === 0) return;
+
+            setIsLoading(true);
+            setError(null);
+            try {
+                if (all) {
+                    await api.get('/deployment/deployAll', {
+                        params: { projectId },
+                    });
+                } else {
+                    await Promise.all(
+                        selected.map((service) =>
+                            api.get('/deployment/deployByName', {
+                                params: { projectId, service },
+                            })
+                        )
+                    );
+                }
+            } catch (err) {
+                setError('Failed to trigger deployment');
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        []
+    );
 
     const fetchStatus = useCallback(async () => {
         try {

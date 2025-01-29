@@ -102,3 +102,34 @@ export const getLatestStatus = async (
         next(error);
     }
 };
+
+
+export const deployAllProject = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const projectId = Number(req.query.projectId || '');
+        if (!projectId) {
+            res.status(400).json({ error: 'projectId is required' });
+            return;
+        }
+        const project = await query<ProjectMetadata>(
+            MetadataType.Project,
+            projectId
+        );
+        if (!project) {
+            res.status(404).json({ error: 'Project not found' });
+            return;
+        }
+        const actionName = `deploy-all.yml`;
+        await runGhActionByName(projectId, actionName);
+        res.json({
+            success: true,
+            message: `Deployment started for all`,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

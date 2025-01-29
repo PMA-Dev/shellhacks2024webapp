@@ -70,7 +70,12 @@ export const DeploymentsPage = () => {
             </div>
 
             <Button
-                onClick={() => deploy(selected)}
+                onClick={() => {
+                    if (selected.frontend && selected.backend && selected.worker) {
+                        deploy(selected, true);
+                    }
+                    deploy(selected);
+                }}
                 disabled={isLoading}
                 className="bg-yellow-500 text-black px-6 py-2 rounded-lg"
             >

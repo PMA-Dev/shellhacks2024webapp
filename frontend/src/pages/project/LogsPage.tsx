@@ -61,11 +61,14 @@ export const LogsPage = () => {
                 {['frontend', 'backend', 'worker'].map((type) => (
                     <Button
                         key={type}
-                        onClick={() =>
+                        onClick={() => {
                             setActiveTab(
                                 type as 'frontend' | 'backend' | 'worker'
-                            )
-                        }
+                            );
+                            handleRefresh(
+                                type as 'frontend' | 'backend' | 'worker'
+                            );
+                        }}
                         className={`px-4 py-2 rounded-md ${
                             activeTab === type
                                 ? 'bg-blue-600 text-white'
@@ -117,7 +120,9 @@ export const LogsPage = () => {
                     className="h-[80vh] border rounded-md p-4 overflow-y-auto bg-gray-50 shadow-md whitespace-pre-wrap text-wrap"
                 >
                     {logData[activeTab] ? (
-                        <pre style={{whiteSpace: "pre-wrap"}}>{logData[activeTab]}</pre>
+                        <pre style={{ whiteSpace: 'pre-wrap' }}>
+                            {logData[activeTab]}
+                        </pre>
                     ) : (
                         <p>No logs available</p>
                     )}

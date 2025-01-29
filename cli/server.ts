@@ -27,7 +27,11 @@ import {
     getFileByIdFromDb,
     uploadFileHandler,
 } from './routes/cmsHelper';
-import { deployByNameUsingGhAction, getLatestStatus } from './routes/deployment';
+import {
+    deployAllProject,
+    deployByNameUsingGhAction,
+    getLatestStatus,
+} from './routes/deployment';
 import {
     getComponentMetadata,
     getComponentMetadataById,
@@ -166,7 +170,8 @@ const initializeRoutes = async (app: Express) => {
     app.get('/azure/deployUsingAction', deployToVmUsingGhActionsRoute);
 
     // Deployment routes
-    app.get('/deployment/deployByName', deployByNameUsingGhAction );
+    app.get('/deployment/deployByName', deployByNameUsingGhAction);
+    app.get('/deployment/deployAll', deployAllProject);
     app.get('/deployment/getLatestStatus', getLatestStatus);
 
     // Log/ssh routes
